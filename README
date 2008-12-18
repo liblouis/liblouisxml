@@ -1,0 +1,51 @@
+liblouisxml REQUIRES the latest version of liblouis.
+
+DOCUMENTATION
+
+For documentation, see liblouisxml-guide.html or liblouisxml-guide.txt . 
+These are in the docs directory. For an example of a configuration file,
+see excmple_default.cfg and example_canonical.cfg . For examples of 
+semantics-action
+files, see example_dtbook3.sem and excmple_math.sem , also in the docs 
+directory. For examples of translation tables, see
+en-us-g2.ctb en-us-g1.ctb chardefs.cti nemeth.ctb and whatever other
+files they may include. These are all in the tables directory 
+of the liblouis distribution.
+
+INSTALLATION
+
+First obtain the latest version of liblouis and compile it. Before
+compiling, you should chose between 16- and 32-bit Unicode, as described
+in the README file and the documentation. liblouisxml inherits this
+choice from liblouis.
+
+After unpacking the distribution tarball for liblouisxml go to the
+directory it creates. You may need to edit the file paths.c . This
+controls where liblouisxml and liblouis will look for configuration
+files, semantic-action files, and translation tables. Usually running
+"configure" takes care of this.  After running "configure" run "make"
+and "make install". You will need root privileges for the installation
+step.
+
+This will produce the liblouisxml library and the programs xml2brl,
+mathml2brl and the script msword2brl.
+
+Note that that the library and programs will not work properly unless
+you have first installed the latest version of liblouis. msword2brl
+requires the installation of antiword.
+
+RELEASE NOTES 
+
+mathml2brl is primarily for testing the lbx_translateString function. 
+Type mathml2brl -h to see usage information. 
+
+xml2brl is a full transcription program. Again, type xml2brl -h to see
+usage information. It will handle xml files from bookshare.org, docbook
+files, xhtml files, files saved as xml by Microsoft Word and text files
+"right out of the box." 
+
+msword2brl takes a Microsoft Word file and produces a well-formatted 
+braille file.
+
+
+

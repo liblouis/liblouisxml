@@ -1,0 +1,38 @@
+John J. Boyer, john.boyer@jjb-software.com
+
+Release liblouisxml-1.4.2, June 16, 2008
+
+Converted to Gnu autotools
+
+A few bugs fixed
+
+Release liblouisxml-1.4.1
+
+linux-Makefile optimized for RedHat
+
+If there are errors in a liblouis table you will now get only a single 
+arror report instead of myriads.
+
+Release liblouisxml-1.4.0, May 12, 2008
+
+doc directory renamed docs . Semantic-action and configuration files in 
+this directory have been prefixed with example_ 
+
+mode  parameter added to functions in liblouisxml.h
+
+Cdata sections can now be translated as text, computer code or ignored.
+
+A function to find the true namo of the "Program Files" directory in 
+Windows has been written by Yuemei Sun of ViewPlus Technologies. It is 
+in the paths.c module.
+
+Paths for translation tables, semantic action files and configuration 
+files can now be assigned more flexibly. See paths.c
+
+xml2brl will now accept configuration settings on the command line, so 
+it is unnecessary to change a configuration file.
+
+It is now possible to pass a configuration string in memory to the 
+library, not just the name of a configuration file.
+
+For details on all these changes see docs/liblouisxml-guide.html

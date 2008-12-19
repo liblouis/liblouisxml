@@ -1,4 +1,4 @@
-lbx_filesdir = $(sysconfdir)/liblouisxml/lbx_files
+lbx_filesdir = $(datadir)/liblouisxml/lbx_files
 
 lbx_files_DATA = \
 	marburg.sem \

@@ -1,3 +1,13 @@
+2008-12-23  Christian Egli  <christian.egli@sbszh.ch>
+
+	* doc/Makefile.am : Integrated the man page and the
+	liblouisxml-guide in the build process.
+
+	* doc/xml2brl.1: Added a man page for xml2brl.
+
+	* doc/liblouisxml-guide.texi: Added a texinfo version of the
+	liblouisxml-guide.
+
 John J. Boyer, john.boyer@jjb-software.com
 
 Release liblouisxml-1.4.2, June 16, 2008

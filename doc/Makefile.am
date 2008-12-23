@@ -20,7 +20,17 @@ EXTRA_DIST = \
 
 info_TEXINFOS = liblouisxml-guide.texi
 
+dist_man_MANS = xml2brl.1
+man_MANS = xml2brl.1
+
+$(man_MANS): xml2brl.asciidoc
+
 SUFFIXES                = .txt
 
 .texi.txt:
 	$(MAKEINFO) --plaintext $< -o $@
+
+# man pages are generated from asciidoc. If you would like to
+# regenerate the man page you need to have asciidoc installed.
+.asciidoc.1:
+	a2x -d manpage -f manpage $<

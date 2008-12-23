@@ -18,3 +18,9 @@ EXTRA_DIST = \
 	liblouisxml-guide.html \
 	liblouisxml-guide.txt
 
+info_TEXINFOS = liblouisxml-guide.texi
+
+SUFFIXES                = .txt
+
+.texi.txt:
+	$(MAKEINFO) --plaintext $< -o $@

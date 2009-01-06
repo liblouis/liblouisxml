@@ -66,13 +66,13 @@ main (int argc, char **argv)
 	      ("-f configFile: configuration file name, default: default.cfg.\n");
 	    printf ("inputFile : input file, '--' means stdin\n");
 	    printf ("outputFile : output file\n");
-	    printf ("xml2brl with no argumenst takes input on stdin\n");
+	    printf ("xml2brl with no arguments takes input on stdin\n");
 	    printf ("and gives output on stdout.\n");
 	    printf ("OPTIONS\n");
 	    printf ("-h, print this message and exit.\n");
 	    printf ("-b, back-translate a braille file.\n");
 	    printf ("-r, reformat a braille file.\n");
-	    printf ("-p, translate a Poorly formattted file.\n");
+	    printf ("-p, translate a poorly formatted file.\n");
 	    printf ("[-t]: h(t)ml document, not xhtml");
 	    printf ("[-l]: write errors to log file instead of stderr.\n");
 	    exit (0);

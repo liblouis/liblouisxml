@@ -21,6 +21,10 @@ EXTRA_DIST = \
 
 info_TEXINFOS = liblouisxml-guide.texi
 
+# generate one big html file
+AM_MAKEINFOHTMLFLAGS = --no-headers --no-split
+
+# man pages
 dist_man_MANS = xml2brl.1 msword2brl.1
 man_MANS = xml2brl.1 msword2brl.1
 

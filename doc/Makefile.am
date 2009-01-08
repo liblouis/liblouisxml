@@ -16,14 +16,15 @@ EXTRA_DIST = \
 	example_html.sem \
 	example_math.sem \
 	liblouisxml-guide.html \
-	liblouisxml-guide.txt
+	liblouisxml-guide.txt \
+	xml2brl.asciidoc
 
 info_TEXINFOS = liblouisxml-guide.texi
 
-dist_man_MANS = xml2brl.1
-man_MANS = xml2brl.1
+dist_man_MANS = xml2brl.1 msword2brl.1
+man_MANS = xml2brl.1 msword2brl.1
 
-$(man_MANS): xml2brl.asciidoc
+xml2brl.1: xml2brl.asciidoc
 
 SUFFIXES                = .txt
 

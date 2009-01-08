@@ -59,7 +59,10 @@ AC_CONFIG_FILES([Makefile
                  lbx_files/Makefile
                  liblouisxml/Makefile
                  tests/Makefile
-		liblouisxml.pc
+		 liblouisxml.pc
                  tools/Makefile])
+
+AC_CONFIG_FILES([tools/msword2brl], [chmod +x tools/msword2brl])
+
 AC_OUTPUT
 

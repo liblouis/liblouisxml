@@ -3,7 +3,11 @@
 usage () {
   cat <<"EOF"
 
-msword2brl infile outfile
+msword2brl [OPTION] infile outfile
+
+Options:
+  --help     Print this message
+  --version  Print version information
 
 Infile must be a Microsoft Word file. The script first calls the
 `antiword' program, so you must have this installed on your machine.

@@ -9,13 +9,6 @@
 * Liblouisxml: (liblouisxml). An xml to Braille Translation Library.
 @end direntry
 
-@c Version and Contact Info
-@set MAINTAINERSITE @uref{http://www.jjb-software.com/liblouisxml-guide.html,maintainers webpage}
-@set AUTHOR John J. Boyer
-@set MAINTAINER John J. Boyer
-@set MAINTAINEREMAIL @email{john.boyer@jjb-software.com}
-@set MAINTAINERCONTACT @uref{mailto:john.boyer@jjb-software.com,contact the maintainer}
-@c %**end of header
 @finalout
 
 @c Macro definitions
@@ -1424,14 +1417,14 @@ the document. One element is used to denote a chapter heading. Another
 is used to denote a paragraph, Still another to denote text in bold
 type, and so on. In other words, the elements take the place of the
 capitalization, changes in type font, spacing, etc. in a book.
-However, The computer still does not know what to do when it
+However, the computer still does not know what to do when it
 encounters an element. The semantic-action file tells it that.
 
 Consider @file{html.sem}. A copy is included as part of this
 documentation with the name @file{example_sem}. It may differ from the
 file that liblouisxml is currently using. You will see that it begins
 with some lines about copyrights. Each line begins with a number sign
-(@samp{#}). This indicates that it is a "comment," intended for the
+(@samp{#}). This indicates that it is a "comment", intended for the
 human reader and the computer should ignore it. Then there is a blank
 line. Finally, there are two other comments explaining that the file
 must be edited to get proper output. This is because a human being

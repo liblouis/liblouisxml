@@ -5,7 +5,7 @@ AC_INIT(liblouisxml, 1.7.0, john.boyer@jjb-software.com)
 AC_CONFIG_SRCDIR([liblouisxml/semantics.c])
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 AC_CONFIG_HEADER([liblouisxml/config.h])
-AM_MAINTAINER_MODE
+# AM_MAINTAINER_MODE
 
 # libtool versioning for libwnck
 

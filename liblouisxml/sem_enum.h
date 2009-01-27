@@ -41,6 +41,9 @@ typedef enum
   htmltarget,
   changetable,
   reverse,
+  configfile,
+  configstring,
+  configtweak,
   /* styles */
   document,
   para,

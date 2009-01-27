@@ -204,6 +204,7 @@ int set_paths (const char *configPath);
 int read_configuration_file (const char *configFileName,
 			     const char *logFileName, const char 
 *settingsString, unsigned int mode);
+int config_compileSettings (const char *fileName);
 int examine_document (xmlNode * node);
 int transcribe_document (xmlNode * node);
 int transcribe_math (xmlNode * node, int action);
@@ -234,4 +235,5 @@ int do_newpage (void);
 int do_blankline (void);
 int do_softreturn (void);
 int do_righthandpage (void);
+int do_configstring (xmlNode *node);
 #endif /*louisxml_h*/

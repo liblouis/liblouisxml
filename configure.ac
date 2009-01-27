@@ -1,7 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(liblouisxml, 1.7.0, john.boyer@jjb-software.com)
+AC_INIT(liblouisxml, 1.8.0, john.boyer@jjb-software.com)
 AC_CONFIG_SRCDIR([liblouisxml/semantics.c])
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 AC_CONFIG_HEADER([liblouisxml/config.h])
@@ -14,7 +14,8 @@ LIBLOUISXML_CURRENT=1
 
 # increment any time the source changes; set to
 #  0 if you increment CURRENT
-LIBLOUISXML_REVISION=4
+LIBLOUISXML_REVISION=5
+
 
 # increment if any interfaces have been added; set to 0
 #  if any interfaces have been changed or removed. removal has
@@ -30,7 +31,7 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
+# AC_PROG_RANLIB
 AC_ISC_POSIX
 AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL

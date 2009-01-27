@@ -50,17 +50,17 @@ transcribe_document (xmlNode * node)
     case skip:
       pop_sem_stack ();
       return 0;
-case htmllink:
-if (ud->format_for != browser)
-break;
-insert_linkOrTarget (node, 0);
-pop_sem_stack;
+    case htmllink:
+      if (ud->format_for != browser)
+	break;
+      insert_linkOrTarget (node, 0);
+      pop_sem_stack;
       return 1;
-case htmltarget:
-if (ud->format_for != browser)
-break;
-insert_linkOrTarget (node, 1);
-pop_sem_stack;
+    case htmltarget:
+      if (ud->format_for != browser)
+	break;
+      insert_linkOrTarget (node, 1);
+      pop_sem_stack;
       return 1;
     case code:
       transcribe_computerCode (node, 0);
@@ -121,7 +121,7 @@ pop_sem_stack;
       switch (child->type)
 	{
 	case XML_ELEMENT_NODE:
-	    transcribe_paragraph (child, 0);
+	  transcribe_paragraph (child, 0);
 	  break;
 	case XML_TEXT_NODE:
 	  insert_text (child);
@@ -138,5 +138,3 @@ pop_sem_stack;
   pop_sem_stack ();
   return 1;
 }
-
-

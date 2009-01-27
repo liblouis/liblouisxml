@@ -43,6 +43,7 @@ liblouisxml_la_SOURCES =			\
 	transcriber.h
 
 EXTRA_DIST = \
+	README \
 	make_sem_names.c \
 	Makesemnames
 

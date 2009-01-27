@@ -42,7 +42,7 @@ typedef struct
   int lineNumber;
   int numEntries;
   int unedited;
-  char line[MAXNAMELEN];
+  char line[2 * MAXNAMELEN];
 }
 FileInfo;
 
@@ -592,6 +592,12 @@ compileLine (FileInfo * nested)
       inserts = encodeInsertions (nested, (xmlChar *) insertions,
 				  insertionsLength);
     }
+  if (insertionsLength == 0 && (actionNum == configfile || actionNum ==
+				configstring))
+    {
+      semanticError (nested, "This semantic action requires a third column.");
+      return 0;
+    }
   hashInsert (namesAndActions, (xmlChar *) lookFor, actionNum, inserts);
   nested->numEntries++;
   return 1;
@@ -602,15 +608,22 @@ getALine (FileInfo * nested)
 {
 /*Read a line of char's from an input file */
   int ch;
+  int pch = 0;
   int numchars = 0;
   memset (nested->line, 0, sizeof (nested->line));
   while ((ch = fgetc (nested->in)) != EOF)
     {
       if (ch == 13)
 	continue;
+      if (pch == '\\' && ch == 10)
+	{
+	  numchars--;
+	  continue;
+	}
       if (ch == 10 || numchars >= sizeof (nested->line))
 	break;
       nested->line[numchars++] = ch;
+      pch = ch;
     }
   if (ch == EOF)
     return 0;

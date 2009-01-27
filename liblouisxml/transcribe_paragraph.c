@@ -55,6 +55,9 @@ transcribe_paragraph (xmlNode * node, int action)
       if (action != 0)
 	pop_sem_stack ();
       return 0;
+    case configtweak:
+      do_configstring (node);
+      break;
     case htmllink:
       if (ud->format_for != browser)
 	break;

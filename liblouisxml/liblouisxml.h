@@ -41,9 +41,8 @@ extern "C"
 /* Function prototypes are documented briefly below. For more extensive 
 documentation see liblouis-guide.html. */
 
-void *lbx_initialize (const char *const configFileName, const char
-			const *logFileName, const char const
-*settingsString); 
+  void *lbx_initialize (const char *const configFileName, const char
+			const *logFileName, const char const *settingsString);
 
 /* This function initializes the libxml2 library, runs canonical.cfg and
 processes the configuration file given in configFileName, sets up a log
@@ -53,11 +52,11 @@ structure. This pointer is void and must be cast to (UserData *) in the
 calling program. To access the information in this structure you must
 include louisxml.h */
 
-typedef enum
-{
-  dontInit = 1,
-  htmlDoc = 2
-} processingModes;
+  typedef enum
+  {
+    dontInit = 1,
+    htmlDoc = 2
+  } processingModes;
 
   int lbx_translateString
     (const char *const configFileName,

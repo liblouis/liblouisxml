@@ -35,16 +35,24 @@
 
 static void examText (xmlNode * node);
 static void examCdataa (xmlNode * node);
-static int examEmptyElement (xmlNode * node);
+static int doConfigfile (xmlNode * node);
 
 int
 examine_document (xmlNode * node)
 {
 /*Examine the DOM tree, add semantic attributes and set indicators.*/
   xmlNode *child;
+  if (node == NULL)
+    return 0;
   ud->stack[++ud->top] = set_sem_attr (node);
   switch (ud->stack[ud->top])
     {
+    case configfile:
+      doConfigfile (node);
+      break;
+    case configstring:
+do_configstring (node);
+      break;
     case code:
       ud->has_comp_code = 1;
       break;
@@ -72,10 +80,7 @@ examine_document (xmlNode * node)
       switch (child->type)
 	{
 	case XML_ELEMENT_NODE:
-	  if (child->children)
-	    examine_document (child);
-	  else
-	    examEmptyElement (child);
+	  examine_document (child);
 	  break;
 	case XML_TEXT_NODE:
 	  examText (child);
@@ -88,23 +93,6 @@ examine_document (xmlNode * node)
 	  break;
 	}
       child = child->next;
-    }
-  ud->top--;
-  return 1;
-}
-
-static int
-examEmptyElement (xmlNode * node)
-{
-  ud->stack[++ud->top] = set_sem_attr (node);
-  switch (ud->stack[ud->top])
-    {
-    case newpage:
-      break;
-    case righthandpage:
-      break;
-    default:
-      break;
     }
   ud->top--;
   return 1;
@@ -126,4 +114,46 @@ static void
 examCdataa (xmlNode * node)
 {
   ud->has_cdata = 1;
+}
+
+static int
+doConfigfile (xmlNode * node)
+{
+  int k;
+  char filePath[MAXNAMELEN];
+  ud->text_length = 0;
+  insert_code (node, 0);
+  for (k = 0; k < ud->text_length; k++)
+    ud->typeform[k] = (xmlChar) ud->text_buffer[k];
+  ud->typeform[k] = 0;
+  if (!find_file (ud->typeform, filePath))
+    return 0;
+  if (!config_compileSettings (filePath))
+    return 0;
+  return 1;
+}
+
+int
+do_configstring (xmlNode * node)
+{
+  int k;
+  int kk = 0;
+  xmlChar configString[2 * MAXNAMELEN];
+  int savedTextLength = ud->text_length;
+  insert_code (node, 0);
+  configString[kk++] = ud->string_escape;
+  for (k = savedTextLength; k < ud->text_length; kk++)
+    {
+      if (ud->text_buffer[k] == '=')
+	configString[kk++] = ' ';
+      else if (ud->text_buffer[k] == ';')
+	configString[kk++] = '\n';
+      else
+	configString[kk++] = (xmlChar) ud->text_buffer[k];
+    }
+  configString[kk] = 0;
+  if (!config_compileSettings (configString))
+    return 0;
+  ud->text_length = savedTextLength;
+  return 1;
 }

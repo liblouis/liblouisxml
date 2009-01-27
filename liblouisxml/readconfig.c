@@ -205,8 +205,8 @@ controlCharValue (FileInfo * nested)
 
 static int compileConfig (FileInfo * nested);
 
-static int
-config_compileFile (const char *fileName)
+int
+config_compileSettings (const char *fileName)
 {
 /*Compile an input file or string */
   FileInfo nested;
@@ -242,7 +242,27 @@ getLine (FileInfo * nested)
   int lineLen = 0;
   int ch;
   if (nested->fileName[0] != ud->string_escape)
-    return ((int) fgets (nested->line, sizeof (nested->line), nested->in));
+    {
+      int pch = 0;
+      while ((ch = fgetc (nested->in)) != EOF)
+	{
+	  if (ch == 13)
+	    continue;
+	  if (pch == '\\' && ch == 10)
+	    {
+	      lineLen--;
+	      continue;
+	    }
+	  if (ch == 10 || lineLen > (sizeof (nested->line) - 2))
+	    break;
+	  nested->line[lineLen++] = ch;
+	  pch = ch;
+	}
+      nested->line[lineLen] = 0;
+      if (ch == EOF)
+	return 0;
+      return 1;
+    }
   if (nested->configString[nested->stringPos] == 0)
     return 0;
   while ((ch = nested->configString[nested->stringPos]))
@@ -665,7 +685,7 @@ compileConfig (FileInfo * nested)
 	    if (nested->value == NULL)
 	      configureError (nested, "a file name in column 2 is required");
 	    else
-	      config_compileFile (nested->value);
+	      config_compileSettings (nested->value);
 	    parseLine (nested);
 	    checkSubActions (nested, mainActions, actions);
 	    if (mainActionNumber != NOTFOUND)
@@ -864,15 +884,15 @@ initConfigFiles (const char *firstConfigFile, char *fileName)
       strcat (ud->contracted_table_name, logFileNamex);
       lou_logFile (ud->contracted_table_name);
     }
-  if (!config_compileFile ("canonical.cfg"))
+  if (!config_compileSettings ("canonical.cfg"))
     return 0;
   return 1;
 }
 
 int
 read_configuration_file (const char *const configFileList, const char
-			 const *logFileName, const char const
-			 *configString, unsigned int mode)
+			 const *logFileName,
+			 const char *configString, unsigned int mode)
 {
 /* read the configuration file and perform other initialization*/
   int k;
@@ -925,7 +945,7 @@ read_configuration_file (const char *const configFileList, const char
   if (k == listLength || k == 0)
     {				/* Only one file */
       initConfigFiles (configFileList, mainFile);
-      config_compileFile (mainFile);
+      config_compileSettings (mainFile);
     }
   else
     {				/* Compile a list of files */
@@ -933,7 +953,7 @@ read_configuration_file (const char *const configFileList, const char
       subFile[k] = 0;
       initConfigFiles (subFile, mainFile);
       currentListPos = k + 1;
-      config_compileFile (mainFile);
+      config_compileSettings (mainFile);
       while (currentListPos < listLength)
 	{
 	  for (k = currentListPos; k < listLength; k++)
@@ -942,7 +962,7 @@ read_configuration_file (const char *const configFileList, const char
 	  strncpy (subFile, &configFileList[currentListPos],
 		   k - currentListPos);
 	  subFile[k - currentListPos] = 0;
-	  config_compileFile (subFile);
+	  config_compileSettings (subFile);
 	  currentListPos = k + 1;
 	}
     }
@@ -951,14 +971,14 @@ read_configuration_file (const char *const configFileList, const char
   if (configString != NULL)
     {
       if (configString[0] == ud->string_escape)
-	config_compileFile (configString);
+	config_compileSettings (configString);
       else
 	{
 	  k = 0;
 	  ud->typeform[k++] = ud->string_escape;
 	  ud->typeform[k] = 0;
 	  strcat ((char *) ud->typeform, configString);
-	  config_compileFile ((char *) ud->typeform);
+	  config_compileSettings ((char *) ud->typeform);
 	  memset (ud->typeform, 0, sizeof (ud->typeform));
 	}
     }

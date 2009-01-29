@@ -1,7 +1,7 @@
 INCLUDES =		\
 	-I$(top_srcdir) \
-	-DLBX_PATH=\"$(sysconfdir)/liblouisxml/lbx_files/\" \
-	-DLIBLOUIS_TABLES_PATH=\"$(sysconfdir)/liblouis/tables/\"
+	-DLBX_PATH=\"$(datadir)/liblouisxml/lbx_files/\" \
+	-DLIBLOUIS_TABLES_PATH=\"$(datadir)/liblouis/tables/\"
 liblouisxmlincludedir = $(includedir)/liblouisxml
 
 liblouisxmlinclude_HEADERS = \

@@ -30,10 +30,13 @@ man_MANS = xml2brl.1 msword2brl.1
 
 xml2brl.1: xml2brl.asciidoc
 
+# The lead dev doesn't have help2man, so rather than have totally
+# up-to-date man pages we'll have a lead dev that can hack away
+
 # Autogenerate the man page using help2man. This happens whenever
 # msword2brl is modified, which contains the usage message.
-msword2brl.1: $(top_srcdir)/tools/msword2brl
-	help2man --info-page=liblouisxml-guide --output=$@ $<
+# msword2brl.1: $(top_srcdir)/tools/msword2brl
+# 	help2man --info-page=liblouisxml-guide --output=$@ $<
 
 SUFFIXES                = .txt
 

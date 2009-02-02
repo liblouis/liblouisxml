@@ -2,8 +2,8 @@ liblouis NEWS -*- outline -*-
 
 * Noteworthy changes in release 1.8.0 (2009-02-01)
 
-This is the release of liblouisxml from the Google code page. It is a
-bug fix release to work with the latest release of liblouis.
+This is the first release of liblouisxml from the Google code page. It
+is a bug fix release to work with the latest release of liblouis.
 
 ** New features
 

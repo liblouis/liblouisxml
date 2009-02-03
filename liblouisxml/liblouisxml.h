@@ -41,6 +41,9 @@ extern "C"
 /* Function prototypes are documented briefly below. For more extensive 
 documentation see liblouis-guide.html. */
 
+char *lbx_version (void);
+/* Returns the version of liblouisxml. */
+
   void *lbx_initialize (const char *const configFileName, const char
 			const *logFileName, const char const *settingsString);
 

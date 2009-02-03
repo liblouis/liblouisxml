@@ -36,6 +36,13 @@
 #include <libxml/HTMLparser.h>
 UserData *ud = NULL;
 
+char *
+lbx_version ()
+{
+  static char *version = PACKAGE_VERSION;
+  return version;
+}
+
 static void
 liblouisxmlErrors (void *ctx ATTRIBUTE_UNUSED, const char *msg, ...)
 {

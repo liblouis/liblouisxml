@@ -11,11 +11,19 @@
 
 @finalout
 
+@defindex semantic
+
 @c Macro definitions
 
-@c Opcode.
+@c setting.
 @macro setting{name, args}
 @tindex \name\
+@item \name\ \args\
+@end macro
+
+@c semantic action.
+@macro semanticAction{name, args}
+@semanticindex \name\
 @item \name\ \args\
 @end macro
 
@@ -80,6 +88,7 @@ Fifth Floor, Boston, MA 02110-1301, USA.
 * Connecting with the xml Document::  
 * Implementing Braille Mathematics Codes::  
 * Settings Index::              
+* Semantic Action Index::       
 * Function Index::              
 * Program Index::               
 
@@ -109,6 +118,11 @@ Customization: Configuring liblouisxml
 * translation::                 
 * xml::                         
 * style::                       
+
+Connecting with the xml Document - Semantic-Action Files
+
+* Overview::                    
+* Semantic Actions in detail::  
 
 @end detailmenu
 @end menu
@@ -731,7 +745,7 @@ Whether or not to format the output into pages. Here the value is
 @samp{yes}, for use with an embosser. However the user of a braille
 display may wish to specify @samp{no}, so as not to be bothered with
 page numbers and forms feed characters. If no is specified the lines
-will still be of the length given in callsPerLine, but the value of
+will still be of the length given in cellsPerLine, but the value of
 linesPerPage will be ignored.
 
 @setting{paragraphs, yes}
@@ -864,7 +878,7 @@ This section provides various information for the processing of xml files.
 
 @table @code
 
-@setting{semanticFiles, *\,nemeth.semm}
+@setting{semanticFiles, *\,nemeth.sem}
 This setting gives a list of semantic-action files. These files are
 read in the sequence given in the list. Here the first member of the
 list is an asterisk (@samp{*}). This means that the corresponding file
@@ -1344,6 +1358,14 @@ This style is used to indicate the beginning of a braille volume.
 @node  Connecting with the xml Document, Implementing Braille Mathematics Codes, Customization Configuring liblouisxml, Top
 @chapter Connecting with the xml Document - Semantic-Action Files
 
+@menu
+* Overview::                    
+* Semantic Actions in detail::  
+@end menu
+
+@node Overview, Semantic Actions in detail, Connecting with the xml Document, Connecting with the xml Document
+@section Overview
+
 When liblouisxml (or @command{xml2brl}) processes an xml document, it
 needs to be told how to use the information in that document to
 produce a properly translated and formatted braille document. These
@@ -1673,10 +1695,30 @@ For further discussion of how the third column is used
 not limited to mathematics. It can be used to add characters to
 anything enclosed by an xml tag.
 
+@node Semantic Actions in detail,  , Overview, Connecting with the xml Document
+@section Semantic Actions in detail
+
 Here is a complete list of the semantic actions which liblouisxml
 recognizes. Many of them are also the names of styles. These are
 listed first, preceded by an asterisk. For a discussion of these,
 @pxref{Customization Configuring liblouisxml}.
+
+Generally the format of a semantic action is:
+
+@example
+semanticAction elementSpecifier optionalArguments
+@end example
+
+@code{elementSpecifier} is the second-column value, which may be an
+element name, an element-attribute pair or an element-attribute-value
+triplet, separated by commas. This specifies where a semantic action
+is to be applied. If it is solely an element then the action is
+applied if this element is encountered. If it is an element-attribute
+pair then the action is applied if the given element also has the
+specified attribute. In the last case with a element-attribute-value
+triplet the action is only applied if the element has the specified
+attribute and the value of this attribute is equal to the specified
+value.
 
 @table @code
 
@@ -1691,23 +1733,48 @@ listed first, preceded by an asterisk. For a discussion of these,
 @item * directions
 @item * dispmath
 @item * disptext
-@item * document
+
+@semanticAction{document, elementSpecifier}
+Everything between @code{<elementSpecifier>} and
+@code{</elementSpecifier>} is an entire document.
+
 @item * exercise1
 @item * exercise2
 @item * exercise3
 @item * glossary
 @item * graph
 @item * graphlabel
-@item * heading1
-@item * heading2
-@item * heading3
-@item * heading4
+@semanticAction{heading1, elementSpecifier}
+Format the enclosed text as a first-level braille heading, that is,
+the text will be centered and proceeded and followed by blank lines.
+(You can change this by changing the definition of the heading1
+style).
+
+@semanticAction{heading2, elementSpecifier}
+Format the enclosed text as a second-level braille heading. (You can
+change this by changing the definition of the heading2 style).
+
+@semanticAction{heading3, elementSpecifier}
+Format the enclosed text as a third-level braille heading. (You can
+change this by changing the definition of the heading3 style).
+
+@semanticAction{heading4, elementSpecifier}
+Format the enclosed text as a fourth-level braille heading. (You can
+change this by changing the definition of the heading4 style).
+
 @item * indexx
-@item * list
+@semanticAction{list, elementSpecifier}
+Format the content of @code{elementSpecifier} with list style. That is, the
+first line will begin at the left margin and subsequent lines will be
+indented two cells.
+
 @item * matrix
 @item * music
 @item * note
-@item * para
+@semanticAction{para, elementSpecifier}
+Everything between @code{<elementSpecifier>} and @code{</elementSpecifier>} is to be a
+normal body text paragraph.
+
 @item * quotation
 @item * section
 @item * spatial
@@ -1718,7 +1785,10 @@ listed first, preceded by an asterisk. For a discussion of these,
 @item * style4
 @item * style5
 @item * subsection
-@item * table
+@semanticAction{table, elementSpecifier}
+Format the table contained in the element @code{<elementSpecifier>} according to
+the table formatting rules it has been given for braille output.
+
 @item * titlepage
 @item * trnote
 @item * volume
@@ -1739,14 +1809,29 @@ listed first, preceded by an asterisk. For a discussion of these,
 @item footer
 @item frontmatter
 @item graphic
-@item italicx
+
+@semanticAction{italicx, elementSpecifier}
+Enclose the text which follows in braille italic indicators.
+The @samp{x} at the end of the semantic action name is there to
+prevent conflicts with names elsewhere in the software. Just where the
+italic indicators will be placed is controlled by the liblouis
+translation table in use.
+
 @item jacket
 @item line
 @item linkto
 @item maction
 @item maligngroup
 @item malignmark
-@item math
+@semanticAction{math, elementSpecifier}
+Every mathematical expression begins with the element @code{<elementSpecifier>}
+(which may have attributes and values), and ends with
+@code{</elementSpecifier>}. This is therefore the root element of a mathematical
+expression. However, mathematical expressions are usually part of a
+document, so it is not given the semantic action document. The
+@code{math} semantic action causes liblouisxml to carry out special
+interpretation actions.
+
 @item menclose
 @item merror
 @item mfenced
@@ -1779,14 +1864,28 @@ listed first, preceded by an asterisk. For a discussion of these,
 @item no
 @item noindent
 @item none
+
+@semanticAction{notranslate, elementSpecifier}
+Output the text between the start and end tags exactly as written. It
+will, however, be formatted with appropriate line breaks, page numbers
+etc. If you want to make sure that things appear on the same line
+separate them with an unbreakable space, @samp{&#160;} or
+@samp{&#xa0;}.
+
 @item preface
 @item rearmatter
 @item rightalign
 @item righthandpage
 @item runninghead
 @item semantics
-@item skip
-@item softreturn
+
+@semanticAction{skip, elementSpecifier}
+Skip ahead until it encounters the element @code{<elementSpecifier>}. Nothing
+in between will have any effect on the braille output.
+
+@semanticAction{softreturn, elementSpecifier}
+Do a soft return, that is, start a new line without starting a new
+paragraph.
 @item specsym
 @item tblbody
 @item tblcol
@@ -1842,21 +1941,21 @@ mfrac mfrac ^?,/,^#
 
 You will see that the third column contains two commas. This means
 that it has three subcolumns. A fraction has a numerator and a
-denominator. These are called children of the mfrac element. The first
-subcolumn specifies the characters that liblouisxml should place in
-front of the numerator. The second subcolumn gives the characters to
-be placed between the numerator and denominator. Finally, the third
-subcolumn gives the characters to place after the denominator. You
-will see that the first subcolumn contains a caret followed by a
-question mark. The dot pattern for the question mark in computer
-braille is the same as for the Nemeth start-fraction indicator. The
-caret is used so that liblouis can tell this apart from a question
-mark, which also has the same dot pattern in computer braille. The
-second subcolumn contains a slash but no caret. This is because there
-is no danger of confusion where the slash is concerned. The third
-subcolumn does contain a caret, and it also contains a number sign,
-which corresponds to the Nemeth end-fraction indicator. When
-liblouisxml encounters the MathML representation of the fraction
+denominator. These are called children of the @code{mfrac} element.
+The first subcolumn specifies the characters that liblouisxml should
+place in front of the numerator. The second subcolumn gives the
+characters to be placed between the numerator and denominator.
+Finally, the third subcolumn gives the characters to place after the
+denominator. You will see that the first subcolumn contains a caret
+followed by a question mark. The dot pattern for the question mark in
+computer braille is the same as for the Nemeth start-fraction
+indicator. The caret is used so that liblouis can tell this apart from
+a question mark, which also has the same dot pattern in computer
+braille. The second subcolumn contains a slash but no caret. This is
+because there is no danger of confusion where the slash is concerned.
+The third subcolumn does contain a caret, and it also contains a
+number sign, which corresponds to the Nemeth end-fraction indicator.
+When liblouisxml encounters the MathML representation of the fraction
 one-half it produces the following string of characters:
 @samp{^?1/2^#}. liblouis then removes the carets to get @samp{?1/2#}.
 
@@ -2041,12 +2140,17 @@ always "\s 0
 replaces the baseline or multipurpose indicator followed by a space
 with just a space.
 
-@node Settings Index, Function Index, Implementing Braille Mathematics Codes, Top
+@node Settings Index, Semantic Action Index, Implementing Braille Mathematics Codes, Top
 @unnumbered Settings Index
 
 @printindex tp
 
-@node Function Index, Program Index, Settings Index, Top
+@node  Semantic Action Index, Function Index, Settings Index, Top
+@unnumbered Semantic Action Index
+
+@printindex semantic
+
+@node Function Index, Program Index, Semantic Action Index, Top
 @unnumbered Function Index
 
 @printindex fn

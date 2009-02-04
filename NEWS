@@ -1,5 +1,22 @@
 liblouisxml NEWS -*- outline -*-
 
+* Noteworthy changes in release 1.9.0 (2009-02-xx)
+
+** New features
+
+configfile and configstring semantic actions
+
+Documentation brought up-to-date. Specifically the semantic actions
+are now described in detail.
+
+** Bug fixes
+
+None
+
+** Changes in behavior
+
+None
+
 * Noteworthy changes in release 1.8.0 (2009-02-01)
 
 This is the first release of liblouisxml from the Google code page. It

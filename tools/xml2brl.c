@@ -177,8 +177,6 @@ main (int argc, char **argv)
 		skipit = 0;
 	      continue;
 	    }
-	  if (ch <= 32 && pch <= 32)
-	    continue;
 	  if (ch == '-')
 	    {
 	      nch = fgetc (inputFile);
@@ -186,10 +184,16 @@ main (int argc, char **argv)
 		continue;
 	      ungetc (nch, inputFile);
 	    }
-	  if (!(pch == 10 && ((ppch >= 97 && ppch <= 122) || ppch == ',')))
+	  if (!((pch == 10 && ch == 10) || (ppch == 10 && pch == 10)))
 	    {
-	      if (pch == 10 && ch < 97)
-		fputc (10, tempFile);
+	      if (ch <= 32 && pch <= 32)
+		continue;
+	      if (!
+		  (pch == 10 && ((ppch >= 97 && ppch <= 122) || ppch == ',')))
+		{
+		  if (pch == 10 && ch < 97)
+		    fputc (10, tempFile);
+		}
 	    }
 	  ppch = pch;
 	  pch = ch;

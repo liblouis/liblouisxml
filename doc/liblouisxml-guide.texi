@@ -21,10 +21,19 @@
 @item \name\ \args\
 @end macro
 
+@macro settingref{name}
+@code{\name\} setting (@pxref{\name\ setting,\name\,@code{\name\}})
+@end macro
+
 @c semantic action.
 @macro semanticAction{name, args}
 @semanticindex \name\
+@anchor{\name\ semantic}
 @item \name\ \args\
+@end macro
+
+@macro semanticref{name}
+@code{\name\} semantic action (@pxref{\name\ semantic,\name\,@code{\name\}})
 @end macro
 
 @copying
@@ -86,6 +95,7 @@ Fifth Floor, Boston, MA 02110-1301, USA.
 * Transcribing with the xml2brl program::  
 * Customization Configuring liblouisxml::  
 * Connecting with the xml Document::  
+* Special Features::            
 * Implementing Braille Mathematics Codes::  
 * Settings Index::              
 * Semantic Action Index::       
@@ -123,6 +133,10 @@ Connecting with the xml Document - Semantic-Action Files
 
 * Semantic Actions Overview::   
 * Semantic Actions in detail::  
+
+Special Features
+
+* Table of contents::           
 
 @end detailmenu
 @end menu
@@ -522,14 +536,14 @@ configuration file used by @command{xml2brl}.
 back-translate. The input file must be a braille file, such as
 @file{.brf}. The output file is a back-translation of this file. It
 may be in either plain-text or xhtml (html), according to the setting
-of backFormat in the outputFormat section of the configuration file.
-Html files will contain page numbers and emphasis. To get good html,
-the liblouis table must have the entry @samp{space \e 1b} so that it
-will pass through escape characters. The @file{html.sem} file must
-also contain the line @samp{pagenum pagenum}. Text output files simply
-have a blank line between paragraphs. Encoding of text files is
-controlled by the outputEncoding setting. Html files are always in
-UTF-8.
+of @code{backFormat} in the @code{outputFormat} section of the
+configuration file. Html files will contain page numbers and emphasis.
+To get good html, the liblouis table must have the entry @samp{space
+\e 1b} so that it will pass through escape characters. The
+@file{html.sem} file must also contain the line @samp{pagenum
+pagenum}. Text output files simply have a blank line between
+paragraphs. Encoding of text files is controlled by the
+@code{outputEncoding} setting. Html files are always in UTF-8.
 
 @item -r 
 Reformat. The input file must be a braille file, such as @file{.brf}.
@@ -669,16 +683,17 @@ particular setting name, the value specified simply replaces the one
 specified in @file{canonical.cfg}.
 
 As you will see by looking at @file{canonical.cfg}, it contains four
-main sections, outputFormat, translation, xml and styles. In addition,
-a configuration file can contain an include entry. This causes the
-file named on that line to be read in at the point where the line
-occurs. The sections need not follow each other in any particular
-order, nor is the order of settings within each section important. In
-this document and in the @file{canonical.cfg} file, where section and
-setting names consist of more than one word, the first letter of each
-word following the initial one is capitalized. This is merely for
-readability. The case of the letters in these names is ignored by the
-program. Section and setting names may not contain spaces.
+main sections, @code{outputFormat}, @code{translation}, @code{xml} and
+@code{styles}. In addition, a configuration file can contain an
+include entry. This causes the file named on that line to be read in
+at the point where the line occurs. The sections need not follow each
+other in any particular order, nor is the order of settings within
+each section important. In this document and in the
+@file{canonical.cfg} file, where section and setting names consist of
+more than one word, the first letter of each word following the
+initial one is capitalized. This is merely for readability. The case
+of the letters in these names is ignored by the program. Section and
+setting names may not contain spaces.
 
 Here, then, is an explanation of each section and setting in the
 @file{canonical.cfg} file. When you look at this file you will see
@@ -824,6 +839,12 @@ the interlineBackTable. Back-translation is used instead of simply
 presenting the print original because a braille line may contain
 additional information, such as leading blanks, print or braille page
 numbers, print page separator lines, etc.
+
+@anchor{lineFill setting}
+@setting{lineFill, '}
+This setting defines the fill character that will be used before the
+page numbers in the table of contents for example. The default fill
+character is an apostrophe (dot 3).
 
 @end table 
 
@@ -1069,9 +1090,42 @@ This style is used for computer programs.
 
 @end table
 
-@subsection style contents
+@anchor{contentsheader style}
+@subsection style contentsheader
+This style is used to specify where the contents should be placed and
+the title that should be given to it.
+@table @code
+@setting{linesBefore, 1}
+@setting{linesAfter, 1}
+@setting{format, centered}
+@end table
 
-This is for entries in a table of contents.
+@subsection style contents1
+This style and the other contents styles are used for the table of
+contents and correspond to four heading levels.
+@table @code
+@setting{firstLineIndent, -2}
+@setting{leftMargin, 2}
+@setting{format, contents}
+@end table
+@subsection style contents2
+@table @code
+@setting{firstLineIndent, -2}
+@setting{leftMargin, 4}
+@setting{format, contents}
+@end table
+@subsection style contents3
+@table @code
+@setting{firstLineIndent, -2}
+@setting{leftMargin, 6}
+@setting{format, contents}
+@end table
+@subsection style contents4
+@table @code
+@setting{firstLineIndent, -2}
+@setting{leftMargin, 8}
+@setting{format, contents}
+@end table
 
 @subsection style dedication
 
@@ -1355,7 +1409,7 @@ text.
 
 This style is used to indicate the beginning of a braille volume.
 
-@node  Connecting with the xml Document, Implementing Braille Mathematics Codes, Customization Configuring liblouisxml, Top
+@node  Connecting with the xml Document, Special Features, Customization Configuring liblouisxml, Top
 @chapter Connecting with the xml Document - Semantic-Action Files
 
 @menu
@@ -1803,6 +1857,13 @@ the table formatting rules it has been given for braille output.
 @item cdata
 @item center
 @item chemistry
+@semanticAction{contentsheader, elementSpecifier}
+
+Replace the given element with a table of contents (@pxref{Table of
+contents}). Typically the @code{elementSpecifier} would occur at the
+end of the information which you want to be at the head of the output,
+such as a title page, dedication, etc.
+
 @item contracted
 @item copyright
 @item endnotes
@@ -1897,7 +1958,68 @@ paragraph.
 
 @end table
 
-@node Implementing Braille Mathematics Codes, Settings Index, Connecting with the xml Document, Top
+@node Special Features, Implementing Braille Mathematics Codes, Connecting with the xml Document, Top
+@chapter Special Features
+
+@menu
+* Table of contents::           
+@end menu
+
+@node Table of contents,  , Special Features, Special Features
+@section Table of contents
+
+A table of contents is produced for an xml file if the file contains a
+tag which has been defined with the @semanticref{contentsheader} and
+also tags for the @code{heading1}, @code{heading2}, @code{heading3} or
+@code{heading4} semantic actions (@pxref{heading1
+semantic,heading1,@code{heading1}}). The table of contents will
+contain print and braille page numbers if these features have been
+enabled. A sequence of fill characters will be inserted before the
+page numbers, so that the latter are at the right margin. The fill
+character can be specified in a configuration file with the
+@settingref{lineFill}. The default fill character is an apostrophe
+(dot 3).
+
+Five new styles have been defined for the table of contents. The first
+is the @code{contentsheader} style (@pxref{contentsheader style}),
+which is used to specify how the contents should be placed and the
+title that should be given to it. The others correspond to the four
+heading levels and are @code{contents1}, @code{contents2},
+@code{contents3} and @code{contents4}. These styles are chosen as
+appropriate while the table of contents is being made. Do not declare
+them in a semantic-action file. See the @file{canonical.cfg} file for
+the current default definitions of all these styles.
+
+The table of contents will be placed where the xml tag is that you
+declared in the @semanticref{contentsheader}. It begins on a new page.
+After it is completed the braille page number is reset to
+@code{beginningBraillePageNumber} and another new page is started.
+This means that the xml tag with the @code{contentsheader} semantic
+action should occur at the end of the information which you want to be
+at the head of the output, such as a title page, dedication, etc.
+
+It is not necessary that an xml file contain a tag with the
+@code{contentsheader} semantic action. If the file contains headers
+you can obtain a table of contents by specifying @code{contents yes}
+in a configuration file or @option{-Ccontents=yes} on the command line
+of @command{xml2brl}. In this case, the table of contents will appear
+at the beginning of the output. Pages will be numbered beginning with
+1. When the table of contents is complete, the material in the file
+will start on a new page and the page number will be the value given
+in @code{beginningBraillePageNumber}.
+
+The @code{contents1}, etc. styles all have the @code{format contents}
+setting. This is a variant of the @code{leftJustified} format. It has
+been necessary to change the way @code{firstLineIndent} is handled to
+accommodate multilevel lists. Up till now, if @code{firstLineIndent}
+was negative, the first line would start at the real left margin,
+regardless of the value of @code{leftMargin}. Now the value of
+@code{firstLineIndent} is simply added to @code{leftMargin}. This
+means that if it is negative it is really subtracted. For example, if
+@code{leftMargin} is 4 and @code{firstLineIndent} is -2 the first line
+will start in cell 2.
+
+@node Implementing Braille Mathematics Codes, Settings Index, Special Features, Top
 @chapter Implementing Braille Mathematics Codes
 
 The Nemeth Code of Braille Mathematical and Science Notation has been

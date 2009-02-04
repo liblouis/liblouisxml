@@ -121,7 +121,7 @@ Customization: Configuring liblouisxml
 
 Connecting with the xml Document - Semantic-Action Files
 
-* Overview::                    
+* Semantic Actions Overview::   
 * Semantic Actions in detail::  
 
 @end detailmenu
@@ -1359,11 +1359,11 @@ This style is used to indicate the beginning of a braille volume.
 @chapter Connecting with the xml Document - Semantic-Action Files
 
 @menu
-* Overview::                    
+* Semantic Actions Overview::   
 * Semantic Actions in detail::  
 @end menu
 
-@node Overview, Semantic Actions in detail, Connecting with the xml Document, Connecting with the xml Document
+@node Semantic Actions Overview, Semantic Actions in detail, Connecting with the xml Document, Connecting with the xml Document
 @section Overview
 
 When liblouisxml (or @command{xml2brl}) processes an xml document, it
@@ -1695,7 +1695,7 @@ For further discussion of how the third column is used
 not limited to mathematics. It can be used to add characters to
 anything enclosed by an xml tag.
 
-@node Semantic Actions in detail,  , Overview, Connecting with the xml Document
+@node Semantic Actions in detail,  , Semantic Actions Overview, Connecting with the xml Document
 @section Semantic Actions in detail
 
 Here is a complete list of the semantic actions which liblouisxml

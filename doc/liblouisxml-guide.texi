@@ -41,12 +41,12 @@ This manual is for liblouisxml (version @value{VERSION},
 @value{UPDATED}), an xml to Braille Translation Library.
 
 This file may contain code borrowed from the Linux screenreader
-@acronym{BRLTTY}, Copyright @copyright{} 1999-2006 by the
+@acronym{BRLTTY}, Copyright @copyright{} 1999-2009 by the
 @acronym{BRLTTY} Team.
 
 @noindent
-Copyright @copyright{} 2004-2007 ViewPlus Technologies, Inc.
-@uref{www.viewplus.com} and Copyright @copyright{} 2007,2008 JJB
+Copyright @copyright{} 2004-2009 ViewPlus Technologies, Inc.
+@uref{www.viewplus.com} and Copyright @copyright{} 2006,2009 JJB
 Software, Inc. @uref{www.jjb-software.com}.
 
 @quotation
@@ -84,7 +84,7 @@ Fifth Floor, Boston, MA 02110-1301, USA.
 
 @ifnottex
 @node Top, Introduction, (dir), (dir)
-@top Liblouis Programmer's and User's Guide
+@top Liblouisxml Programmer's and User's Guide
 
 @insertcopying
 @end ifnottex
@@ -97,7 +97,7 @@ Fifth Floor, Boston, MA 02110-1301, USA.
 * Connecting with the xml Document::  
 * Special Features::            
 * Implementing Braille Mathematics Codes::  
-* Settings Index::              
+* Configuration Settings Index::              
 * Semantic Action Index::       
 * Function Index::              
 * Program Index::               
@@ -196,14 +196,15 @@ User's Guide}).
 @section License
 
 Liblouisxml may contain code borrowed from the Linux screenreader
-BRLTTY, Copyright @copyright{} 1999-2006 by the BRLTTY Team.
+BRLTTY, Copyright @copyright{} 1999-2009
+ by the BRLTTY Team.
 
 @noindent
-Copyright @copyright{} 2004-2007 ViewPlus Technologies, Inc.
+Copyright @copyright{} 2004-2009 ViewPlus Technologies, Inc.
 @uref{www.viewplus.com}.
 
 @noindent
-Copyright @copyright{} 2007,2008 JJB Software, Inc.
+Copyright @copyright{} 2006,2009 JJB Software, Inc.
 @uref{www.jjb-software.com}.
 
 Liblouisxml is free software: you can redistribute it and/or modify it
@@ -217,14 +218,15 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public
-License along with Liblouis. If not, see
+License along with Liblouisxml. If not, see
 @uref{http://www.gnu.org/licenses/}.
 
 @node Overview, Files and Paths, License, Programming with liblouisxml
 @section Overview
 
 liblouisxml is an "extensible renderer", designed to translate a wide
-variety of xml documents into braille, but with a special emphasis on
+variety of xml and text documents into braille, but with a special 
+emphasis on
 technical material. The overall operation of liblouisxml is controlled
 by a configuration file. The way in which a particular type of xml
 document is to be rendered is specified by a semantic-action file for
@@ -254,9 +256,9 @@ library liblouis is used to do the braille translation.
 
 The @code{transcribe_math} function works in conjunction with the
 latest version of liblouis and a special math translation table to
-transcribe most mathematical expressions into fairly good Nemeth Code.
-Much refinement is still necessary. Other braille mathematical codes
-can be handled by modifying the translation table.
+transcribe most mathematical expressions into good Nemeth Code.
+Other Braille mathematics codes can be handled by modifying the 
+translation table and semantic-action file.
 
 The functions which are not needed at the moment, such as
 @code{transcribe_chemistry}, are only skeletons. However, I hope that
@@ -287,7 +289,7 @@ directory provided by liblouisxml, which contains the principal
 configuration file (@file{canonical.cfg}) and the semantic-action
 files. Another should be to the tables directory in the liblouis
 distribution. Note that liblouisxml also generates some files, all of
-which are placed on the current directory. These files are new
+which are placed in the current directory. These files are new
 prototype semantic-action files, additions to old semantic-action
 files, temporary files, and log files. The first two can be used to
 extend the capability of liblouisxml to process xml documents. The
@@ -297,19 +299,16 @@ Paths are set by changing a few lines of code in the @file{paths.c}
 module. If you are preparing liblouisxml for Windows a function which
 finds the name of the "Program Files" directory for your locale is
 called automatically. You can then modify the line containing the term
-@samp{yourSubDir} as needed.
+@samp{yourSubDir} as needed. Note that this line will produce a 
+deliberate compiler error, so you can find it easily.
 
 If you are preparing liblouisxml for a Unix-type system look for the
-line that says @samp{Set Unix Paths}. The following three lines
-establish a path to the @file{lbx_files} directory in your home
-directory. As distributed, this directory contains the semantic-action
-files and some configuration files. You can chose to copy the tables
-from the liblouis distribution into it as well, or you can modify the
-following three lines to point to the actual location of the tables.
-You can also chose to place both the @file{lbx_files} and the tables
-directory in @file{/etc}.
+line that says @samp{Set Unix Paths}. The following lines
+establish paths to the  @file{lbx_files} directory and to the liblouis 
+@file{tables} directory. If you are using the Gnu autotooled versions of 
+liblouis and liblouisxml these paths are set up automatically.
 
-The function @code{addPath} takes care of adding path to liblouisxml
+The function @code{addPath} takes care of adding a path to liblouisxml
 properly. You can specify many more than two paths.
 
 @node lbx_version, lbx_initialize, Files and Paths, Programming with liblouisxml
@@ -321,8 +320,8 @@ char *lbx_version (void)
 @end example
 
 This function returns a pointer to a character string containing the
-version of liblouisxml, plus other information such as the release
-date and perhaps notable changes.
+version of liblouisxml. Oother information such as the release
+date and perhaps notable changes may be added later.
 
 @node lbx_initialize, lbx_translateString, lbx_version, Programming with liblouisxml
 @section lbx_initialize
@@ -330,9 +329,9 @@ date and perhaps notable changes.
 @findex lbx_initialize
 @example
 void * lbx_initialize (
-     const char *const configFilelist, 
-     const char const *logFileName, 
-     const char *const settingsString)
+     const char *configFilelist, 
+     const char *logFileName, 
+     const char *settingsString)
 @end example
 
 This function initializes the libxml2 library, processes
@@ -357,7 +356,7 @@ function is used by @command{xml2brl}.
 @findex lbx_translateString
 @example
 int lbx_translateString (
-    const char *const configfilelist, 
+    const char *configfilelist, 
     char * inbuf, 
     widechar *outbuf, 
     int *outlen, 

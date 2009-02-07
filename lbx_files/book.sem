@@ -25,7 +25,7 @@ heading2 part
 heading3 important
 heading3 warning
 heading4 figure
-include math.sem
+include nemeth.sem
 italicx emph
 italicx emph,type,italic
 italicx emphasis

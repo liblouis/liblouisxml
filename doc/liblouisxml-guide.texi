@@ -97,7 +97,7 @@ Fifth Floor, Boston, MA 02110-1301, USA.
 * Connecting with the xml Document::  
 * Special Features::            
 * Implementing Braille Mathematics Codes::  
-* Settings Index::              
+* Configuration Settings Index::  
 * Semantic Action Index::       
 * Function Index::              
 * Program Index::               
@@ -320,7 +320,7 @@ char *lbx_version (void)
 @end example
 
 This function returns a pointer to a character string containing the
-version of liblouisxml. Oother information such as the release
+version of liblouisxml. Other information such as the release
 date and perhaps notable changes may be added later.
 
 @node lbx_initialize, lbx_translateString, lbx_version, Programming with liblouisxml
@@ -435,14 +435,12 @@ int lbx_translateTextFile (
 
 This function accepts a text file in @code{inputFilename} and produces
 a braille translation in @code{outputFilename}. The input file is
-assumed to be encoded in Ascii8. However, utf-8 can be specified 
-with the configuration setting @code{inputTextEncoding utf8}. Blank 
-lines 
-indicate the divisions
-between paragraphs. Two blank lines cause a blank line between
-paragraphs (or headers). The output file may be in UTF-8, UTF-16, or
-Ascii8, as specified by the @code{outputEncoding} line in the
-configuration file, @code{configfilelist}. As for
+assumed to be encoded in Ascii8. However, utf-8 can be specified with
+the configuration setting @code{inputTextEncoding utf8}. Blank lines
+indicate the divisions between paragraphs. Two blank lines cause a
+blank line between paragraphs (or headers). The output file may be in
+UTF-8, UTF-16, or Ascii8, as specified by the @code{outputEncoding}
+line in the configuration file, @code{configfilelist}. As for
 @code{lbx_translateString}, the @code{mode} parameter specifies
 whether complete initialization is to be done or simply initialization
 for a new document.
@@ -483,7 +481,7 @@ This function should be called at the end of the application to free
 all memory allocated by liblouisxml and liblouis. If you wish to
 change configuration files during your application, use a @code{mode}
 parameter of 0 on the function call using the new configuration
-information. This will call the function automatiaally.
+information. This will call the function automatically.
 
 @node Transcribing with the xml2brl program, Customization Configuring liblouisxml, Programming with liblouisxml, Top
 @chapter Transcribing with the xml2brl program
@@ -521,11 +519,11 @@ by commas.) This file specifies such things as the number of cells per
 line, the number of lines per page, The translation tables to be used,
 how paragraphs and headings are to be formatted, etc. If this part of
 the command line is omitted, @command{xml2brl} assumes that the
-configuration file is named @file{default.cfg}.
-If the configuration file name contains a pathname
-@command{xml2brl} will consider this as a path on which to look for
-files that it needs (@pxref{Files and Paths}). If no pathname is given 
-the standard paths are searched and finally the current directory.
+configuration file is named @file{default.cfg}. If the configuration
+file name contains a pathname @command{xml2brl} will consider this as
+a path on which to look for files that it needs (@pxref{Files and
+Paths}). If no pathname is given the standard paths are searched and
+finally the current directory.
 
 @item -Csetting=value 
 This option enables you to specify configuration settings on the
@@ -663,10 +661,9 @@ structure containing the configuration information.
 @command{xml2brl} uses the configuration file @file{default.cfg}
 unless a different one is specified via the @option{-f} command-line
 option. The configuration file name may include a full path. In this
-case, liblouisxml will consider this to be the user path
-(@pxref{Files and Paths}). If just a file name
-(or list) is given, liblouisxml will consider the current directory as
-the user path.
+case, liblouisxml will consider this to be the user path (@pxref{Files
+and Paths}). If just a file name (or list) is given, liblouisxml will
+consider the current directory as the user path.
 
 The configuration "file" specified with the @option{-f} option need
 not be a single filename. It can be several file names separated by
@@ -953,10 +950,11 @@ The following sections all deal with styles. Each style has its own
 section. Style section names are unlike other section names in that
 they consist of the word style, followed by a space, followed by a
 style name. More styles may be added as the software develops, and
-some may be dropped. New styles cannot be defined by the user, because 
-the styles already defined appear to be adequate. this feature can be 
-added if needed. There are, however, five utility styles, style1 through 
-style5, which the user can employ in any wax.
+some may be dropped. New styles currently cannot be defined by the
+user, because the styles already defined appear to be adequate. This
+feature can be added if needed. There are, however, five utility
+styles, @code{style1} through @code{style5}, which the user can employ
+in any way.
 
 @subsection style document
 
@@ -965,9 +963,9 @@ given in it are applied to all other styles. If a section for another
 style is given, the settings in it replace those from the document
 style for that section. Because the settings in the document style
 apply to all other styles, if a document style section is given it
-must precede the sections for all other styles. Since 
-@file{cannonical.cfg} contains a document style definition, the user may 
-not use this style.
+must precede the sections for all other styles. Since
+@file{canonical.cfg} contains a document style definition, the user
+may not use this style.
 
 @table @code
 
@@ -1012,10 +1010,9 @@ The format setting controls how the text in the style will be
 formatted. Valid values are @samp{leftJustified},
 @samp{rightJustified}, @samp{centered}, @samp{computerCoded},
 @samp{alignColumnsLeft}, @samp{alignColumnsRight}, @samp{listColumns},
-@samp{listLines} and @samp{contents}. The first three are 
-self-explanatory.
-@samp{computerCoded} is used for computer programs and similar
-material. The next three are used for tabular material.
+@samp{listLines} and @samp{contents}. The first three are
+self-explanatory. @samp{computerCoded} is used for computer programs
+and similar material. The next three are used for tabular material.
 @samp{alignColumnsLeft} causes the left ends of columns to be aligned.
 @samp{alignColumnsRight} causes the right ends of columns to be
 aligned. @samp{listColumns} causes columns to be placed one after the
@@ -1026,9 +1023,9 @@ escape characters must be specified to indicate the end of a row.
 Indentation of the lines in a row is controlled by the leftMargin and
 firstLineIndent settings. @samp{listLines} is similar except that it
 lists lines, as in poetry stanzas. The semantic-action file must
-specify two escape characters to indicate the end of a line. 
-@samp{contents} is used only in styles specificably intended for tables 
-of contents.
+specify two escape characters to indicate the end of a line.
+@samp{contents} is used only in styles specifically intended for
+tables of contents.
 
 @setting{newPageBefore, no}
 
@@ -2034,7 +2031,7 @@ means that if it is negative it is really subtracted. For example, if
 @code{leftMargin} is 4 and @code{firstLineIndent} is -2 the first line
 will start in cell 2.
 
-@node Implementing Braille Mathematics Codes, Settings Index, Special Features, Top
+@node Implementing Braille Mathematics Codes, Configuration Settings Index, Special Features, Top
 @chapter Implementing Braille Mathematics Codes
 
 The Nemeth Code of Braille Mathematical and Science Notation has been
@@ -2277,12 +2274,12 @@ always "\s 0
 replaces the baseline or multipurpose indicator followed by a space
 with just a space.
 
-@node Settings Index, Semantic Action Index, Implementing Braille Mathematics Codes, Top
-@unnumbered Settings Index
+@node Configuration Settings Index, Semantic Action Index, Implementing Braille Mathematics Codes, Top
+@unnumbered Configuration Settings Index
 
 @printindex tp
 
-@node  Semantic Action Index, Function Index, Settings Index, Top
+@node  Semantic Action Index, Function Index, Configuration Settings Index, Top
 @unnumbered Semantic Action Index
 
 @printindex semantic

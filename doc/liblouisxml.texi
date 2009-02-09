@@ -2,7 +2,7 @@
 @c %**start of header
 @setfilename liblouisxml.info
 @include version.texi
-@settitle Liblouisxml Programmer's and User's Guide
+@settitle Liblouisxml User's and Programmer's Manual
 
 @dircategory Misc
 @direntry
@@ -68,7 +68,7 @@ Fifth Floor, Boston, MA 02110-1301, USA.
 @end copying
 
 @titlepage
-@title  Liblouisxml Programmer's and User's Guide
+@title  Liblouisxml User's and Programmer's Manual
 
 @subtitle Release @value{VERSION}
 @author by John J. Boyer
@@ -84,7 +84,7 @@ Fifth Floor, Boston, MA 02110-1301, USA.
 
 @ifnottex
 @node Top, Introduction, (dir), (dir)
-@top Liblouisxml Programmer's and User's Guide
+@top Liblouisxml User's and Programmer's Manual
 
 @insertcopying
 @end ifnottex
@@ -173,8 +173,8 @@ mathematics code read @ref{Implementing Braille Mathematics Codes}.
 
 You will also find it advantageous to be acquainted with the companion
 library liblouis, which is a braille translator and back-translator
-(@pxref{Top, , Overview, liblouis, Liblouis Programmer's and
-User's Guide}).
+(@pxref{Top, , Overview, liblouis, Liblouis User's and Programmer's
+Manual}).
 
 @node Programming with liblouisxml, Transcribing with the xml2brl program, Introduction, Top
 @chapter Programming with liblouisxml
@@ -232,7 +232,7 @@ by a configuration file. The way in which a particular type of xml
 document is to be rendered is specified by a semantic-action file for
 that document type. Braille translation is done by the liblouis
 braille translation and back-translation library (@pxref{Top, ,
-Overview, liblouis, Liblouis Programmer's and User's Guide}).
+Overview, liblouis, Liblouis User's and Programmer's Manual}).
 Its operation, in turn is controlled by translation table files. All
 these files are plain text and can be created and edited in any text
 editor. Configuration settings can also be specified on the command
@@ -282,7 +282,7 @@ files, configuration files, semantic-action files, and liblouis
 translation tables. The first two are discussed later in this
 documentation. liblouis translation tables are discussed in the
 liblouis documentation (@pxref{Top, , Overview, liblouis, Liblouis
-Programmer's and User's Guide}) which is distributed with liblouis.
+User's and Programmer's Manual}) which is distributed with liblouis.
 These files can be placed on various paths, which are determined at
 compile time. One of these paths should be to the @file{lbx_files}
 directory provided by liblouisxml, which contains the principal
@@ -639,7 +639,7 @@ Connecting with the xml Document - Semantic-Action Files, Connecting
 with the xml Document - Semantic-Action Files }). The latter are
 discussed in this section. A third type of file, braille translation
 tables, is discussed in the liblouis documentation (@pxref{Top, ,
-Overview, liblouis, Liblouis Programmer's and User's Guide}).
+Overview, liblouis, Liblouis User's and Programmer's Manual}).
 Another section of the present document which may be of interest is
 Implementing Braille Mathematical Codes (@pxref{Implementing Braille
 Mathematics Codes}).
@@ -2199,8 +2199,8 @@ pairs} and @samp{# pass2 corrections}. The first simply replace
 characters preceded by a caret with the character itself. The second
 make adjustments in the code generated directly from the
 @file{nemeth.sem} file. The pass2 opcode is discussed in the liblouis
-documentation (@pxref{Top, , Overview, liblouis, Liblouis Programmer's
-and User's Guide}). Here are some comments on a few of the entries in
+documentation (@pxref{Top, , Overview, liblouis, Liblouis User's and
+Programmer's Manual}). Here are some comments on a few of the entries in
 @file{nemeth.ctb}.
 
 @example 

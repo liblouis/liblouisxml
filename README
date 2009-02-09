@@ -26,17 +26,14 @@ files, semantic-action files, and translation tables. Usually running
 and "make install". You will need root privileges for the installation
 step.
 
-This will produce the liblouisxml library and the programs xml2brl,
-mathml2brl and the script msword2brl.
+This will produce the liblouisxml library and the programs xml2brl and
+the script msword2brl.
 
 Note that that the library and programs will not work properly unless
 you have first installed the latest version of liblouis. msword2brl
 requires the installation of antiword.
 
 RELEASE NOTES 
-
-mathml2brl is primarily for testing the lbx_translateString function. 
-Type mathml2brl -h to see usage information. 
 
 xml2brl is a full transcription program. Again, type xml2brl -h to see
 usage information. It will handle xml files from bookshare.org, docbook

@@ -1,5 +1,7 @@
 2009-02-09  Christian Egli  <christian.egli@sbszh.ch>
 
+	* README: Remove any mentioning of mathml2brl
+
 	* doc/liblouis.texi (Programming with liblouis): Move the
 	programming section to the back and rename to emphasize more on
 	the user instead of the programmer.

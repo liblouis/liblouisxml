@@ -5,8 +5,8 @@ doc_DATA = \
 	example_canonical.cfg \
 	example_default.cfg \
 	example_html.sem \
-	liblouisxml-guide.html \
-	liblouisxml-guide.txt
+	liblouisxml.html \
+	liblouisxml.txt
 
 EXTRA_DIST = \
 	copyright-notice \
@@ -14,11 +14,11 @@ EXTRA_DIST = \
 	example_default.cfg \
 	example_html.sem \
 	example_math.sem \
-	liblouisxml-guide.html \
-	liblouisxml-guide.txt \
+	liblouisxml.html \
+	liblouisxml.txt \
 	xml2brl.asciidoc
 
-info_TEXINFOS = liblouisxml-guide.texi
+info_TEXINFOS = liblouisxml.texi
 
 # generate one big html file
 AM_MAKEINFOHTMLFLAGS = --no-headers --no-split
@@ -35,7 +35,7 @@ xml2brl.1: xml2brl.asciidoc
 # Autogenerate the man page using help2man. This happens whenever
 # msword2brl is modified, which contains the usage message.
 # msword2brl.1: $(top_srcdir)/tools/msword2brl
-# 	help2man --info-page=liblouisxml-guide --output=$@ $<
+# 	help2man --info-page=liblouisxml --output=$@ $<
 
 SUFFIXES                = .txt
 

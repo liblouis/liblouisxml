@@ -1,6 +1,6 @@
 \input texinfo
 @c %**start of header
-@setfilename liblouisxml-guide.info
+@setfilename liblouisxml.info
 @include version.texi
 @settitle Liblouisxml Programmer's and User's Guide
 
@@ -173,7 +173,7 @@ mathematics code read @ref{Implementing Braille Mathematics Codes}.
 
 You will also find it advantageous to be acquainted with the companion
 library liblouis, which is a braille translator and back-translator
-(@pxref{Top, , Overview, liblouis-guide, Liblouis Programmer's and
+(@pxref{Top, , Overview, liblouis, Liblouis Programmer's and
 User's Guide}).
 
 @node Programming with liblouisxml, Transcribing with the xml2brl program, Introduction, Top
@@ -232,7 +232,7 @@ by a configuration file. The way in which a particular type of xml
 document is to be rendered is specified by a semantic-action file for
 that document type. Braille translation is done by the liblouis
 braille translation and back-translation library (@pxref{Top, ,
-Overview, liblouis-guide, Liblouis Programmer's and User's Guide}).
+Overview, liblouis, Liblouis Programmer's and User's Guide}).
 Its operation, in turn is controlled by translation table files. All
 these files are plain text and can be created and edited in any text
 editor. Configuration settings can also be specified on the command
@@ -281,7 +281,7 @@ As stated in the previous section, liblouisxml uses three kinds of
 files, configuration files, semantic-action files, and liblouis
 translation tables. The first two are discussed later in this
 documentation. liblouis translation tables are discussed in the
-liblouis guide (@pxref{Top, , Overview, liblouis-guide, Liblouis
+liblouis documentation (@pxref{Top, , Overview, liblouis, Liblouis
 Programmer's and User's Guide}) which is distributed with liblouis.
 These files can be placed on various paths, which are determined at
 compile time. One of these paths should be to the @file{lbx_files}
@@ -639,7 +639,7 @@ Connecting with the xml Document - Semantic-Action Files, Connecting
 with the xml Document - Semantic-Action Files }). The latter are
 discussed in this section. A third type of file, braille translation
 tables, is discussed in the liblouis documentation (@pxref{Top, ,
-Overview, liblouis-guide, Liblouis Programmer's and User's Guide}).
+Overview, liblouis, Liblouis Programmer's and User's Guide}).
 Another section of the present document which may be of interest is
 Implementing Braille Mathematical Codes (@pxref{Implementing Braille
 Mathematics Codes}).
@@ -2199,7 +2199,7 @@ pairs} and @samp{# pass2 corrections}. The first simply replace
 characters preceded by a caret with the character itself. The second
 make adjustments in the code generated directly from the
 @file{nemeth.sem} file. The pass2 opcode is discussed in the liblouis
-guide (@pxref{Top, , Overview, liblouis-guide, Liblouis Programmer's
+documentation (@pxref{Top, , Overview, liblouis, Liblouis Programmer's
 and User's Guide}). Here are some comments on a few of the entries in
 @file{nemeth.ctb}.
 

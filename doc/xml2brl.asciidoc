@@ -180,7 +180,7 @@ manual.  If the +info+ and +xml2brl+ programs are properly installed
 at your site, the command 
 
 --------------------------------------------------------------------------------
-info liblouis-guide
+info liblouisxml
 --------------------------------------------------------------------------------
 
 should give you access to the complete manual.

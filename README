@@ -2,15 +2,14 @@ liblouisxml REQUIRES the latest version of liblouis.
 
 DOCUMENTATION
 
-For documentation, see liblouisxml-guide.html or liblouisxml-guide.txt . 
-These are in the docs directory. For an example of a configuration file,
-see excmple_default.cfg and example_canonical.cfg . For examples of 
-semantics-action
-files, see example_dtbook3.sem and excmple_math.sem , also in the docs 
-directory. For examples of translation tables, see
+For documentation, see liblouisxml.html or liblouisxml.txt. These are
+in the docs directory. For an example of a configuration file, see
+excmple_default.cfg and example_canonical.cfg . For examples of
+semantics-action files, see example_dtbook3.sem and excmple_math.sem ,
+also in the docs directory. For examples of translation tables, see
 en-us-g2.ctb en-us-g1.ctb chardefs.cti nemeth.ctb and whatever other
-files they may include. These are all in the tables directory 
-of the liblouis distribution.
+files they may include. These are all in the tables directory of the
+liblouis distribution.
 
 INSTALLATION
 

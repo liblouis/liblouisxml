@@ -39,7 +39,7 @@ extern "C"
 #endif				/* __cplusplus */
 
 /* Function prototypes are documented briefly below. For more extensive 
-documentation see liblouis-guide.html. */
+documentation see liblouis.html. */
 
 char *lbx_version (void);
 /* Returns the version of liblouisxml. */

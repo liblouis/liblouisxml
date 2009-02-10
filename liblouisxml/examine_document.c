@@ -126,7 +126,7 @@ doConfigfile (xmlNode * node)
   for (k = 0; k < ud->text_length; k++)
     ud->typeform[k] = (xmlChar) ud->text_buffer[k];
   ud->typeform[k] = 0;
-  if (!find_file (ud->typeform, filePath))
+  if (!find_file ((char *) ud->typeform, filePath))
     return 0;
   if (!config_compileSettings (filePath))
     return 0;
@@ -152,7 +152,7 @@ do_configstring (xmlNode * node)
 	configString[kk++] = (xmlChar) ud->text_buffer[k];
     }
   configString[kk] = 0;
-  if (!config_compileSettings (configString))
+  if (!config_compileSettings ((char *)configString))
     return 0;
   ud->text_length = savedTextLength;
   return 1;

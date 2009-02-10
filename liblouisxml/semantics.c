@@ -537,7 +537,7 @@ compileLine (FileInfo * nested)
   char *lookFor;
   int lookForLength;
   char *insertions;
-  int insertionsLength;
+  int insertionsLength = 0;
   InsertsType *inserts;
   sem_act actionNum;
   if (namesAndActions == NULL)

@@ -54,13 +54,13 @@ transcribe_document (xmlNode * node)
       if (ud->format_for != browser)
 	break;
       insert_linkOrTarget (node, 0);
-      pop_sem_stack;
+      pop_sem_stack ();
       return 1;
     case htmltarget:
       if (ud->format_for != browser)
 	break;
       insert_linkOrTarget (node, 1);
-      pop_sem_stack;
+      pop_sem_stack ();
       return 1;
     case code:
       transcribe_computerCode (node, 0);

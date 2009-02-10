@@ -756,6 +756,7 @@ getBraillePageString (void)
     pageNumberString[pageNumberLength] = ' ';
   for (k = 0; k < translatedLength; k++)
     pageNumberString[pageNumberLength++] = ud->braille_page_string[k];
+  return 1;
 }
 
 static int
@@ -2353,6 +2354,6 @@ do_righthandpage (void)
 {
   do_newpage ();
   if (ud->braille_pages && ud->interpoint && !(ud->braille_page_number & 1))
-    fillPage;
+    fillPage ();
   return 1;
 }

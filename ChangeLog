@@ -1,3 +1,13 @@
+2009-02-10  Christian Egli  <christian.egli@sbszh.ch>
+
+	* tests/testcode.xml:
+	* liblouisxml/transcribe_music.c:
+	* liblouisxml/transcribe_graphic.c:
+	* liblouisxml/transcribe_chemistry.c:
+	* liblouisxml/make_sem_names.c: Move license from GPL +
+	restrictions/permissions to LGPL with the bessing of the copyright
+	holders.
+
 2009-02-09  Christian Egli  <christian.egli@sbszh.ch>
 
 	* README: Remove any mentioning of mathml2brl

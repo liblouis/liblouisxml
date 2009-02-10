@@ -18,6 +18,8 @@ EXTRA_DIST = \
 	liblouisxml.txt \
 	xml2brl.asciidoc
 
+CLEANFILES = liblouisxml.html liblouisxml.txt
+
 info_TEXINFOS = liblouisxml.texi
 
 # generate one big html file

@@ -1564,6 +1564,51 @@ the table formatting rules it has been given for braille output.
 @item cdata
 @item center
 @item chemistry
+@semanticAction{configfile, elementSpecifier filename}
+
+The @code{configfile}, @code{configstring} and @code{configtweak}
+semantic actions enable the configuration of liblouisxml to be changed
+according to the contents of the document being transcribed.
+@code{configfile} and @code{configstring} take effect during the
+document analysis phase performed by @file{examine_document.c}.
+@code{configtweak} is effective during the transcription phase,
+performed by @file{transcribe_document.c} and the functions called in
+this module.
+
+@code{elementSpecifier} is the usual second-column value, which may be
+an element name, an element-attribute pair or an
+element-attribute-value triplet, separated by commas. @code{filename}
+must be on one of the paths set in the @file{paths.c} module. The file
+may contain any configuration settings except those in the xml
+section. These would be ineffective, since the document has already
+been parsed.
+
+@semanticAction{configstring, elementSpecifier setting1=value1;setting2=value2;...}
+
+Note that the @code{setting=value} pairs are separated by semicolons.
+Because the string may be longer than a screen line, you can use a
+backslash @samp{\} followed immediately by a line ending @samp{\n}, to
+continue to another line. The string must not contain any blanks. Any
+setting which can be specified in a file read with configfile can be
+specified in @code{configstring}.
+
+@semanticAction{configtweak, elementSpecifier}
+
+@code{configtweak} is identical to @code{configstring} except that it
+is called in the transcription phase. It should be used only for
+things like changing translation tables. For example:
+
+@example
+configtweak elementSpecifier literaryTextTable=fooTable;\
+mathExprTable=barTable
+@end example
+
+@c FIXME: changetable is not documented
+@code{configtweak} is not a generalization of @code{changetable}. The
+latter changes only the literarytexttable and applies to a subtree.
+@code{configtweak} remains in effect until changed by another
+@code{configtweak}.
+
 @semanticAction{contentsheader, elementSpecifier}
 
 Replace the given element with a table of contents (@pxref{Table of

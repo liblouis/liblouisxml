@@ -37,7 +37,7 @@
 UserData *ud = NULL;
 
 char *
-lbx_version ()
+EXPORT_CALL lbx_version ()
 {
   static char *version = PACKAGE_VERSION;
   return version;
@@ -89,7 +89,7 @@ processXmlDocument (xmlDoc * doc)
 }
 
 void *
-lbx_initialize (const char *configFileName, const char 	*logFileName, 
+EXPORT_CALL lbx_initialize (const char *configFileName, const char 	*logFileName, 
 const char *settingsString)
 {
   initLibxml2 ();
@@ -100,7 +100,7 @@ const char *settingsString)
 }
 
 int
-lbx_translateString (const char *const configFileName, char *inbuf,
+EXPORT_CALL lbx_translateString (const char *const configFileName, char *inbuf,
 		     widechar * outbuf, int *outlen, unsigned int mode)
 {
 /* Translate the well-formed xml expression in inbuf into braille 
@@ -149,7 +149,7 @@ lbx_translateString (const char *const configFileName, char *inbuf,
 }
 
 int
-  lbx_translateFile
+  EXPORT_CALL lbx_translateFile
   (char *configFileName, char *inFileName, char *outFileName, unsigned
    int mode)
 {
@@ -205,7 +205,7 @@ int
 }
 
 int
-  lbx_translateTextFile
+  EXPORT_CALL lbx_translateTextFile
   (char *configFileName, char *inFileName, char *outFileName, unsigned
    int mode)
 {
@@ -243,7 +243,7 @@ int
 }
 
 int
-  lbx_backTranslateFile
+  EXPORT_CALL lbx_backTranslateFile
   (char *configFileName, char *inFileName, char *outFileName, unsigned
    int mode)
 {
@@ -282,7 +282,7 @@ int
 }
 
 void
-lbx_free (void)
+EXPORT_CALL lbx_free (void)
 {
 /* Free all memory used by liblouisxml. You MUST call this function at 
 * the END of your application.*/

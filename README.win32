@@ -27,6 +27,11 @@ Don't do it! Replace the proposed directory by c:\msys .
 At the end of installation of MSYS, you'll be asked where Mingw is installed.
 Answer: c:\mingw .
 
+By default, msys opens in a draphical interface which is not accessible, 
+at least not by Jaws. To tell it to use a command-line interface, go to 
+your msys directory, then to bin. Change the name of rxvt.exe to 
+something else.
+
 You will also need to install pkg-config from:
 http://pkg-config.freedesktop.org/releases/
 Version 0.21 seems to be the preferred one.
@@ -48,7 +53,8 @@ Now, simply run the 3 following commands:
 make
 make install
 
-- As liblouisxml depends on liblouis and libxml2 libraries, we will first build
+- As liblouisxml depends on the liblouis and libxml2 libraries, we will 
+first build
 and install these libraries.
 
 - For convenience, we will install liblouis, libxml2 and liblouisxml in

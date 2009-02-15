@@ -34,91 +34,6 @@
 #include <string.h>
 #include "louisxml.h"
 
-/* Contributed by Michel Such <michel.such@free.fr */
-#ifdef _WIN32
-
-/* Adapted from BRLTTY code (see sys_progs_wihdows.h) */
-
-#include <shlobj.h>
-
-static void
-noMemory (void)
-{
-  printf ("Insufficient memory: %s", strerror (errno), "\n");
-  exit (3);
-}
-
-void *
-reallocWrapper (void *address, size_t size)
-{
-  if (!(address = realloc (address, size)) && size)
-    noMemory ();
-  return address;
-}
-
-char *
-strdupWrapper (const char *string)
-{
-  char *address = strdup (string);
-  if (!address)
-    noMemory ();
-  return address;
-}
-
-char *
-getProgramPath (void)
-{
-  char *path = NULL;
-  HMODULE handle;
-
-  if ((handle = GetModuleHandle (NULL)))
-    {
-      size_t size = 0X80;
-      char *buffer = NULL;
-
-      while (1)
-	{
-	  buffer = reallocWrapper (buffer, size <<= 1);
-
-	  {
-	    DWORD length = GetModuleFileName (handle, buffer, size);
-
-	    if (!length)
-	      {
-		printf ("GetModuleFileName\n");
-		exit (3);
-		3;
-	      }
-
-	    if (length < size)
-	      {
-		buffer[length] = 0;
-		path = strdupWrapper (buffer);
-
-		while (length > 0)
-		  if (path[--length] == '\\')
-		    break;
-
-		strncpy (path, path, length + 1);
-		path[length + 1] = '\0';
-		break;
-	      }
-	  }
-	}
-
-      free (buffer);
-    }
-  else
-    {
-      printf ("GetModuleHandle\n");
-      exit (3);
-    }
-
-  return path;
-}
-#endif
-/* End of MS contribution */
-
 static char *lastPath = NULL;
 
 static int
@@ -164,7 +79,7 @@ set_paths (const char *configPath)
   {
     char louisPath[MAXNAMELEN];
     char lbxPath[MAXNAMELEN];
-    strcpy (currentPath, getProgramPath ());
+    strcpy (currentPath, lou_getProgramPath ());
     strcat (currentPath, "..\\");
     if (!addPath (currentPath))
       return 0;

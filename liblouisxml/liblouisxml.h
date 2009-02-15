@@ -39,12 +39,13 @@ extern "C"
 #endif				/* __cplusplus */
 
 /* Function prototypes are documented briefly below. For more extensive 
-documentation see liblouis.html. */
+documentation see liblouisxml.html. */
 
-char *lbx_version (void);
+char * EXPORT_CALL lbx_version (void);
 /* Returns the version of liblouisxml. */
 
-  void *lbx_initialize (const char *const configFileName, const char
+  void * EXPORT_CALL lbx_initialize (const char *const configFileName, 
+const char
 			const *logFileName, const char const *settingsString);
 
 /* This function initializes the libxml2 library, runs canonical.cfg and
@@ -61,7 +62,7 @@ include louisxml.h */
     htmlDoc = 2
   } processingModes;
 
-  int lbx_translateString
+  int EXPORT_CALL lbx_translateString
     (const char *const configFileName,
      char *inbuf, widechar * outbuf, int *outlen, unsigned int mode);
 
@@ -83,16 +84,18 @@ function returns 1 if no errors were encountered and a negative number
 if a conplete translation could not be done.  */
 
 
-  int lbx_translateFile (char *configFileName, char *inputFileName,
+  int EXPORT_CALL lbx_translateFile (char *configFileName, char 
+*inputFileName,
 			 char *outputFileName, unsigned int mode);
 
-  int lbx_translateTextFile (char *configFileName, char *inputFileName,
+  int EXPORT_CALL lbx_translateTextFile (char *configFileName, char 
+*inputFileName,
 			     char *outputFileName, unsigned int mode);
-  int lbx_backTranslateFile (char *configFileName, char
+  int EXPORT_CALL lbx_backTranslateFile (char *configFileName, char
 			     *inputFileName,
 			     char *outputFileName, unsigned int mode);
 
-  void lbx_free (void);
+  void EXPORT_CALL lbx_free (void);
 
 /* This function should be called at the end of the application to free
 all memory allocated by liblouisxml or liblouis. */

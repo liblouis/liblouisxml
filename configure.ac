@@ -55,6 +55,13 @@ AC_FUNC_REALLOC
 AC_FUNC_STAT
 AC_CHECK_FUNCS([memset])
 
+case $host in
+  *mingw* | *cygwin*)
+    LDFLAGS="$LDFLAGS -avoid-version"
+    CFLAGS="$CFLAGS -Wl,--add-stdcall-alias"
+  ;;
+esac
+
 AC_CONFIG_FILES([Makefile
                  doc/Makefile
                  lbx_files/Makefile

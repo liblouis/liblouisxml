@@ -46,8 +46,8 @@ This file may contain code borrowed from the Linux screenreader
 
 @noindent
 Copyright @copyright{} 2004-2009 ViewPlus Technologies, Inc.
-@uref{www.viewplus.com} and Copyright @copyright{} 2006,2009 JJB
-Software, Inc. @uref{www.jjb-software.com}.
+@uref{www.viewplus.com} and Copyright @copyright{} 2006,2009 
+Abilitiessoft, Inc. @uref{www.abilitiessoft.com}.
 
 @quotation
 This file is free software; you can redistribute it and/or modify it
@@ -159,7 +159,7 @@ format. If the word processor has been used correctly
 
 There is a Mac GUI application incorporating liblouisxml called
 @command{louis}. For a link to it go to
-@uref{www.jjb-software.com/downloads}. A similar Windows application
+@uref{www.abilitiessoft.com/downloads}. A similar Windows application
 is in the works.
 
 Users who want to generate Braille using @command{xml2brl} will be
@@ -2042,8 +2042,8 @@ Copyright @copyright{} 2004-2009 ViewPlus Technologies, Inc.
 @uref{www.viewplus.com}.
 
 @noindent
-Copyright @copyright{} 2006,2009 JJB Software, Inc.
-@uref{www.jjb-software.com}.
+Copyright @copyright{} 2006,2009 Abilitiessoft, Inc.
+@uref{www.abilitiessoft.com}.
 
 Liblouisxml is free software: you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published
@@ -2104,7 +2104,7 @@ The functions which are not needed at the moment, such as
 the graphics capability of the Tiger tactile graphics embossers.
 
 The latest versions of liblouisxml and liblouis can be downloaded from
-@uref{www.jjb-software.com}. Note that liblouisxml will only work with
+@uref{www.abilitiessoft.com}. Note that liblouisxml will only work with
 the latest version of liblouis.
 
 liblouisxml can be compiled to use either 16-bit or 32-bit Unicode

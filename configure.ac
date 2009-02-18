@@ -1,7 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(liblouisxml, 1.8.0, john.boyer@jjb-software.com)
+AC_INIT(liblouisxml, 1.8.0, john.boyer@abilitiessoft.com)
 AC_CONFIG_SRCDIR([liblouisxml/semantics.c])
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 AC_CONFIG_HEADER([liblouisxml/config.h])

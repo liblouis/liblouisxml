@@ -67,7 +67,7 @@ c:\ProgramFiles\louis).
 2. Installing Liblouis:
 
 >From the Liblouis site:
-http://www.jjb-software.com/
+http://www.abilitiessoft.com/
 download the latest liblouis tarball.
 Uncompress it using the command:
 tar xfz liblouis-x.x.x.tar.gz
@@ -107,7 +107,7 @@ make install
 4. Installing liblouisxml:
 
 >From the Liblouisxml site:
-http://www.jjb-software.com/
+http://www.abilitiessoft.com/
 download the latest liblouisxml tarball.
 Uncompress it using the command:
 tar xfz liblouisxml-x.x.x.tar.gz

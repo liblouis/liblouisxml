@@ -88,6 +88,8 @@ start_heading (sem_act action, widechar * translatedBuffer, int
 			 action == heading3 || action == heading4 ||
 			 action == contentsheader)))
     return 1;
+  if (translatedLength > 3 * MAXNAMELEN)
+    translatedLength = 3 * MAXNAMELEN;
   heading.action = action;
   heading.headingLength = 0;
   for (k = 0; k < translatedLength; k++)

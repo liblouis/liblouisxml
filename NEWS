@@ -13,7 +13,7 @@ the configuration of liblouisxml to be changed according to the
 contents of the document being transcribed.
 
 *** Documentation up-to-date
-The documentation brought up-to-date. Specifically the semantic
+The documentation is brought up-to-date. Specifically the semantic
 actions are now described in detail. Also there is now documentation
 about the table of contents feature.
 
@@ -23,7 +23,6 @@ about the table of contents feature.
 - New paths.c which finds where the program is under Windows
 - Added build instructions for Windows and Mac
 - Fix a buffer overflow in table of contents generation
-
 
 ** Changes in behavior
 

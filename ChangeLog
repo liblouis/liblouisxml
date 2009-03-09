@@ -1,25 +1,28 @@
+2009-03-09  Christian Egli  <christian.egli@sbszh.ch>
+
+	* doc/Makefile.am (doc_DATA): Use the default location for docdir.
+	Thanks to Lars Bjørndal for the report.
+
 2009-03-04 John J. Boyer <john.boyer@abilitiessoft.com>
 	* Release 1.9.0
 
-
 2009-02-20 John J. Boyer <john.boyer@abilitiessoft.com>
 
-	* Added the directory mac-osx-10.5 and its files for building on 
-	  the Mac.
+	* Added the directory mac-osx-10.5 and its files for building on
+	the Mac.
 
 2009-02-18 John J. Boyer <john.boyer@abilitiessoft.com>
 
 	* Changing e-mail, website and company name to abilitiessoft.
 
-
-2009-02-1e John J. Boyer <john.boyer@jjb-software.com>
+2009-02-16 John J. Boyer <john.boyer@jjb-software.com>
 	* Added __stdcall as per liblouis.
-	* Moved qetProgramPath from paths.c to compileTranslationTable.c 
-	  in liblouis and made it exportable as lou_getProgramPath for 
+	* Moved qetProgramPath from paths.c to compileTranslationTable.c
+	  in liblouis and made it exportable as lou_getProgramPath for
 	  Windows only.
 
 2009-02-10 (2) John J. Boyer <john.boyer@jjb-software.com>
-	* Put in new path.c module, which finds the program location in 
+	* Put in new path.c module, which finds the program location in
 	  Windows.
 2009-02-13  Christian Egli  <christian.egli@sbszh.ch>
 

@@ -1,5 +1,3 @@
-docdir = $(datadir)/liblouisxml/doc
-
 doc_DATA = \
 	copyright-notice \
 	example_canonical.cfg \

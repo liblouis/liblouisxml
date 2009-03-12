@@ -1532,9 +1532,10 @@ indented two cells.
 @item * matrix
 @item * music
 @item * note
-@semanticAction{para, elementSpecifier}
-Everything between @code{<elementSpecifier>} and @code{</elementSpecifier>} is to be a
-normal body text paragraph.
+
+@semanticAction{para, elementSpecifier} Everything between
+@code{<elementSpecifier>} and @code{</elementSpecifier>} is to be
+formatted as a normal body text paragraph.
 
 @item * quotation
 @item * section

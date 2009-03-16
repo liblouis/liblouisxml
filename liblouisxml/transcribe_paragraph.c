@@ -126,11 +126,11 @@ transcribe_paragraph (xmlNode * node, int action)
   child = node->children;
   while (child)
     {
+      insert_code (node, branchCount);
+      branchCount++;
       switch (child->type)
 	{
 	case XML_ELEMENT_NODE:
-	  insert_code (node, branchCount);
-	  branchCount++;
 	  transcribe_paragraph (child, 1);
 	  break;
 	case XML_TEXT_NODE:

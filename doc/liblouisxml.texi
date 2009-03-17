@@ -1555,7 +1555,6 @@ the table formatting rules it has been given for braille output.
 @item * trnote
 @item * volume
 @item acknowledge
-@item allcaps
 @item author
 @item blankline
 @item bodymatter
@@ -1633,7 +1632,6 @@ translation table in use.
 
 @item jacket
 @item line
-@item linkto
 @item maction
 @item maligngroup
 @item malignmark
@@ -1676,7 +1674,6 @@ interpretation actions.
 @item munderover
 @item newpage
 @item no
-@item noindent
 @item none
 
 @semanticAction{notranslate, elementSpecifier}
@@ -1688,7 +1685,6 @@ separate them with an unbreakable space, @samp{&#160;} or
 
 @item preface
 @item rearmatter
-@item rightalign
 @item righthandpage
 @item runninghead
 @item semantics
@@ -1700,7 +1696,7 @@ in between will have any effect on the braille output.
 @semanticAction{softreturn, elementSpecifier}
 Do a soft return, that is, start a new line without starting a new
 paragraph.
-@item specsym
+
 @item tblbody
 @item tblcol
 @item tblhead

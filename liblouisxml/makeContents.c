@@ -159,7 +159,7 @@ make_contents (void)
       do_newpage ();
       ud->contents = 2;
       currentHeading = firstHeading;
-      while (currentHeading->next != NULL)
+      while (currentHeading != NULL) 
 	{
 	  memcpy (ud->translated_buffer, currentHeading->headingChars,
 		  currentHeading->headingLength * CHARSIZE);

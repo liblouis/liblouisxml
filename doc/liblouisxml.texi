@@ -1564,6 +1564,8 @@ the table formatting rules it has been given for braille output.
 @item cdata
 @item center
 @item chemistry
+@item changetable
+@item compbrl
 @semanticAction{configfile, elementSpecifier filename}
 
 The @code{configfile}, @code{configstring} and @code{configtweak}
@@ -1603,7 +1605,6 @@ configtweak elementSpecifier literaryTextTable=fooTable;\
 mathExprTable=barTable
 @end example
 
-@c FIXME: changetable is not documented
 @code{configtweak} is not a generalization of @code{changetable}. The
 latter changes only the literarytexttable and applies to a subtree.
 @code{configtweak} remains in effect until changed by another
@@ -1621,7 +1622,10 @@ such as a title page, dedication, etc.
 @item endnotes
 @item footer
 @item frontmatter
+@item generic
 @item graphic
+@item htmllink
+@item htmltarget
 
 @semanticAction{italicx, elementSpecifier}
 Enclose the text which follows in braille italic indicators.
@@ -1667,6 +1671,7 @@ interpretation actions.
 @item msub
 @item msubsup
 @item msup
+@item mtable
 @item mtd
 @item mtext
 @item mtr
@@ -1683,14 +1688,17 @@ etc. If you want to make sure that things appear on the same line
 separate them with an unbreakable space, @samp{&#160;} or
 @samp{&#xa0;}.
 
+@item pagenum
 @item preface
 @item rearmatter
+@item reverse
 @item righthandpage
 @item runninghead
 @item semantics
 
 @semanticAction{skip, elementSpecifier}
-Skip ahead until it encounters the element @code{<elementSpecifier>}. Nothing
+Skip ahead until it encounters the element @code{</elementSpecifier>}. 
+Nothing
 in between will have any effect on the braille output.
 
 @semanticAction{softreturn, elementSpecifier}

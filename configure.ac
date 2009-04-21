@@ -1,7 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(liblouisxml, 1.9.0, john.boyer@abilitiessoft.com)
+AC_INIT(liblouisxml, 1.9.1, john.boyer@abilitiessoft.com)
 AC_CONFIG_SRCDIR([liblouisxml/semantics.c])
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 AC_CONFIG_HEADER([liblouisxml/config.h])
@@ -14,7 +14,7 @@ LIBLOUISXML_CURRENT=1
 
 # increment any time the source changes; set to
 #  0 if you increment CURRENT
-LIBLOUISXML_REVISION=6
+LIBLOUISXML_REVISION=7
 
 
 # increment if any interfaces have been added; set to 0

@@ -1,5 +1,12 @@
 liblouisxml NEWS -*- outline -*-
 
+* Noteworthy changes in release 1.9.1 (2009-04-21)
+
+** Bug fixes
+
+- Fix the table of contents generator
+- Improved the documentation 
+
 * Noteworthy changes in release 1.9.0 (2009-03-04)
 
 This release contains some new semantic actions and some major

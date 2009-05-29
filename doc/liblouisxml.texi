@@ -424,7 +424,7 @@ file name is given).
 @setting{cellsPerLine, 40}
 The number of cells in a braille line.
 
-@setting{LinesPerPage, 25}
+@setting{linesPerPage, 25}
 The number of lines on a braille page
 
 @setting{interpoint, no}
@@ -458,8 +458,8 @@ Whether or not to format the output into pages. Here the value is
 @samp{yes}, for use with an embosser. However the user of a braille
 display may wish to specify @samp{no}, so as not to be bothered with
 page numbers and forms feed characters. If no is specified the lines
-will still be of the length given in cellsPerLine, but the value of
-linesPerPage will be ignored.
+will still be of the length given in @code{cellsPerLine}, but the
+value of @code{linesPerPage} will be ignored.
 
 @setting{paragraphs, yes}
 Whether or not to format the output into paragraphs, using appropriate
@@ -469,8 +469,8 @@ formatting may specify @samp{no}.
 
 @setting{BeginingPageNumber, 1}
 This is the number to be placed on the first Braille page if
-braillePages is yes. This is useful when producing multiple Braille
-volumes.
+@code{braillePages} is yes. This is useful when producing multiple
+Braille volumes.
 
 @setting{printPageNumberAt, top}
 If print page numbers are given in the xml input file they will be
@@ -483,14 +483,14 @@ the print page break actually occurs. You may also specify
 The braille page number will be placed in the bottom right-hand corner
 of each page. If interpoint yes has been specified only odd pages will
 receive page numbers. If you specify @samp{top} for this setting then
-@samp{bottom} must be specified for printPageNumberAt.
+@samp{bottom} must be specified for @code{printPageNumberAt}.
 
 @setting{hyphenate, no}
 If @samp{yes} is specified words will be hyphenated at the ends of
 lines if a hyphenation table is available. In contracted English
 Braille hyphenation is not generally used, but it can save
 considerable space. The hyphenation table is specified as part of the
-table list in the literaryTextTable setting of the translation
+table list in the @code{literaryTextTable} setting of the translation
 section.
 
 @setting{outputEncoding, ascii8}
@@ -1533,9 +1533,10 @@ indented two cells.
 @item * music
 @item * note
 
-@semanticAction{para, elementSpecifier} Everything between
-@code{<elementSpecifier>} and @code{</elementSpecifier>} is to be
-formatted as a normal body text paragraph.
+@semanticAction{para, elementSpecifier} 
+Everything between @code{<elementSpecifier>} and
+@code{</elementSpecifier>} is to be formatted as a normal body text
+paragraph.
 
 @item * quotation
 @item * section

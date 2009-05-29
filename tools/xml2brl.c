@@ -73,7 +73,7 @@ main (int argc, char **argv)
 	    printf ("-b, back-translate a braille file.\n");
 	    printf ("-r, reformat a braille file.\n");
 	    printf ("-p, translate a poorly formatted file.\n");
-	    printf ("[-t]: h(t)ml document, not xhtml");
+	    printf ("[-t]: h(t)ml document, not xhtml.\n");
 	    printf ("[-l]: write errors to log file instead of stderr.\n");
 	    exit (0);
 	  case 'l':

@@ -17,7 +17,7 @@ liblouisxml_la_LDFLAGS =	\
 	-version-info \
 	$(LIBLOUISXML_CURRENT):$(LIBLOUISXML_REVISION):$(LIBLOUISXML_AGE) \
 	-no-undefined \
-	$(BASE_DEPENDENCIES_LDFLAGS)
+	$(BASE_DEPENDENCIES_LIBS)
 
 liblouisxml_la_SOURCES =			\
 	change_table.c \

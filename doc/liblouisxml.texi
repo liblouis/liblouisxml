@@ -1136,14 +1136,14 @@ in the xml document. To understand how this works, it is necessary to
 have a basic knowledge of the organization of an xml document.
 
 An xml document is organized like a book, but with much finer detail.
-first there is the title of the whole book. Then there are various
+First there is the title of the whole book. Then there are various
 sections, such as author, copyright, table of contents, dedication,
 acknowledgments, preface, various chapters, bibliography, index, and
 so on. Each chapter may be divided into sections, and these in turn
 can be divided into subsections, subsubsections, etc. In a book the
 parts have names or titles distinguished by capitalization, type
 fonts, spacing, and so forth. In an xml document the names of the
-parts are enclosed in angle brackets (@samp{<>}). for example, if
+parts are enclosed in angle brackets (@samp{<>}). For example, if
 liblouisxml encounters @code{<html>} at the beginning of a document,
 it knows it is dealing with a document that conforms to the standards
 of the extensible markup language (xhtml) - at least we hope it does.

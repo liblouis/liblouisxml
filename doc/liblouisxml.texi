@@ -1182,7 +1182,7 @@ commas. You might want to do this to specify the semantic-action file
 for the particular braille mathematical code to be used. For example:
 
 @example
-semanticFiles book.sem,ukmath.sem
+semanticFiles book.sem,ukmaths.sem
 @end example
 
 As you will see in the next section, different braille style
@@ -1200,7 +1200,8 @@ However, the computer still does not know what to do when it
 encounters an element. The semantic-action file tells it that.
 
 Consider @file{html.sem}. A copy is included as part of this
-documentation with the name @file{example_sem}. It may differ from the
+documentation with the name @file{example_html.sem}. It may differ from 
+the
 file that liblouisxml is currently using. You will see that it begins
 with some lines about copyrights. Each line begins with a number sign
 (@samp{#}). This indicates that it is a "comment", intended for the

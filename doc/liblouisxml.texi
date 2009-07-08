@@ -766,6 +766,20 @@ This style is used for an attribution following a quotation.
 
 This style is used for bibliographies. Settings will be added later.
 
+
+@subsection style blankLineBefore
+
+This style is used automatically when a text file has three or more 
+blank lines in succession.
+
+@table @code
+
+@setting{linesBefore 1}
+
+@setting{firstLineIndent 2}
+
+@end table
+
 @subsection style caption
 
 This style is used for picture captions.
@@ -1482,6 +1496,10 @@ triplet the action is only applied if the element has the specified
 attribute and the value of this attribute is equal to the specified
 value.
 
+In the following table the styles are merely listed (preceded by an 
+asterisk), since they have been described in style subsections above.
+
+
 @table @code
 
 @item * arith
@@ -1491,6 +1509,11 @@ value.
 @item * caption
 @item * code
 @item * contents
+@item contents1
+@item contents2
+@item contenss3
+@item contents4
+@item contentsHeader 
 @item * dedication
 @item * directions
 @item * dispmath

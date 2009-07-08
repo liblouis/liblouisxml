@@ -1683,7 +1683,10 @@ editTrans (void)
 				ud->translated_buffer,
 				&translationLength, ud->text_buffer,
 				&translatedLength, NULL, NULL, 0))
-	return 0;
+	{
+	  ud->edit_table_name[0] = 0;
+	  return 0;
+	}
       translatedBuffer = ud->text_buffer;
     }
   else
@@ -1714,7 +1717,8 @@ write_paragraph (sem_act action)
     return -1;
   if (prevStyle == NULL)
     prevStyle = &ud->document_style;
-  editTrans ();
+  if (!editTrans ())
+    return 0;
   if (style->format != computerCoded && action != document)
     {
       int realStart;

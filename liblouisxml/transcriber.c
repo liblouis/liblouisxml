@@ -34,6 +34,7 @@
 #include <string.h>
 #include "louisxml.h"
 
+static int doLeftJustify (void);
 static StyleType *style = NULL;
 static StyleType *prevStyle = NULL;
 static int firstLineInParagraph = 1;
@@ -1051,21 +1052,28 @@ doAlignColumns ()
   int rowLength;
   int colSize[MAXCOLS];
   widechar rowBuf[MAXROWSIZE];
-  int transBufPos;
+  int bufPos;
   int k;
   unsigned int ch;
   int rowEnd = 0;
+  for (bufPos = 0; bufPos < translatedLength; bufPos++)
+    if (translatedBuffer[bufPos] == escapeChar)
+      break;
+  if (bufPos >= translatedLength)
+    {
+      doLeftJustify ();
+      return 1;
+    }
   for (k = 0; k < MAXCOLS; k++)
     colSize[k] = 0;
 
   /*Calculate number of columns and column sizes */
-  transBufPos = 0;
-  while (transBufPos < translatedLength)
+  while (bufPos < translatedLength)
     {
-      ch = translatedBuffer[transBufPos++];
+      ch = translatedBuffer[bufPos++];
       if (ch == escapeChar)
 	{
-	  unsigned int nch = translatedBuffer[transBufPos];
+	  unsigned int nch = translatedBuffer[bufPos];
 	  if (nch == 'r')	/*End of row */
 	    {
 	      numRows++;
@@ -1073,7 +1081,7 @@ doAlignColumns ()
 		rowEnd = colLength;
 	      colLength = 0;
 	      colNum = 0;
-	      transBufPos++;
+	      bufPos++;
 	    }
 	  else if (nch == 'c')
 	    {
@@ -1083,7 +1091,7 @@ doAlignColumns ()
 		colSize[colNum] = colLength;
 	      colNum++;
 	      colLength = 0;
-	      transBufPos++;
+	      bufPos++;
 	    }
 	  else if (nch == 'e')
 	    break;
@@ -1119,7 +1127,7 @@ doAlignColumns ()
 /*Now output the stuff.*/
   if ((ud->lines_per_page - ud->lines_on_page) < numRows)
     fillPage ();
-  transBufPos = 0;
+  bufPos = 0;
   for (rowNum = 0; rowNum < numRows; rowNum++)
     {
       int charactersWritten = 0;
@@ -1131,9 +1139,9 @@ doAlignColumns ()
 	  for (colNum = 0; colNum < numCols; colNum++)
 	    {
 	      while (rowLength < MAXROWSIZE
-		     && translatedBuffer[transBufPos] != escapeChar)
-		rowBuf[rowLength++] = translatedBuffer[transBufPos++];
-	      transBufPos += 2;
+		     && translatedBuffer[bufPos] != escapeChar)
+		rowBuf[rowLength++] = translatedBuffer[bufPos++];
+	      bufPos += 2;
 	      if (colNum < (numCols - 1))
 		{
 		  while (rowLength < MAXROWSIZE && rowLength <
@@ -1143,34 +1151,34 @@ doAlignColumns ()
 	      else
 		{
 		  while (rowLength < MAXROWSIZE
-			 && translatedBuffer[transBufPos] != escapeChar)
-		    rowBuf[rowLength++] = translatedBuffer[transBufPos++];
-		  transBufPos += 2;	/*actual end of row */
+			 && translatedBuffer[bufPos] != escapeChar)
+		    rowBuf[rowLength++] = translatedBuffer[bufPos++];
+		  bufPos += 2;	/*actual end of row */
 		}
 	    }
 	}
       else
 	{
-	  int prevBufPos = transBufPos;
+	  int prevBufPos = bufPos;
 	  int prevCol = 0;
 	  for (colNum = 0; colNum < numCols; colNum++)
 	    {
-	      while (translatedBuffer[transBufPos] != escapeChar)
-		transBufPos++;
-	      for (k = transBufPos - 1; k >= prevBufPos; k--)
+	      while (translatedBuffer[bufPos] != escapeChar)
+		bufPos++;
+	      for (k = bufPos - 1; k >= prevBufPos; k--)
 		rowBuf[k + prevCol] = translatedBuffer[k];
 	      for (; k >= prevCol; k--)
 		rowBuf[k + prevCol] = ' ';
-	      prevBufPos = transBufPos + 2;
+	      prevBufPos = bufPos + 2;
 	      prevCol = colSize[colNum];
 	      rowLength += colSize[colNum];
 	      if (rowLength > MAXROWSIZE)
 		break;
 	    }
-	  while (rowLength < MAXROWSIZE && translatedBuffer[transBufPos] !=
+	  while (rowLength < MAXROWSIZE && translatedBuffer[bufPos] !=
 		 escapeChar)
-	    rowBuf[rowLength++] = translatedBuffer[transBufPos++];
-	  transBufPos += 2;
+	    rowBuf[rowLength++] = translatedBuffer[bufPos++];
+	  bufPos += 2;
 	}
       while (charactersWritten < rowLength)
 	{
@@ -1220,80 +1228,91 @@ doListColumns (void)
   int bufPos;
   int prevPos = 0;
   for (bufPos = 0; bufPos < translatedLength; bufPos++)
-    if (translatedBuffer[bufPos] == escapeChar && translatedBuffer[bufPos + 1]
-	== escapeChar)
-      {
-	int charactersWritten = 0;
-	int cellsToWrite = 0;
-	int availableCells = 0;
-	int k;
-	thisRow = &translatedBuffer[prevPos];
-	rowLength = bufPos - prevPos - 1;
-	prevPos = bufPos + 2;
-	while (charactersWritten < rowLength)
-	  {
-	    int wordTooLong = 0;
-	    int breakAt = 0;
-	    int leadingBlanks = 0;
-	    availableCells = startLine ();
-	    if (firstLineInParagraph)
-	      {
-		if (style->first_line_indent < 0)
-		  leadingBlanks = 0;
-		else
-		  leadingBlanks =
-		    style->left_margin + style->first_line_indent;
-		firstLineInParagraph = 0;
-	      }
-	    else
-	      leadingBlanks = style->left_margin;
-	    if (!insertCharacters (blanks, leadingBlanks))
-	      return 0;
-	    availableCells -= leadingBlanks;
-	    if ((charactersWritten + availableCells) >= rowLength)
-	      cellsToWrite = rowLength - charactersWritten;
-	    else
-	      {
-		for (cellsToWrite = availableCells; cellsToWrite > 0;
-		     cellsToWrite--)
-		  if (thisRow[charactersWritten + cellsToWrite] == ' ')
-		    break;
-		if (cellsToWrite == 0)
-		  {
-		    cellsToWrite = availableCells - 1;
-		    wordTooLong = 1;
-		  }
-		else
-		  {
-		    if (ud->hyphenate)
-		      breakAt =
-			hyphenatex (charactersWritten + cellsToWrite,
-				    charactersWritten + availableCells);
-		    if (breakAt)
-		      cellsToWrite = breakAt - charactersWritten;
-		  }
-	      }
-	    for (k = charactersWritten;
-		 k < (charactersWritten + cellsToWrite); k++)
-	      if (thisRow[k] == 0xa0)	/*unbreakable space */
-		thisRow[k] = 0x20;	/*space */
-	    if (!insertWidechars (&thisRow[charactersWritten], cellsToWrite))
-	      return 0;
-	    charactersWritten += cellsToWrite;
-	    if (thisRow[charactersWritten] == ' ')
-	      charactersWritten++;
-	    if ((breakAt && thisRow[breakAt - 1] != *litHyphen)
-		|| wordTooLong)
-	      {
-		if (!insertDubChars (litHyphen, strlen (litHyphen)))
-		  return 0;
-	      }
-	    finishLine ();
-	  }
-      }
-    else if (translatedBuffer[bufPos - 1] !=
-	     escapeChar && translatedBuffer[bufPos] == escapeChar)
-      translatedBuffer[bufPos] = ' ';
+    if (translatedBuffer[bufPos] == escapeChar)
+      break;
+  if (bufPos >= translatedLength)
+    {
+      doLeftJustify ();
+      return 1;
+    }
+  for (; bufPos < translatedLength; bufPos++)
+    {
+      if (translatedBuffer[bufPos] == escapeChar &&
+	  translatedBuffer[bufPos + 1] == escapeChar)
+	{
+	  int charactersWritten = 0;
+	  int cellsToWrite = 0;
+	  int availableCells = 0;
+	  int k;
+	  thisRow = &translatedBuffer[prevPos];
+	  rowLength = bufPos - prevPos - 1;
+	  prevPos = bufPos + 2;
+	  while (charactersWritten < rowLength)
+	    {
+	      int wordTooLong = 0;
+	      int breakAt = 0;
+	      int leadingBlanks = 0;
+	      availableCells = startLine ();
+	      if (firstLineInParagraph)
+		{
+		  if (style->first_line_indent < 0)
+		    leadingBlanks = 0;
+		  else
+		    leadingBlanks =
+		      style->left_margin + style->first_line_indent;
+		  firstLineInParagraph = 0;
+		}
+	      else
+		leadingBlanks = style->left_margin;
+	      if (!insertCharacters (blanks, leadingBlanks))
+		return 0;
+	      availableCells -= leadingBlanks;
+	      if ((charactersWritten + availableCells) >= rowLength)
+		cellsToWrite = rowLength - charactersWritten;
+	      else
+		{
+		  for (cellsToWrite = availableCells; cellsToWrite > 0;
+		       cellsToWrite--)
+		    if (thisRow[charactersWritten + cellsToWrite] == ' ')
+		      break;
+		  if (cellsToWrite == 0)
+		    {
+		      cellsToWrite = availableCells - 1;
+		      wordTooLong = 1;
+		    }
+		  else
+		    {
+		      if (ud->hyphenate)
+			breakAt =
+			  hyphenatex (charactersWritten + cellsToWrite,
+				      charactersWritten + availableCells);
+		      if (breakAt)
+			cellsToWrite = breakAt - charactersWritten;
+		    }
+		}
+	      for (k = charactersWritten;
+		   k < (charactersWritten + cellsToWrite); k++)
+		if (thisRow[k] == 0xa0)	/*unbreakable space */
+		  thisRow[k] = 0x20;	/*space */
+	      if (!insertWidechars
+		  (&thisRow[charactersWritten], cellsToWrite))
+		return 0;
+	      charactersWritten += cellsToWrite;
+	      if (thisRow[charactersWritten] == ' ')
+		charactersWritten++;
+	      if ((breakAt && thisRow[breakAt - 1] != *litHyphen)
+		  || wordTooLong)
+		{
+		  if (!insertDubChars (litHyphen, strlen (litHyphen)))
+		    return 0;
+		}
+	      finishLine ();
+	    }
+	}
+      else if (translatedBuffer[bufPos - 1] !=
+	       escapeChar && translatedBuffer[bufPos] == escapeChar)
+	translatedBuffer[bufPos] = ' ';
+    }
   return 1;
 }
 
@@ -1305,6 +1324,14 @@ doListLines (void)
   int bufPos;
   int prevPos = 0;
   for (bufPos = 0; bufPos < translatedLength; bufPos++)
+    if (translatedBuffer[bufPos] == escapeChar)
+      break;
+  if (bufPos >= translatedLength)
+    {
+      doLeftJustify ();
+      return 1;
+    }
+  for (; bufPos < translatedLength; bufPos++)
     if (translatedBuffer[bufPos] == escapeChar && translatedBuffer[bufPos + 1]
 	== escapeChar)
       {

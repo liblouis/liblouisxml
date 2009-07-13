@@ -467,7 +467,7 @@ styles. If @samp{no} is specified, what would be a paragraph is output
 simply as one long line. Applications that wish to do their own
 formatting may specify @samp{no}.
 
-@setting{BeginingPageNumber, 1}
+@setting{beginningPageNumber, 1}
 This is the number to be placed on the first Braille page if
 @code{braillePages} is yes. This is useful when producing multiple
 Braille volumes.

@@ -199,6 +199,7 @@ extern UserData *ud;
 /* Function definitions */
 StyleType *style_cases (sem_act action);
 sem_act find_semantic_number (const char *semName);
+int file_exists (const char *completePath);
 int find_file (const char *fileName, char *filePath);
 int set_paths (const char *configPath);
 int read_configuration_file (const char *configFileName,

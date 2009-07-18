@@ -76,6 +76,15 @@ configureError (FileInfo * nested, char *format, ...)
 }
 
 int
+file_exists (const char *completePath)
+{
+  struct stat statInfo;
+  if (stat (completePath, &statInfo) != -1)
+    return 1;
+  return 0;
+}
+
+int
 find_file (const char *fileList, char *filePath)
 {
   struct stat statInfo;

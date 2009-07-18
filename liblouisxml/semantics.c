@@ -638,19 +638,24 @@ sem_compileFile (const char *fileName)
 /*Compile an input file */
   FileInfo nested;
   char completePath[MAXNAMELEN];
+  int haveAppended = 0;
   if (!*fileName)
     return 1;			/*Probably run with defaults */
-  if (!find_file (fileName, completePath))
+  if (strncmp (fileName, "appended_", 9) == 0)
     {
-      if (strncmp (fileName, "appended_", 9) != 0)
-	{
-	  semanticError (NULL, "Can't find semantic-action file %s",
-			 fileName);
-	  haveSemanticFile = 0;
-	  strcpy (firstFileName, fileName);
-	  return 0;
-	}
-      return 1;
+      strcpy (completePath, ud->writeable_path);
+      strcat (completePath, fileName);
+      if (file_exists (completePath))
+	haveAppended = 1;
+      else
+	return 1;
+    }
+  if (!haveAppended && !find_file (fileName, completePath))
+    {
+      semanticError (NULL, "Can't find semantic-action file %s", fileName);
+      haveSemanticFile = 0;
+      strcpy (firstFileName, fileName);
+      return 0;
     }
   nested.fileName = fileName;
   nested.lineNumber = 0;
@@ -697,6 +702,7 @@ getRootName (xmlNode * rootElement, char *fileName)
     }
   strcat (fileName, ".sem");
 }
+static int moreEntries = 0;
 
 int
 compile_semantic_table (xmlNode * rootElement)
@@ -704,6 +710,7 @@ compile_semantic_table (xmlNode * rootElement)
   char fileName[MAXNAMELEN];
   attrValueCounts = NULL;
   haveSemanticFile = 1;
+  moreEntries = 0;
   numEntries = 0;
   if (*ud->semantic_files)
     {
@@ -904,8 +911,6 @@ pop_sem_stack ()
   return no;
 }
 
-
-static int moreEntries = 0;
 
 static void
 addNewEntries (const xmlChar * newEntry)

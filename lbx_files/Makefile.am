@@ -17,6 +17,8 @@ lbx_files_DATA = \
 	preface.sem \
 	set.sem \
 	ThML.sem \
+	ukmaths.sem \
+	ukmaths.cfg \
 	wordDocument.sem \
 	Workbook.sem \
 	w_wordDocument.sem

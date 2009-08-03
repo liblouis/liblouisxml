@@ -1,39 +1,35 @@
-# Marburg Braille Code for Mathematics
-# Semantic Action File
-# mike sivill <mike.sivill@viewplus.com>
+# Licnsed under LGPL
 
 maction maction
 maligngroup maligngroup
 malignmark malignmark
 math math \eb,\*\ee
 menclose menclose
-mfrac mfrac ^;,^8,^;
-mfenced mfenced ^2,,^`
-mfenced mfenced,open, ^9,,o
+mfrac mfrac \x0003,@456-34,\x0004
+mfenced mfenced @126,@345
+mfenced mfenced,open,{ @246,@135
+mover mover ,@4-346,@12456
+munder munder ,@4-16,@12456
 mglyph mglyph
 mi mi
 mlabeledtr mlabeledtr
 mmultiscripts mmultiscripts
 mn mn
 mo mo
-mover mover ^",^<,^}
 mpadded mpadded
-mroot mroot ^<,^>,^}
-mrow mrow
+reverse mroot @146
+mrow mrow \x0001,\*\x0002
 ms ms
-mspace mspace
-msqrt msqrt ^>,^/
-skip mstyle
-msub msub ,~*,~/
-msubsup msupsup ,^~,^~^~,^"
-msubsup msubsup ,^;,0,^"
-msup msup ,^0,^`
+mspace mspace \x00a0
+msqrt msqrt  @146
+mstyle mstyle
+msub msub ,@16,@12456
+msubsup msubsup ,@346,@12456
+msup msup ,@346,@12456
 matrix mtable
 mtd mtd \*\ec
 mtext mtext
-mtr mtr \*\er
-#mtr mtr \2,\*,^@\x001b\x001b
-munder munder ^",^%,^}
+mtr mtr @123456,\*@123456\er
 munderover munderover ^",^%,^<,^}
 semantics semantics
 skip annotation
@@ -113,18 +109,9 @@ no math,display,inline
 no mi,mathvariant,normal
 no mi,mathvariant,fraktur
 no mi,mathvariant,bold-sans
-
-no mi,mathvariant,double-struck
-no mi,mathvariant,double-struck
 no mi,mathvariant,double-struck
 no menclose,notation
 no mtd,columnalign
 no menclose,notation,longdiv
 no mtd,columnalign,right
-no mfrac
-no mfrac
-no mfrac
-no mfrac
-no mfrac
-no mfrac
 no mstyle,scriptlevel,-1

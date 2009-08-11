@@ -28,7 +28,6 @@ AM_MAKEINFOHTMLFLAGS = --no-headers --no-split
 
 # man pages
 dist_man_MANS = xml2brl.1 msword2brl.1
-man_MANS = xml2brl.1 msword2brl.1
 
 xml2brl.1: xml2brl.asciidoc
 

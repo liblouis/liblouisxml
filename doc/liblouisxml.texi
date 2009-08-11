@@ -774,9 +774,9 @@ blank lines in succession.
 
 @table @code
 
-@setting{linesBefore 1}
+@setting{linesBefore, 1}
 
-@setting{firstLineIndent 2}
+@setting{firstLineIndent, 2}
 
 @end table
 

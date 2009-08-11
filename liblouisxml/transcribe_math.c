@@ -62,20 +62,14 @@ transcribe_math (xmlNode * node, int action)
   child = node->children;
   while (child)
     {
+      insert_code (node, branchCount);
+      branchCount++;
       switch (child->type)
 	{
 	case XML_ELEMENT_NODE:
-	  insert_code (node, branchCount);
-	  branchCount++;
-	  if (child->children)
-	    transcribe_math (child, 1);
+	  transcribe_math (child, 1);
 	  break;
 	case XML_TEXT_NODE:
-	  if (branchCount == 0)
-	    {
-	      insert_code (node, branchCount);
-	      branchCount++;
-	    }
 	  mathText (child, 1);
 	  break;
 	case XML_CDATA_SECTION_NODE:

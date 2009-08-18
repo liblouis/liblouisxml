@@ -1,4 +1,15 @@
-liblouisxml NEWS -*- outline -*-
+liblouisxml NEWS -*- org -*-
+
+* Noteworthy changes in release 1.10.0 ()
+** New features
+- Beta version of UK Maths
+- Alpha version of Marburg math
+- rpm spec file
+
+** Bug fixes
+- Updated semantic files
+- Documentation fixes
+- Fix for building static libs
 
 * Noteworthy changes in release 1.9.1 (2009-04-21)
 

@@ -1,6 +1,10 @@
-liblouisxml NEWS -*- org -*-
+liblouisxml NEWS -- history of user-visible changes.
 
-* Noteworthy changes in release 1.10.0 ()
+* Noteworthy changes in release 2.0.0 ()
+
+This release contains support for UK and Marburg math and the usual
+assortment of bug fixes.
+
 ** New features
 - Beta version of UK Maths
 - Alpha version of Marburg math
@@ -62,3 +66,7 @@ Search for liblouis tables under /usr/share now.
 ** Changes in behavior
 
 None
+
+Local variables:
+mode: org
+end:

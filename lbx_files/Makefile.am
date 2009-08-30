@@ -1,6 +1,7 @@
 lbx_filesdir = $(datadir)/liblouisxml/lbx_files
 
 lbx_files_DATA = \
+	doc.sem \
 	marburg.cfg \
 	marburg.sem \
 	article.sem \

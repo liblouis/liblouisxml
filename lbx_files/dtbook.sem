@@ -52,7 +52,7 @@ no secondary,sortas,element
 italicx span,class,italic \s,\*\s
 no dtbook,version,2005-3
 no w
-no acronym
+notranslate acronym
 no sent
 no caption
 no table
@@ -473,3 +473,19 @@ no strong,id,strong_000001
 no h2,id,p_000001
 no level2,id,level2_000004
 no pagenum,page,front
+no book,space
+no level1,id,level1_000002
+no h1,id,h1_000002
+no level3,id,level3_000001
+no level3,id,level3_000002
+no h3,smilref,The_Hammer_of_God00001.smil#h3_000001
+no h3,smilref,The_Hammer_of_God00001.smil#h3_000002
+no h3,id,h3_000001
+no h3,id,h3_000002
+no book,space,preserve
+no sub,smilref
+no sup,smilref
+no em,smilref
+no sub,smilref,The_Fountains_of_Paradise00001.smil#sub_000001
+no em,smilref,The_Fountains_of_Paradise00001.smil#em_000155
+no sup,smilref,The_Fountains_of_Paradise00001.smil#sup_000001

@@ -1,3 +1,7 @@
+2009-10-03  Christian Egli  <christian.egli@alumni.ethz.ch>
+
+	* tests/check_version.c: Add a test case for lbx_version().
+
 2009-08-11  Christian Egli  <christian.egli@sbszh.ch>
 
 	* doc/Makefile.am (man_MANS): Only define the man pages once,
@@ -67,8 +71,8 @@
 	* liblouisxml/transcribe_graphic.c:
 	* liblouisxml/transcribe_chemistry.c:
 	* liblouisxml/make_sem_names.c: Move license from GPL +
-	restrictions/permissions to LGPL with the bessing of the copyright
-	holders.
+	restrictions/permissions to LGPL with the blessing of the
+	copyright holders.
 
 2009-02-09  Christian Egli  <christian.egli@sbszh.ch>
 

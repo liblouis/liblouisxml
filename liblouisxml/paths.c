@@ -85,10 +85,10 @@ set_paths (const char *configPath)
       return 0;
     strcpy (lbxPath, currentPath);
     strcat (lbxPath, "share\\liblouisxml\\lbx_files\\");
-    addPath (lbxPath);
     strcpy (louisPath, currentPath);
     strcat (louisPath, "share\\liblouis\\tables\\");
     addPath (louisPath);
+    addPath (lbxPath);
   }
 #else
 /* Set Unix paths (Linux, Mac OS X, etc.) */

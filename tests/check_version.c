@@ -1,6 +1,7 @@
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
-#include "config.h"
+#include "liblouisxml.h"
 
 /* Make sure lbx_version does report the actual version */
 int

@@ -1,4 +1,6 @@
-AM_CPPFLAGS = -I$(top_srcdir)/liblouisxml
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/liblouisxml \
+	$(BASE_DEPENDENCIES_CFLAGS)
 
 LDADD = $(top_builddir)/liblouisxml/liblouisxml.la
 

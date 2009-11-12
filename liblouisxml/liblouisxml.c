@@ -29,11 +29,13 @@
    Maintained by John J. Boyer john.boyer@jjb-software.com
    */
 
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "louisxml.h"
 #include <libxml/HTMLparser.h>
+
 UserData *ud = NULL;
 
 char *

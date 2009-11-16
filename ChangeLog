@@ -1,3 +1,16 @@
+2009-11-04  Christian Egli  <christian.egli@sbszh.ch>
+
+	* Makefile.am:
+	* configure.ac:
+	* man/Makefile.am: Automatically generate man pages using help2man
+	if it is available.
+
+	* Makefile.am:
+	* configure.ac:
+	* gnulib/*:
+	* tools/xml2brl.c: Integrate gnulib and use it to do option
+	parsing using getopt. xml2brl now handles --help and --version.
+
 2009-10-03  Christian Egli  <christian.egli@alumni.ethz.ch>
 
 	* tests/check_version.c: Add a test case for lbx_version().

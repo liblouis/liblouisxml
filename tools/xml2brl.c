@@ -1,47 +1,98 @@
 /* liblouisxml Braille Transcription Library
 
    This file may contain code borrowed from the Linux screenreader
-   BRLTTY, copyright (C) 1999-2006 by
-   the BRLTTY Team
+   BRLTTY, copyright (C) 1999-2006 by the BRLTTY Team
 
-   Copyright (C) 2004, 2005, 2006
-   ViewPlus Technologies, Inc. www.viewplus.com
-   and
+   Copyright (C) 2004, 2005, 2006, 2009
+   ViewPlus Technologies, Inc. www.viewplus.com and
    JJB Software, Inc. www.jjb-software.com
-   All rights reserved
 
-   This file is free software; you can redistribute it and/or modify it
-   under the terms of the Lesser or Library GNU General Public License 
-   as published by the
-   Free Software Foundation; either version 3, or (at your option) any
-   later version.
-
-   This file is distributed in the hope that it will be useful, but
-   WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
-   Library GNU General Public License for more details.
-
-   You should have received a copy of the Library GNU General Public 
-   License along with this program; see the file COPYING.  If not, write to
-   the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+   
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+   
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
    Maintained by John J. Boyer john.boyer@jjb-software.com
    */
+
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "louisxml.h"
+#include <getopt.h>
+#include "progname.h"
+#include "version-etc.h"
+
+static const struct option longopts[] =
+{
+  { "help", no_argument, NULL, 'h' },
+  { "version", no_argument, NULL, 'v' },
+  { "config-file", required_argument, NULL, 'f' },
+  { "backward", no_argument, NULL, 'b' },
+  { "reformat", no_argument, NULL, 'r' },
+  { "poorly-formatted", no_argument, NULL, 'p' },
+  { "html", no_argument, NULL, 't' },
+  { "log-file", no_argument, NULL, 'l' },
+  { "config-setting", required_argument, NULL, 'C' },
+  { NULL, 0, NULL, 0 }
+};
+
+const char version_etc_copyright[] =
+  "Copyright %s %d ViewPlus Technologies, Inc. and JJB Software, Inc.";
+
+#define AUTHORS "John J. Boyer"
+
+static void
+print_help (void)
+{
+  printf ("\
+Usage: %s [OPTION] [inputFile] [outputFile]\n", program_name);
+  
+  fputs ("\
+Translate an xml or a text file into an embosser-ready braille file.\n\
+This includes translation into grade two, if desired, mathematical \n\
+codes, etc. It also includes formatting according to a built-in \n\
+style sheet which can be modified by the user.\n\
+\n\
+If inputFile is not specified or '-' input us taken from stdin. If outputFile\n\
+is not specified the output is sent to stdout.\n\n", stdout);
+
+  fputs ("\
+  -h, --help          	  display this help and exit\n\
+  -v, --version       	  display version information and exit\n\
+  -f, --config-file       name a configuration file that specifies\n\
+                          how to do the translation\n\
+  -b, --backward      	  backward translation\n\
+  -r, --reformat      	  reformat a braille file\n\
+  -p, --poorly-formatted  translate a poorly formatted file\n\
+  -t, --html              html document, not xhtml\n\
+  -C, --config-setting    specify particular configuration settings\n\
+                          They override any settings that are specified in a\n\
+                          config file\n\
+  -l, --log-file          write errors to log file instead of stderr\n", stdout);
+
+  printf ("\n");
+  printf ("\
+Report bugs to <%s>.\n", PACKAGE_BUGREPORT);
+}
 
 int
 main (int argc, char **argv)
 {
-  int curarg = 1;
   int mode = dontInit;
-  char *configFileName = NULL;
-  char *inputFileName = NULL;
-  char *outputFileName = NULL;
+  char *configFileName = "default.cfg";
+  char *inputFileName = "stdin";
+  char *outputFileName = "stdout";
   char tempFileName[MAXNAMELEN];
   char *logFileName = NULL;
   char whichProc = 0;
@@ -54,95 +105,90 @@ main (int argc, char **argv)
   int charsRead = 0;
   int k;
   UserData *ud;
-  while (curarg < argc)
-    {
-      if (argv[curarg][0] == '-')
-	switch (argv[curarg][1])
+
+  int optc;
+  set_program_name (argv[0]);
+
+  while ((optc = getopt_long (argc, argv, "hvf:brptlC:", longopts, NULL)) != -1)
+    switch (optc)
+      {
+      /* --help and --version exit immediately, per GNU coding standards.  */
+      case 'v':
+        version_etc (stdout, program_name, PACKAGE_NAME, VERSION, AUTHORS, (char *) NULL);
+        exit (EXIT_SUCCESS);
+        break;
+      case 'h':
+        print_help ();
+        exit (EXIT_SUCCESS);
+        break;
+      case 'l':
+	logFileName = "xml2brl.log";
+	break;
+      case 't':
+	mode |= htmlDoc;
+	break;
+      case 'f':
+	configFileName = optarg;
+	break;
+      case 'b':
+      case 'p':
+      case 'r':
+      case 'x':
+	whichProc = optc;
+      break;
+      case 'C':
+	if (configSettings == NULL)
 	  {
-	  case 'h':
-	    printf
-	      ("Usage: xml2brl [Options] [-f configFile] [inputFile] [outputFile]\n");
-	    printf
-	      ("-f configFile: configuration file name, default: default.cfg.\n");
-	    printf ("inputFile : input file, '--' means stdin\n");
-	    printf ("outputFile : output file\n");
-	    printf ("xml2brl with no arguments takes input on stdin\n");
-	    printf ("and gives output on stdout.\n");
-	    printf ("OPTIONS\n");
-	    printf ("-h, print this message and exit.\n");
-	    printf ("-b, back-translate a braille file.\n");
-	    printf ("-r, reformat a braille file.\n");
-	    printf ("-p, translate a poorly formatted file.\n");
-	    printf ("[-t]: h(t)ml document, not xhtml.\n");
-	    printf ("[-l]: write errors to log file instead of stderr.\n");
-	    exit (0);
-	  case 'l':
-	    logFileName = "xml2brl.log";
-	    break;
-	  case 'f':
-	    if (argc < (curarg + 1))
-	      {
-		fprintf (stderr, "No configuration file!");
-		exit (1);
-	      }
-	    configFileName = argv[curarg + 1];
-	    curarg++;
-	    break;
-	  case 't':
-	    mode |= htmlDoc;
-	    break;
-	  case 'b':
-	  case 'p':
-	  case 'r':
-	  case 'x':
-	    whichProc = argv[curarg][1];
-	    break;
-	  case 'C':
-	    if (configSettings == NULL)
-	      {
-		configSettings = malloc (BUFSIZE);
-		configSettings[0] = 0;
-	      }
-	    strcat (configSettings, &argv[curarg][2]);
-	    strcat (configSettings, "\n");
-	    break;
-	  case '-':
-	    inputFileName = "stdin";
-	    break;
-	  default:
-	    fprintf (stderr, "Invalid option %s.\n", argv[curarg]);
-	    exit (1);
+	    configSettings = malloc (BUFSIZE);
+	    configSettings[0] = 0;
 	  }
-      else
+	strcat (configSettings, optarg);
+	strcat (configSettings, "\n");
+	break;
+      default:
+	fprintf (stderr, "Try `%s --help' for more information.\n",
+		 program_name);
+	exit (EXIT_FAILURE);
+        break;
+      }
+
+  if (optind < argc) 
+    {
+      if (optind == argc - 1)
 	{
-	  if (inputFileName == NULL)
-	    inputFileName = argv[curarg];
-	  else
-	    outputFileName = argv[curarg];
+	  inputFileName = argv[optind];
 	}
-      curarg++;
+      else if (optind == argc - 2)
+	{
+	  if (strcmp (argv[optind], "-") != 0)
+	    inputFileName = argv[optind];
+	  outputFileName = argv[optind + 1];
+	}
+      else 
+	{
+	  fprintf (stderr, "%s: extra operand: %s\n",
+		   program_name, argv[optind + 2]);
+	  fprintf (stderr, "Try `%s --help' for more information.\n",
+		   program_name);
+	  exit (EXIT_FAILURE);
+	}
     }
+
   if (whichProc == 0)
     whichProc = 'x';
-  if (configFileName == NULL)
-    configFileName = "default.cfg";
-  if (inputFileName == NULL)
-    inputFileName = "stdin";
-  if (outputFileName == NULL)
-    outputFileName = "stdout";
   if (configSettings != NULL)
     for (k = 0; configSettings[k]; k++)
       if (configSettings[k] == '=')
 	configSettings[k] = ' ';
   if ((ud = lbx_initialize (configFileName, logFileName,
 			    configSettings)) == NULL)
-    exit (1);
+    exit (EXIT_FAILURE);
   if (strcmp (inputFileName, "stdin") != 0)
     {
       if (!(inputFile = fopen (inputFileName, "r")))
 	{
 	  lou_logPrint ("Can't open file %s.\n", inputFileName);
-	  exit (1);
+	  exit (EXIT_FAILURE);
 	}
     }
   else

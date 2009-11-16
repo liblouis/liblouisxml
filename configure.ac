@@ -3,11 +3,12 @@
 AC_PREREQ(2.59)
 AC_INIT(liblouisxml, 2.0.0, john.boyer@abilitiessoft.com)
 AC_CONFIG_SRCDIR([liblouisxml/semantics.c])
-AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 AC_CONFIG_HEADER([liblouisxml/config.h])
 # AM_MAINTAINER_MODE
 
-# libtool versioning for libwnck
+AC_CONFIG_AUX_DIR([build-aux])
+AC_CONFIG_MACRO_DIR([m4])
+AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 
 # increment if the interface has additions, changes, removals.
 LIBLOUISXML_CURRENT=1
@@ -28,6 +29,12 @@ AC_SUBST(LIBLOUISXML_AGE)
 
 # Checks for programs.
 AC_PROG_CC
+
+# gnulib
+gl_EARLY
+gl_INIT
+
+# Checks for more programs.
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
@@ -35,6 +42,13 @@ AC_PROG_MAKE_SET
 AC_ISC_POSIX
 AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
+
+# GNU help2man creates man pages from --help output; in many cases,
+# this is sufficient, and obviates the need to maintain man pages
+# separately. However, some developers do not have it so we do not
+# make its use mandatory.
+AC_CHECK_PROG([HELP2MAN], [help2man], [help2man])
+AM_CONDITIONAL([HAVE_HELP2MAN], [test x$HELP2MAN = xhelp2man])
 
 AC_PATH_PROG(PKG_CONFIG, pkg-config)
 
@@ -63,7 +77,9 @@ case $host in
 esac
 
 AC_CONFIG_FILES([Makefile
+		 gnulib/Makefile
                  doc/Makefile
+		 man/Makefile
                  lbx_files/Makefile
                  liblouisxml/Makefile
                  tests/Makefile

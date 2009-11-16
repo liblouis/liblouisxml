@@ -1,4 +1,17 @@
-liblouisxml REQUIRES the latest version of liblouis.
+INTRODUCTION
+
+Liblouisxml is an open-source library providing complete braille
+transcription services for xml documents. It translates into
+appropriate braille codes and formats according to its style sheet and
+the specifications in the document. A command-line program, xml2brl
+which uses this library is also included. The latest version of
+liblouis is required.
+
+The library is licensed under the GNU Lesser General Public License
+version 3 or later. See the file COPYING.LIB.
+
+The command line tools, are licensed under the GNU General Public
+License version 3.0 or later. See the file COPYING.
 
 DOCUMENTATION
 

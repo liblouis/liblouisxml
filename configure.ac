@@ -84,7 +84,8 @@ AC_CONFIG_FILES([Makefile
                  liblouisxml/Makefile
                  tests/Makefile
 		 liblouisxml.pc
-                 tools/Makefile])
+                 tools/Makefile
+		 m4/Makefile])
 
 AC_CONFIG_FILES([tools/msword2brl], [chmod +x tools/msword2brl])
 

@@ -36,8 +36,10 @@
 int
 transcribe_document (xmlNode * node)
 {
+  StyleType *style;
   xmlNode *child;
   ud->top = -1;
+  ud->style_top = -1;
   start_document ();
   push_sem_stack (node);
   switch (ud->stack[ud->top])
@@ -91,23 +93,6 @@ transcribe_document (xmlNode * node)
       write_paragraph (para);
       pop_sem_stack ();
       return 1;
-    case table:
-    case caption:
-    case exercise1:
-    case exercise2:
-    case exercise3:
-    case directions:
-    case stanza:
-    case quotation:
-    case attribution:
-    case section:
-    case subsection:
-    case list:
-    case center:
-    case heading4:
-    case heading3:
-    case heading2:
-    case heading1:
     case para:
       transcribe_paragraph (node, 0);
       pop_sem_stack ();
@@ -115,6 +100,8 @@ transcribe_document (xmlNode * node)
     default:
       break;
     }
+  if ((style = is_style (node)) != NULL)
+    start_style (style);
   child = node->children;
   while (child)
     {
@@ -134,6 +121,8 @@ transcribe_document (xmlNode * node)
 	}
       child = child->next;
     }
+  if (style)
+    end_style (style);
   end_document ();
   pop_sem_stack ();
   return 1;

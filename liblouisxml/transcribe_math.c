@@ -39,6 +39,7 @@ static void mathText (xmlNode * node, int action);
 int
 transcribe_math (xmlNode * node, int action)
 {
+  StyleType *style;
   xmlNode *child;
   int branchCount = 0;
   if (action == 0)
@@ -50,7 +51,7 @@ transcribe_math (xmlNode * node, int action)
     {
     case skip:
       pop_sem_stack ();
-      return 0;
+      return 1;
     case reverse:
       do_reverse (node);
       break;
@@ -59,6 +60,8 @@ transcribe_math (xmlNode * node, int action)
     default:
       break;
     }
+  if ((style = is_style (node)) != NULL)
+    start_style (style);
   child = node->children;
   while (child)
     {
@@ -82,10 +85,10 @@ transcribe_math (xmlNode * node, int action)
     }
   insert_code (node, branchCount);
   insert_code (node, -1);
-  if (style_cases (ud->stack[ud->top]) != NULL)
+  if (style)
     {
       mathTrans ();
-      write_paragraph (ud->stack[ud->top]);
+      end_style (style);
     }
   pop_sem_stack ();
   if (action == 0)

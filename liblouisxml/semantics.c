@@ -46,9 +46,7 @@ typedef struct
 }
 FileInfo;
 
-#define HASHSIZE 1123
-#define NOTFOUND -1
-
+#define HASHSIZE 383
 #define MAXINSERTS 256
 typedef struct
 {
@@ -64,14 +62,20 @@ typedef struct
   unsigned char *key;
   int value;
   InsertsType *inserts;
-} hashEntry;
+  StyleType *style;
+} HashEntry;
 
 typedef struct
 {
   int curBucket;
-  hashEntry *curEntry;
-  hashEntry *entries[HASHSIZE];
-} hashTable;
+  HashEntry *curEntry;
+  HashEntry *entries[HASHSIZE];
+} HashTable;
+
+static int notFound = -1;
+static HashTable *actionTable = NULL;
+static HashTable *semanticTable = NULL;
+static HashTable *newEntriesTable;
 
 static int errorCount = 0;
 
@@ -112,21 +116,21 @@ stringHash (const unsigned char *s)
   return h;
 }
 
-static hashTable *
+static HashTable *
 hashNew (void)
 {
-  hashTable *table;
-  table = malloc (sizeof (hashTable));
-  memset (table, 0, sizeof (hashTable));
+  HashTable *table;
+  table = malloc (sizeof (HashTable));
+  memset (table, 0, sizeof (HashTable));
   table->curBucket = -1;
   return table;
 }
 
 static void
-hashFree (hashTable * table)
+hashFree (HashTable * table)
 {
   int i;
-  hashEntry *e, *next;
+  HashEntry *e, *next;
   if (table == NULL)
     return;
   for (i = 0; i < HASHSIZE; i++)
@@ -136,15 +140,17 @@ hashFree (hashTable * table)
 	free (e->key);
 	if (e->inserts != NULL)
 	  free (e->inserts);
+	if (e->value == -100)
+	  free (e->style);
 	free (e);
       }
   free (table);
 }
 
-static hashEntry *
-hashScan (hashTable * table)
+static HashEntry *
+hashScan (HashTable * table)
 {
-  hashEntry *e;
+  HashEntry *e;
   if (table == NULL)
     return NULL;
   if (table->curBucket == -1)
@@ -170,35 +176,36 @@ hashScan (hashTable * table)
   return NULL;
 }
 
-static hashEntry *latestEntry;
+static HashEntry *latestEntry;
 
 /* assumes that key is not already present! */
 static void
-hashInsert (hashTable * table, const unsigned char *key, int value,
-	    InsertsType * inserts)
+hashInsert (HashTable * table, const unsigned char *key, int value,
+	    InsertsType * inserts, StyleType * style)
 {
   int i;
-  if (table == NULL || key == NULL || value < 0)
+  if (table == NULL || key == NULL)
     return;
   i = stringHash (key) % HASHSIZE;
-  latestEntry = malloc (sizeof (hashEntry));
+  latestEntry = malloc (sizeof (HashEntry));
   latestEntry->next = table->entries[i];
   latestEntry->key = malloc (strlen ((char *) key) + 1);
   strcpy ((char *) latestEntry->key, (char *) key);
   latestEntry->value = value;
   latestEntry->inserts = inserts;
+  latestEntry->style = style;
   table->entries[i] = latestEntry;
 }
 
 static int
-hashLookup (hashTable * table, const unsigned char *key)
+hashLookup (HashTable * table, const unsigned char *key)
 {
   int i;
   int keyLength;
   int entryKeyLength;
   int k;
   if (table == NULL || key == NULL)
-    return NOTFOUND;
+    return notFound;
   keyLength = strlen ((char *) key);
   i = stringHash (key) % HASHSIZE;
   for (latestEntry = table->entries[i]; latestEntry; latestEntry =
@@ -213,32 +220,34 @@ hashLookup (hashTable * table, const unsigned char *key)
       if (k == keyLength)
 	return latestEntry->value;
     }
-  return NOTFOUND;
+  return notFound;
 }
 
-static hashTable *actionTable = NULL;
-static hashTable *namesAndActions = NULL;
-static hashTable *newEntriesTable;
 static char oldFileList[MAXNAMELEN];
 static char firstFileName[MAXNAMELEN];
 static int haveSemanticFile = 1;
+static int docNewEntries = 1;
 
 sem_act
 find_semantic_number (const char *name)
 {
-  static const char *pseudoActions[] = { "include", NULL };
+  static const char *pseudoActions[] = {
+    "include",
+    "newentries",
+    NULL
+  };
   int k;
   xmlChar lowerName[MAXNAMELEN];
   if (actionTable == NULL)
     {
       actionTable = hashNew ();
       for (k = 0; k < end_all; k++)
-	hashInsert (actionTable, (xmlChar *) semNames[k], k, NULL);
+	hashInsert (actionTable, (xmlChar *) semNames[k], k, NULL, NULL);
       k = 0;
       while (pseudoActions[k] != NULL)
 	{
 	  hashInsert (actionTable, (xmlChar *) pseudoActions[k],
-		      k + end_all + 1, NULL);
+		      k + end_all + 1, NULL, NULL);
 	  k++;
 	}
     }
@@ -251,8 +260,8 @@ find_semantic_number (const char *name)
 void
 destroy_semantic_table (void)
 {
-  hashFree (namesAndActions);
-  namesAndActions = NULL;
+  hashFree (semanticTable);
+  semanticTable = NULL;
   hashFree (newEntriesTable);
   newEntriesTable = NULL;
   hashFree (actionTable);
@@ -416,10 +425,10 @@ insert_code (xmlNode * node, int which)
   int k;
   int sumLength;
   InsertsType *inserts;
-  hashEntry *nodeEntry;
+  HashEntry *nodeEntry;
   if (node == NULL)
     return 0;
-  nodeEntry = (hashEntry *) node->_private;
+  nodeEntry = (HashEntry *) node->_private;
   if (nodeEntry == NULL)
     return 0;
   if (nodeEntry->inserts == NULL)
@@ -456,7 +465,7 @@ insert_code (xmlNode * node, int which)
 #define NUMCOUNTS 1024
 #define MAXNUMVAL 5
 static int *attrValueCounts = NULL;
-static hashTable *attrValueCountsTable;
+static HashTable *attrValueCountsTable;
 
 static int
 countAttrValues (xmlChar * key)
@@ -465,7 +474,7 @@ countAttrValues (xmlChar * key)
   int numItems = 1;
   int lastComma = 0;
   static int curCount = 0;
-  int thisCount = NOTFOUND;
+  int thisCount = notFound;
   if (!ud->new_entries)
     return 0;
   if (attrValueCounts == NULL)
@@ -485,11 +494,11 @@ countAttrValues (xmlChar * key)
     case 1:
       return 1;
     case 2:
-      if (hashLookup (attrValueCountsTable, key) != NOTFOUND)
+      if (hashLookup (attrValueCountsTable, key) != notFound)
 	return 1;
       if (curCount >= NUMCOUNTS)
 	return 0;
-      hashInsert (attrValueCountsTable, key, curCount, NULL);
+      hashInsert (attrValueCountsTable, key, curCount, NULL, NULL);
       curCount++;
       return 1;
     case 3:
@@ -497,14 +506,14 @@ countAttrValues (xmlChar * key)
 	return 0;
       key[lastComma] = 0;
       thisCount = hashLookup (attrValueCountsTable, key);
-      if (thisCount == NOTFOUND)
+      if (thisCount == notFound)
 	{
 	  attrValueCounts[curCount]++;
-	  hashInsert (attrValueCountsTable, key, curCount, NULL);
+	  hashInsert (attrValueCountsTable, key, curCount, NULL, NULL);
 	  curCount++;
 	}
       key[lastComma] = ',';
-      if (thisCount == NOTFOUND)
+      if (thisCount == notFound)
 	return 1;
       if (attrValueCounts[thisCount] >= MAXNUMVAL)
 	return 0;
@@ -539,9 +548,10 @@ compileLine (FileInfo * nested)
   char *insertions;
   int insertionsLength = 0;
   InsertsType *inserts;
-  sem_act actionNum;
-  if (namesAndActions == NULL)
-    namesAndActions = hashNew ();
+  StyleType *style = NULL;
+  int actionNum;
+  if (semanticTable == NULL)
+    semanticTable = hashNew ();
   curchar = nested->line;
   while ((ch = *curchar++) <= 32 && ch != 0);
   if (ch == 0 || ch == '#' || ch == '<')
@@ -563,22 +573,31 @@ compileLine (FileInfo * nested)
   lookForLength = curchar - lookFor - 1;
   lookFor[lookForLength] = 0;
   actionNum = find_semantic_number (action);
-  if (actionNum == NOTFOUND)
+  style = lookup_style (action);
+  if (actionNum == notFound && style == NULL)
     {
-      semanticError (nested, "Action %s not recognized", action);
+      semanticError (nested,
+		     "Action or style %s in column 1 not recognized", action);
       return 0;
     }
-/*Handle pseudo actions*/
-  switch (actionNum)
+  if (actionNum > end_all)
     {
-    case end_all + 1:		/*include */
-      if (!sem_compileFile (lookFor))
-	return 0;
-      break;
-    default:
-      break;
+      /* Handle pseudo actions */
+      switch (actionNum)
+	{
+	case end_all + 1:	/*include */
+	  if (!sem_compileFile (lookFor))
+	    return 0;
+	  break;
+	case end_all + 2:	/*newentries */
+	  docNewEntries = 0;
+	  break;
+	default:
+	  break;
+	}
+      return 1;
     }
-  if (hashLookup (namesAndActions, (xmlChar *) lookFor) != NOTFOUND)
+  if (hashLookup (semanticTable, (xmlChar *) lookFor) != notFound)
     return 1;
   countAttrValues ((xmlChar *) lookFor);
   inserts = NULL;
@@ -598,7 +617,9 @@ compileLine (FileInfo * nested)
       semanticError (nested, "This semantic action requires a third column.");
       return 0;
     }
-  hashInsert (namesAndActions, (xmlChar *) lookFor, actionNum, inserts);
+  if (actionNum < 0)
+    actionNum = generic;
+  hashInsert (semanticTable, (xmlChar *) lookFor, actionNum, inserts, style);
   nested->numEntries++;
   return 1;
 }
@@ -710,6 +731,7 @@ compile_semantic_table (xmlNode * rootElement)
   char fileName[MAXNAMELEN];
   attrValueCounts = NULL;
   haveSemanticFile = 1;
+  docNewEntries = 1;
   moreEntries = 0;
   numEntries = 0;
   if (*ud->semantic_files)
@@ -780,10 +802,10 @@ compile_semantic_table (xmlNode * rootElement)
       destroy_semantic_table ();
       return 0;
     }
+  hashFree (actionTable);
+  actionTable = NULL;
   return 1;
 }
-
-#define VALLEN 50
 
 static void addNewEntries (const xmlChar * key);
 
@@ -791,7 +813,7 @@ sem_act
 set_sem_attr (xmlNode * node)
 {
   sem_act action = no;
-  sem_act actionNum = NOTFOUND;
+  int actionNum = notFound;
   xmlChar key[MAXNAMELEN];
   int k;
   int oldKeyLength = 0;
@@ -800,8 +822,8 @@ set_sem_attr (xmlNode * node)
     name = (xmlChar *) "cdata-section";
   else
     name = node->name;
-  if (namesAndActions == NULL)
-    namesAndActions = hashNew ();
+  if (semanticTable == NULL)
+    semanticTable = hashNew ();
   if (node->properties)
     {
       xmlAttr *attributes = node->properties;
@@ -814,38 +836,39 @@ set_sem_attr (xmlNode * node)
 	  strcat ((char *) key, (char *) attrName);
 	  strcat ((char *) key, ",");
 	  oldKeyLength = strlen ((char *) key);
-	  strncat ((char *) key, (char *) attrValue, VALLEN);
+	  strncat ((char *) key, (char *) attrValue, sizeof (key) -
+		   oldKeyLength - 2);
 	  for (k = 0; key[k]; k++)
 	    if ((key[k] <= 32 || key[k] > 126)
 		|| (k >= oldKeyLength && key[k] == ','))
 	      key[k] = '_';
-	  actionNum = NOTFOUND;
-	  if (((actionNum = hashLookup (namesAndActions, key)) != NOTFOUND) ||
+	  actionNum = notFound;
+	  if (((actionNum = hashLookup (semanticTable, key)) != notFound) ||
 	      countAttrValues (key))
 	    {
-	      if (actionNum == NOTFOUND)
+	      if (actionNum == notFound)
 		addNewEntries (key);
 	    }
-	  if (actionNum == NOTFOUND || actionNum == no)
+	  if (actionNum == notFound || actionNum == no)
 	    {
 	      key[oldKeyLength - 1] = 0;
-	      actionNum = hashLookup (namesAndActions, key);
-	      if (actionNum == NOTFOUND)
+	      actionNum = hashLookup (semanticTable, key);
+	      if (actionNum == notFound)
 		addNewEntries (key);
 	      else if (actionNum == no)
-		actionNum = NOTFOUND;
+		actionNum = notFound;
 	    }
-	  if (actionNum != NOTFOUND && actionNum != no)
+	  if (actionNum != notFound && actionNum != no)
 	    break;
 	  attributes = attributes->next;
 	}
     }
-  if (actionNum == NOTFOUND)
+  if (actionNum == notFound)
     {
       strcpy ((char *) key, (char *) name);
-      actionNum = hashLookup (namesAndActions, key);
+      actionNum = hashLookup (semanticTable, key);
     }
-  if (actionNum == NOTFOUND)
+  if (actionNum == notFound)
     addNewEntries (name);
   else
     action = actionNum;
@@ -856,11 +879,21 @@ set_sem_attr (xmlNode * node)
 sem_act
 get_sem_attr (xmlNode * node)
 {
-  hashEntry *nodeEntry = (hashEntry *) node->_private;
+  HashEntry *nodeEntry = (HashEntry *) node->_private;
   if (nodeEntry != NULL)
     return nodeEntry->value;
   else
     return no;
+}
+
+StyleType *
+is_style (xmlNode * node)
+{
+  HashEntry *nodeEntry = (HashEntry *) node->_private;
+  if (nodeEntry != NULL)
+    return nodeEntry->style;
+  else
+    return NULL;
 }
 
 xmlChar *
@@ -869,7 +902,7 @@ get_attr_value (xmlNode * node)
   int firstComma = 0, secondComma = 0;
   int k;
   xmlChar attrName[MAXNAMELEN];
-  hashEntry *nodeEntry = (hashEntry *) node->_private;
+  HashEntry *nodeEntry = (HashEntry *) node->_private;
   if (nodeEntry == NULL || !node->properties)
     return (xmlChar *) "";
   for (k = 0; nodeEntry->key[k]; k++)
@@ -915,16 +948,17 @@ pop_sem_stack ()
 static void
 addNewEntries (const xmlChar * newEntry)
 {
-  if (newEntry == NULL || *newEntry == 0 || !ud->new_entries)
+  if (newEntry == NULL || *newEntry == 0 || !ud->new_entries ||
+      !docNewEntries)
     return;
   if (moreEntries == 0)
     {
       moreEntries = 1;
       newEntriesTable = hashNew ();
     }
-  if (hashLookup (newEntriesTable, newEntry) != NOTFOUND)
+  if (hashLookup (newEntriesTable, newEntry) != notFound)
     return;
-  hashInsert (newEntriesTable, newEntry, 0, NULL);
+  hashInsert (newEntriesTable, newEntry, 0, NULL, NULL);
 }
 
 void
@@ -965,7 +999,7 @@ append_new_entries (void)
     }
   for (items = 1; items < 4; items++)
     {
-      hashEntry *curEntry;
+      HashEntry *curEntry;
       int k;
       while ((curEntry = hashScan (newEntriesTable)))
 	{
@@ -989,160 +1023,6 @@ append_new_entries (void)
   moreEntries = 0;
 }
 
-StyleType *
-style_cases (sem_act st)
-{
-  StyleType *style;
-  switch (st)
-    {
-    case document:
-      style = &ud->document_style;
-      break;
-    case code:
-      style = &ud->code_style;
-      break;
-    case contentsheader:
-      style = &ud->contentsheader_style;
-      break;
-    case contents1:
-      style = &ud->contents1_style;
-      break;
-    case contents2:
-      style = &ud->contents2_style;
-      break;
-    case contents3:
-      style = &ud->contents3_style;
-      break;
-    case contents4:
-      style = &ud->contents4_style;
-      break;
-    case dedication:
-      style = &ud->dedication_style;
-      break;
-    case dispmath:
-      style = &ud->dispmath_style;
-      break;
-    case disptext:
-      style = &ud->disptext_style;
-      break;
-    case glossary:
-      style = &ud->glossary_style;
-      break;
-    case graph:
-      style = &ud->graph_style;
-      break;
-    case graphlabel:
-      style = &ud->graphlabel_style;
-      break;
-    case indexx:
-      style = &ud->indexx_style;
-      break;
-    case matrix:
-      style = &ud->matrix_style;
-      break;
-    case music:
-      style = &ud->music_style;
-      break;
-    case note:
-      style = &ud->note_style;
-      break;
-    case spatial:
-      style = &ud->spatial_style;
-      break;
-    case titlepage:
-      style = &ud->titlepage_style;
-      break;
-    case trnote:
-      style = &ud->trnote_style;
-      break;
-    case volume:
-      style = &ud->volume_style;
-      break;
-    case arith:
-      style = &ud->arith_style;
-      break;
-    case biblio:
-      style = &ud->biblio_style;
-      break;
-    case heading4:
-      style = &ud->heading4_style;
-      break;
-    case heading3:
-      style = &ud->heading3_style;
-      break;
-    case heading2:
-      style = &ud->heading2_style;
-      break;
-    case heading1:
-      style = &ud->heading1_style;
-      break;
-    case list:
-      style = &ud->list_style;
-      break;
-    case table:
-      style = &ud->table_style;
-      break;
-    case caption:
-      style = &ud->caption_style;
-      break;
-    case exercise1:
-      style = &ud->exercise1_style;
-      break;
-    case exercise2:
-      style = &ud->exercise2_style;
-      break;
-    case exercise3:
-      style = &ud->exercise3_style;
-      break;
-    case directions:
-      style = &ud->directions_style;
-      break;
-    case stanza:
-      style = &ud->stanza_style;
-      break;
-    case line:
-      style = &ud->line_style;
-      break;
-    case quotation:
-      style = &ud->quotation_style;
-      break;
-    case attribution:
-      style = &ud->attribution_style;
-      break;
-    case section:
-      style = &ud->section_style;
-      break;
-    case subsection:
-      style = &ud->subsection_style;
-      break;
-    case para:
-      style = &ud->para_style;
-      break;
-    case blanklinebefore:
-      style = &ud->blanklinebefore_style;
-      break;
-    case style1:
-      style = &ud->style1_style;
-      break;
-    case style2:
-      style = &ud->style2_style;
-      break;
-    case style3:
-      style = &ud->style3_style;
-      break;
-    case style4:
-      style = &ud->style4_style;
-      break;
-    case style5:
-      style = &ud->style5_style;
-      break;
-    default:
-      style = NULL;
-      break;
-    }
-  return style;
-}
-
 void
 do_reverse (xmlNode * node)
 {
@@ -1161,4 +1041,40 @@ do_reverse (xmlNode * node)
       child->prev = curNext;
       child = curNext;
     }
+}
+
+#define STYLESUF " elyts"
+
+StyleType *
+new_style (xmlChar * name)
+{
+  char key[MAXNAMELEN];
+  StyleType *style;
+  if (!semanticTable)
+    semanticTable = hashNew ();
+  strcpy (key, name);
+  strcat (key, STYLESUF);
+  if (hashLookup (semanticTable, key) != notFound)
+    return latestEntry->style;
+  style = malloc (sizeof (StyleType));
+  memset (style, 0, sizeof (StyleType));
+  hashInsert (semanticTable, key, -100, NULL, style);
+  return style;
+}
+
+StyleType *
+lookup_style (xmlChar * name)
+{
+  char key[MAXNAMELEN];
+  strcpy (key, name);
+  strcat (key, STYLESUF);
+  if (hashLookup (semanticTable, key) != notFound)
+    return latestEntry->style;
+  return NULL;
+}
+
+StyleType *
+action_to_style (sem_act action)
+{
+  return lookup_style ((char *) semNames[action]);
 }

@@ -39,8 +39,7 @@ liblouisxml_la_SOURCES =			\
 	transcribe_math.c \
 	transcribe_music.c \
 	transcribe_paragraph.c \
-	transcriber.c \
-	transcriber.h
+	transcriber.c
 
 EXTRA_DIST = \
 	README \

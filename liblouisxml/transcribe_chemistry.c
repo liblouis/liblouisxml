@@ -96,26 +96,7 @@ insert_code (node, branchCount);
     }
   switch (ud->stack[ud->top])
     {
-    case table:
-    case tblhead:
-    case tblrow:
-    case caption:
-    case exercise1:
-    case exercise2:
-    case exercise3:
-    case directions:
-    case stanza:
-    case quotation:
-    case attribution:
-    case section:
-    case subsection:
-    case list:
-      write_paragraph (para);
-      break;
     case para:
-      write_paragraph (para);
-      break;
-    case center:
       write_paragraph (para);
       break;
     case heading4:

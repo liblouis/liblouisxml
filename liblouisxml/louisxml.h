@@ -34,7 +34,42 @@
 #include <libxml/parser.h>
 #include "liblouisxml.h"
 #include "sem_enum.h"
-#include "transcriber.h"
+typedef enum
+{
+  leftJustified = 0,
+  rightJustified = 1,
+  centered = 2,
+  alignColumnsLeft = 3,
+  alignColumnsRight = 4,
+  listColumns = 5,
+  listLines = 6,
+  computerCoded = 7,
+  contents = 8
+} StyleFormat;
+
+typedef enum
+{
+  normal = 0,
+  blank = 1,
+  p = 2,
+  roman = 3
+} BrlPageNumFormat;
+
+typedef struct
+{				/*Paragraph formatting instructions */
+  sem_act action;
+  int lines_before;
+  int lines_after;
+  int left_margin;
+  int first_line_indent;	/* At true margin if negative */
+  sem_act translate;
+  int skip_number_lines;	/*Don't write on lines with page numbers */
+  StyleFormat format;
+  BrlPageNumFormat brlNumFormat;
+  int newpage_before;
+  int newpage_after;
+  int righthand_page;
+} StyleType;
 
 #ifdef _WIN32
 #define strcasecmp _strnicmp
@@ -66,9 +101,26 @@ typedef enum
 
 typedef enum
 {
-textDevice = 0,
-browser
+  textDevice = 0,
+  browser
 } FormatFor;
+
+typedef enum
+{
+  error,
+  beforeBody,
+  startBody,
+  resumeBody,
+  bodyInterrupted,
+  afterBody
+} StyleStatus;
+
+typedef struct
+{
+  StyleType *style;
+  StyleStatus status;
+  BrlPageNumFormat curBrlNumFormat;
+} StyleRecord;
 
 typedef struct
 {				/*user data */
@@ -76,7 +128,6 @@ typedef struct
   FILE *outFile;
   int text_length;
   int translated_length;
-  int paragraph_interrupted;
   int interline;
   int has_math;
   int has_comp_code;
@@ -137,58 +188,12 @@ typedef struct
   char lineEnd[8];
   char pageEnd[8];
   char fileEnd[8];
-  /*stylesheet */
-  StyleType document_style;
-  StyleType para_style;
-  StyleType heading1_style;
-  StyleType heading2_style;
-  StyleType heading3_style;
-  StyleType heading4_style;
-  StyleType section_style;
-  StyleType subsection_style;
-  StyleType table_style;
-  StyleType volume_style;
-  StyleType titlepage_style;
-  StyleType contentsheader_style;
-  StyleType contents1_style;
-  StyleType contents2_style;
-  StyleType contents3_style;
-  StyleType contents4_style;
-  StyleType code_style;
-  StyleType quotation_style;
-  StyleType attribution_style;
-  StyleType indexx_style;
-  StyleType glossary_style;
-  StyleType biblio_style;
-  StyleType list_style;
-  StyleType caption_style;
-  StyleType exercise1_style;
-  StyleType exercise2_style;
-  StyleType exercise3_style;
-  StyleType directions_style;
-  StyleType stanza_style;
-  StyleType line_style;
-  StyleType spatial_style;
-  StyleType arith_style;
-  StyleType note_style;
-  StyleType trnote_style;
-  StyleType dispmath_style;
-  StyleType disptext_style;
-  StyleType matrix_style;
-  StyleType music_style;
-  StyleType graph_style;
-  StyleType graphlabel_style;
-  StyleType dedication_style;
-  StyleType blanklinebefore_style;
-  StyleType style1_style;
-  StyleType style2_style;
-  StyleType style3_style;
-  StyleType style4_style;
-  StyleType style5_style;
-  StyleType scratch_style;
-/*end of stylesheet*/
+  int line_spacing;
   int top;
   sem_act stack[STACKSIZE];
+  StyleRecord style_stack[STACKSIZE];
+  int style_top;
+  BrlPageNumFormat brl_page_num_format;
   char xml_header[BUFSIZE];
   widechar text_buffer[2 * BUFSIZE];
   widechar translated_buffer[2 * BUFSIZE];
@@ -197,20 +202,19 @@ typedef struct
 extern UserData *ud;
 
 /* Function definitions */
-StyleType *style_cases (sem_act action);
 sem_act find_semantic_number (const char *semName);
 int file_exists (const char *completePath);
 int find_file (const char *fileName, char *filePath);
 int set_paths (const char *configPath);
 int read_configuration_file (const char *configFileName,
-			     const char *logFileName, const char 
-*settingsString, unsigned int mode);
+			     const char *logFileName, const char
+			     *settingsString, unsigned int mode);
 int config_compileSettings (const char *fileName);
 int examine_document (xmlNode * node);
 int transcribe_document (xmlNode * node);
 int transcribe_math (xmlNode * node, int action);
 int transcribe_computerCode (xmlNode * node, int action);
-int transcribe_cdataSection (xmlNode *node);
+int transcribe_cdataSection (xmlNode * node);
 int transcribe_paragraph (xmlNode * node, int action);
 int transcribe_chemistry (xmlNode * node, int action);
 int transcribe_graphic (xmlNode * node, int action);
@@ -222,19 +226,38 @@ sem_act push_sem_stack (xmlNode * node);
 sem_act pop_sem_stack ();
 void destroy_semantic_table (void);
 void append_new_entries (void);
-int insert_code (xmlNode *node, int which);
+int insert_code (xmlNode * node, int which);
 xmlChar *get_attr_value (xmlNode * node);
 int change_table (xmlNode * node);
 int initialize_contents (void);
-int start_heading (sem_act action, widechar *translatedBuffer, int 
-translatedLength);
+int start_heading (sem_act action, widechar * translatedBuffer, int
+		   translatedLength);
 int finish_heading (sem_act action);
 int make_contents (void);
-void do_reverse (xmlNode *node);
-int do_boxline (xmlNode *node);
+void do_reverse (xmlNode * node);
+int do_boxline (xmlNode * node);
+void do_linespacing (xmlNode *node);
 int do_newpage (void);
 int do_blankline (void);
 int do_softreturn (void);
 int do_righthandpage (void);
-int do_configstring (xmlNode *node);
-#endif /*louisxml_h*/
+int do_configstring (xmlNode * node);
+StyleType *new_style (xmlChar * name);
+StyleType *lookup_style (xmlChar * name);
+StyleType *is_style (xmlNode * node);
+StyleType *action_to_style (sem_act action);
+int insert_utf8 (unsigned char *intext);
+int insert_utf16 (widechar * intext, int length);
+int insert_translation (char *table);
+int write_paragraph (sem_act action);
+int start_document (void);
+int end_document (void);
+int transcribe_text_string (void);
+int transcribe_text_file (void);
+int back_translate_file (void);
+StyleType *find_current_style (void);
+void insert_text (xmlNode * node);
+int insert_linkOrTarget (xmlNode * node, int which);
+int start_style (StyleType * curStyle);
+int end_style (StyleType * curStyle);
+#endif /*louisxml_h */

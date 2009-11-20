@@ -64,7 +64,7 @@ This includes translation into grade two, if desired, mathematical \n\
 codes, etc. It also includes formatting according to a built-in \n\
 style sheet which can be modified by the user.\n\
 \n\
-If inputFile is not specified or '-' input us taken from stdin. If outputFile\n\
+If inputFile is not specified or '-' input is taken from stdin. If outputFile\n\
 is not specified the output is sent to stdout.\n\n", stdout);
 
   fputs ("\

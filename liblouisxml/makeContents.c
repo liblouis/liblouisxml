@@ -147,6 +147,7 @@ make_contents (void)
   int old_braillePageNumber;
   sem_act action;
   int bytesRead;
+  StyleType *style;
   if (!ud->contents)
     return 1;
   old_braillePageNumber = ud->braille_page_number;
@@ -159,11 +160,8 @@ make_contents (void)
       do_newpage ();
       ud->contents = 2;
       currentHeading = firstHeading;
-      while (currentHeading != NULL) 
+      while (currentHeading != NULL)
 	{
-	  memcpy (ud->translated_buffer, currentHeading->headingChars,
-		  currentHeading->headingLength * CHARSIZE);
-	  ud->translated_length = currentHeading->headingLength;
 	  switch (currentHeading->action)
 	    {
 	    case contentsheader:
@@ -181,9 +179,14 @@ make_contents (void)
 	      break;
 	    case heading4:
 	      action = contents4;
- break;
+	      break;
 	    }
-	  write_paragraph (action);
+	  style = action_to_style (action);
+	  start_style (style);
+	  memcpy (ud->translated_buffer, currentHeading->headingChars,
+		  currentHeading->headingLength * CHARSIZE);
+	  ud->translated_length = currentHeading->headingLength;
+	  end_style (style);
 	  currentHeading = currentHeading->next;
 	}
       do_newpage ();

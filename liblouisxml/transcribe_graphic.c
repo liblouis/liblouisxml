@@ -96,35 +96,7 @@ transcribe_graphic (xmlNode * node, int action)
     }
   switch (ud->stack[ud->top])
     {
-    case table:
-    case tblhead:
-    case tblrow:
-    case caption:
-    case exercise1:
-    case exercise2:
-    case exercise3:
-    case directions:
-    case stanza:
-    case quotation:
-    case attribution:
-    case section:
-    case subsection:
-    case list:
-      write_paragraph (para);
-      break;
     case para:
-      write_paragraph (para);
-      break;
-    case center:
-      write_paragraph (para);
-      break;
-    case heading4:
-    case heading3:
-      write_paragraph (para);
-      break;
-    case heading2:
-      break;
-    case heading1:
       write_paragraph (para);
       break;
     default:

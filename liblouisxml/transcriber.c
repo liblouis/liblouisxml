@@ -34,10 +34,38 @@
 #include <string.h>
 #include "louisxml.h"
 
+#define LETSIGN "\\_"
+static StyleRecord *styleSpec;
+static StyleRecord *prevStyleSpec;
+static StyleType *style;
+static StyleType *prevStyle;
+static int styleBody (void);
+
+int
+fineFormat (void)
+{
+  if (ud->text_length == 0 && ud->translated_length == 0)
+    return 1;
+  else
+    {
+      insert_translation (ud->mainBrailleTable);
+      if (styleSpec == NULL)
+	write_paragraph (para);
+      else
+	styleBody ();
+      styleSpec->status = resumeBody;
+    }
+  return 1;
+}
+
+StyleType *
+find_current_style (void)
+{
+  StyleRecord *sr = &ud->style_stack[ud->style_top];
+  return sr->style;
+}
+
 static int doLeftJustify (void);
-static StyleType *style = NULL;
-static StyleType *prevStyle = NULL;
-static int firstLineInParagraph = 1;
 static widechar pageNumberString[32];
 static int pageNumberLength;
 static char *litHyphen = "-";
@@ -62,6 +90,8 @@ start_document (void)
   else
     ud->braille_page_number = ud->beginning_braille_page_number;
   ud->outlen_so_far = 0;
+  styleSpec = prevStyleSpec = NULL;
+  style = prevStyle = lookup_style ("document");
   if (ud->outFile && ud->output_encoding == utf16)
     {
       /*Little Endian indicator */
@@ -127,13 +157,17 @@ transcribe_text_string (void)
   int ch;
   int pch = 0;
   unsigned char paragraphBuffer[BUFSIZE];
+  StyleType *docStyle = lookup_style ("document");
+  StyleType *paraStyle = lookup_style ("para");
   if (!start_document ())
     return 0;
   ud->input_encoding = ud->input_text_encoding;
+  start_style (docStyle);
   while (1)
     {
       while (charsProcessed < ud->inlen)
 	{
+	  start_style (paraStyle);
 	  ch = ud->inbuf[charsProcessed++];
 	  if (ch == 0 || ch == 13)
 	    continue;
@@ -157,18 +191,15 @@ transcribe_text_string (void)
       if (!insert_translation (ud->mainBrailleTable))
 	return 0;
       if (ch == 10)
-	{
-	  if (!write_paragraph (blanklinebefore))
-	    return 0;
-	}
-      else if (!write_paragraph (para))
-	return 0;
+	do_blankline ();
+      end_style (paraStyle);
       charsInParagraph = 0;
       pch = 0;
       if (ch > 32)
 	paragraphBuffer[charsInParagraph++] = ch;
     }
   ud->input_encoding = utf8;
+  end_style (docStyle);
   end_document ();
   return 1;
 }
@@ -182,13 +213,17 @@ transcribe_text_file (void)
   unsigned char paragraphBuffer[BUFSIZE];
   widechar outbufx[BUFSIZE];
   int outlenx = MAX_LENGTH;
+  StyleType *docStyle = lookup_style ("document");
+  StyleType *paraStyle = lookup_style ("para");
   if (!start_document ())
     return 0;
+  start_style (docStyle);
   ud->outbuf = outbufx;
   ud->outlen = outlenx;
   ud->input_encoding = ud->input_text_encoding;
   while (1)
     {
+      start_style (paraStyle);
       while ((ch = fgetc (ud->inFile)) != EOF)
 	{
 	  if (ch == 0 || ch == 13)
@@ -213,18 +248,15 @@ transcribe_text_file (void)
       if (!insert_translation (ud->mainBrailleTable))
 	return 0;
       if (ch == 10)
-	{
-	  if (!write_paragraph (blanklinebefore))
-	    return 0;
-	}
-      else if (!write_paragraph (para))
-	return 0;
+	do_blankline ();
+      end_style (paraStyle);
       charsInParagraph = 0;
       pch = 0;
       if (ch > 32)
 	paragraphBuffer[charsInParagraph++] = ch;
     }
   ud->input_encoding = utf8;
+  end_style (docStyle);
   end_document ();
   return 1;
 }
@@ -340,7 +372,7 @@ insert_utf8 (unsigned char *text)
       StyleType *style = find_current_style ();
       char *table;
       if (style == NULL)
-	style = &ud->para_style;
+	style = lookup_style ("para");
       switch (style->action)
 	{
 	case code:
@@ -399,8 +431,8 @@ insert_translation (char *table)
       ud->text_length = 0;
       return 1;
     }
-  if (ud->paragraph_interrupted)
-    ud->paragraph_interrupted++;
+  if (styleSpec != NULL && styleSpec->status == resumeBody)
+    styleSpec->status = bodyInterrupted;
   if (ud->translated_length > 0 && ud->translated_length <
       MAX_TRANS_LENGTH &&
       ud->translated_buffer[ud->translated_length - 1] > 32)
@@ -538,19 +570,6 @@ insertWidechars (widechar * chars, int length)
   return 1;
 }
 
-StyleType *
-find_current_style (void)
-{
-  int k;
-  StyleType *style;
-  for (k = ud->top; k >= 0; k--)
-    if ((style = style_cases (ud->stack[k])))
-      break;
-  if (k < 0 || style == &ud->document_style)
-    return NULL;
-  return style;
-}
-
 static int
 doInterline (void)
 {
@@ -650,14 +669,17 @@ makePageSeparator (xmlChar * printPageNumber, int length)
   widechar translatedBuffer[MAXNUMLEN];
   int translatedLength = MAXNUMLEN;
   widechar separatorLine[128];
+  char setup[MAXNAMELEN];
   if (!ud->print_pages || !*printPageNumber)
     return 1;
   if (ud->braille_pages && ud->lines_on_page >= (ud->lines_per_page - 2))
     fillPage ();
-  translationBuffer[0] = ' ';
-  utf8ToWc (printPageNumber, &length, &translationBuffer[1],
-	    &translationLength);
-  translationLength++;
+  strcpy (setup, " ");
+  if (!(printPageNumber[0] >= '0' && printPageNumber[0] <= '9'))
+    strcat (setup, LETSIGN);
+  strcat (setup, printPageNumber);
+  length = strlen (setup);
+  utf8ToWc (setup, &length, &translationBuffer[0], &translationLength);
   if (!lou_translateString (ud->mainBrailleTable, translationBuffer,
 			    &translationLength, translatedBuffer,
 			    &translatedLength, NULL, NULL, 0))
@@ -708,19 +730,8 @@ insert_text (xmlNode * node)
     case pagenum:
       if (!ud->print_pages)
 	return;
-      if (ud->text_length == 0 && ud->translated_length == 0)
-	makePageSeparator (node->content, length);
-      else
-	{
-	  StyleType *style = find_current_style ();
-	  insert_translation (ud->mainBrailleTable);
-	  if (style == NULL)
-	    write_paragraph (para);
-	  else
-	    write_paragraph (style->action);
-	  makePageSeparator (node->content, length);
-	  ud->paragraph_interrupted = 1;
-	}
+      fineFormat ();
+      makePageSeparator (node->content, length);
       return;
     case italicx:
       memset (&ud->typeform[ud->text_length], italic, length);
@@ -737,15 +748,36 @@ insert_text (xmlNode * node)
   insert_utf8 (node->content);
 }
 
+static char *makeRomanNumber (int n);
+
 static int
 getBraillePageString (void)
 {
   int k;
-  char brlPageString[12];
+  char brlPageString[40];
   widechar translationBuffer[MAXNUMLEN];
   int translationLength;
   int translatedLength = MAXNUMLEN;
-  translationLength = sprintf (brlPageString, "%d", ud->braille_page_number);
+  switch (ud->brl_page_num_format)
+    {
+    case none:
+      pageNumberLength = 0;
+      return 1;
+    default:
+    case normal:
+      translationLength =
+	sprintf (brlPageString, "%d", ud->braille_page_number);
+      break;
+    case p:
+      translationLength = sprintf (brlPageString, "p%d",
+				   ud->braille_page_number);
+      break;
+    case roman:
+      strcpy (brlPageString, LETSIGN);
+      strcat (brlPageString, makeRomanNumber (ud->braille_page_number));
+      translationLength = strlen (brlPageString);
+      break;
+    }
   for (k = 0; k < translationLength; k++)
     translationBuffer[k] = brlPageString[k];
   if (!lou_translateString (ud->mainBrailleTable, translationBuffer,
@@ -758,6 +790,56 @@ getBraillePageString (void)
   for (k = 0; k < translatedLength; k++)
     pageNumberString[pageNumberLength++] = ud->braille_page_string[k];
   return 1;
+}
+
+static char *
+makeRomanNumber (int n)
+{
+  static char romNum[40];
+  static const char *hundreds[] = {
+    "",
+    "c",
+    "cc",
+    "ccc",
+    "cd",
+    "d",
+    "dc",
+    "dcc",
+    "dccc",
+    "cm",
+    "m"
+  };
+  static const char *tens[] = {
+    "",
+    "x",
+    "xx",
+    "xxx",
+    "xl",
+    "l",
+    "lx",
+    "lxx",
+    "lxxx",
+    "xc"
+  };
+  static const char *units[] = {
+    "",
+    "i",
+    "ii",
+    "iii",
+    "iv",
+    "v",
+    "vi",
+    "vii",
+    "viii",
+    "ix"
+  };
+  if (n <= 0 || n > 1000)
+    return NULL;
+  romNum[0] = 0;
+  strcat (romNum, hundreds[n / 100]);
+  strcat (romNum, tens[(n / 10) % 10]);
+  strcat (romNum, units[n % 10]);
+  return romNum;
 }
 
 static int
@@ -845,91 +927,103 @@ static int
 finishLine (void)
 {
   int cellsToWrite = 0;
-  if (ud->braille_pages)
+  int leaveBlank;
+  for (leaveBlank = -1; leaveBlank < ud->line_spacing; leaveBlank++)
     {
-      if (cellsWritten > 0 && pageNumberLength > 0)
+      if (leaveBlank != -1)
+	startLine ();
+      if (ud->braille_pages)
 	{
-	  cellsToWrite = ud->cells_per_line - pageNumberLength - cellsWritten;
-	  if (!insertCharacters (blanks, cellsToWrite))
-	    return 0;
-	  if (!insertWidechars (pageNumberString, pageNumberLength))
-	    return 0;
-	}
-      else if (ud->lines_on_page == 1)
-	{
-	  if (ud->running_head_length > 0)
+	  if (cellsWritten > 0 && pageNumberLength > 0)
 	    {
 	      cellsToWrite =
-		minimum (ud->running_head_length,
-			 ud->cells_per_line - pageNumberLength);
-	      if (!insertWidechars (ud->running_head, cellsToWrite))
+		ud->cells_per_line - pageNumberLength - cellsWritten;
+	      if (!insertCharacters (blanks, cellsToWrite))
 		return 0;
-	      if (pageNumberLength)
+	      if (!insertWidechars (pageNumberString, pageNumberLength))
+		return 0;
+	    }
+	  else if (ud->lines_on_page == 1)
+	    {
+	      if (ud->running_head_length > 0)
 		{
 		  cellsToWrite =
-		    ud->cells_per_line - pageNumberLength - cellsToWrite;
-		  if (!insertCharacters (blanks, cellsToWrite))
+		    minimum (ud->running_head_length,
+			     ud->cells_per_line - pageNumberLength);
+		  if (!insertWidechars (ud->running_head, cellsToWrite))
 		    return 0;
-		  if (!insertWidechars (pageNumberString, pageNumberLength))
-		    return 0;
+		  if (pageNumberLength)
+		    {
+		      cellsToWrite =
+			ud->cells_per_line - pageNumberLength - cellsToWrite;
+		      if (!insertCharacters (blanks, cellsToWrite))
+			return 0;
+		      if (!insertWidechars
+			  (pageNumberString, pageNumberLength))
+			return 0;
+		    }
+		}
+	      else
+		{
+		  if (pageNumberLength)
+		    {
+		      cellsToWrite = ud->cells_per_line - pageNumberLength;
+		      if (!insertCharacters (blanks, cellsToWrite))
+			return 0;
+		      if (!insertWidechars
+			  (pageNumberString, pageNumberLength))
+			return 0;
+		    }
 		}
 	    }
-	  else
+	  else if (ud->lines_on_page == ud->lines_per_page)
 	    {
-	      if (pageNumberLength)
+	      if (ud->footer_length > 0)
 		{
-		  cellsToWrite = ud->cells_per_line - pageNumberLength;
-		  if (!insertCharacters (blanks, cellsToWrite))
+		  cellsToWrite =
+		    minimum (ud->footer_length,
+			     ud->cells_per_line - pageNumberLength);
+		  if (!insertWidechars (ud->footer, cellsToWrite))
 		    return 0;
-		  if (!insertWidechars (pageNumberString, pageNumberLength))
-		    return 0;
+		  if (pageNumberLength)
+		    {
+		      cellsToWrite =
+			ud->cells_per_line - pageNumberLength - cellsToWrite;
+		      if (!insertCharacters (blanks, cellsToWrite))
+			return 0;
+		      if (!insertWidechars
+			  (pageNumberString, pageNumberLength))
+			return 0;
+		    }
+		}
+	      else
+		{
+		  if (pageNumberLength)
+		    {
+		      cellsToWrite = ud->cells_per_line - pageNumberLength;
+		      if (!insertCharacters (blanks, cellsToWrite))
+			return 0;
+		      if (!insertWidechars
+			  (pageNumberString, pageNumberLength))
+			return 0;
+		    }
 		}
 	    }
 	}
-      else if (ud->lines_on_page == ud->lines_per_page)
+      if (ud->interline)
 	{
-	  if (ud->footer_length > 0)
-	    {
-	      cellsToWrite = minimum (ud->footer_length, ud->cells_per_line -
-				      pageNumberLength);
-	      if (!insertWidechars (ud->footer, cellsToWrite))
-		return 0;
-	      if (pageNumberLength)
-		{
-		  cellsToWrite =
-		    ud->cells_per_line - pageNumberLength - cellsToWrite;
-		  if (!insertCharacters (blanks, cellsToWrite))
-		    return 0;
-		  if (!insertWidechars (pageNumberString, pageNumberLength))
-		    return 0;
-		}
-	    }
-	  else
-	    {
-	      if (pageNumberLength)
-		{
-		  cellsToWrite = ud->cells_per_line - pageNumberLength;
-		  if (!insertCharacters (blanks, cellsToWrite))
-		    return 0;
-		  if (!insertWidechars (pageNumberString, pageNumberLength))
-		    return 0;
-		}
-	    }
+	  if (!doInterline ())
+	    return 0;
 	}
-    }
-  if (ud->interline)
-    {
-      if (!doInterline ())
+      else if (!insertCharacters (ud->lineEnd, strlen (ud->lineEnd)))
 	return 0;
-    }
-  else if (!insertCharacters (ud->lineEnd, strlen (ud->lineEnd)))
-    return 0;
-  if (ud->braille_pages && ud->lines_on_page == ud->lines_per_page)
-    {
-      if (!insertCharacters (ud->pageEnd, strlen (ud->pageEnd)))
-	return 0;
-      ud->lines_on_page = 0;
-      ud->braille_page_number++;
+      if (ud->braille_pages && ud->lines_on_page == ud->lines_per_page)
+	{
+	  if (!insertCharacters (ud->pageEnd, strlen (ud->pageEnd)))
+	    return 0;
+	  ud->lines_on_page = 0;
+	  ud->braille_page_number++;
+	}
     }
   return 1;
 }
@@ -950,7 +1044,6 @@ writeOutbuf (void)
   int k;
   unsigned char *utf8Str;
   ud->translated_length = 0;
-  ud->paragraph_interrupted = 0;
   if (ud->outlen_so_far == 0 || ud->outFile == NULL)
     return 1;			/*output stays in ud->outbuf */
   switch (ud->output_encoding)
@@ -1253,14 +1346,14 @@ doListColumns (void)
 	      int breakAt = 0;
 	      int leadingBlanks = 0;
 	      availableCells = startLine ();
-	      if (firstLineInParagraph)
+	      if (styleSpec->status == startBody)
 		{
 		  if (style->first_line_indent < 0)
 		    leadingBlanks = 0;
 		  else
 		    leadingBlanks =
 		      style->left_margin + style->first_line_indent;
-		  firstLineInParagraph = 0;
+		  styleSpec->status = resumeBody;
 		}
 	      else
 		leadingBlanks = style->left_margin;
@@ -1348,14 +1441,14 @@ doListLines (void)
 	    int breakAt = 0;
 	    int leadingBlanks = 0;
 	    availableCells = startLine ();
-	    if (firstLineInParagraph)
+	    if (styleSpec->status == startBody)
 	      {
 		if (style->first_line_indent < 0)
 		  leadingBlanks = 0;
 		else
 		  leadingBlanks =
 		    style->left_margin + style->first_line_indent;
-		firstLineInParagraph = 0;
+		styleSpec->status = resumeBody;
 	      }
 	    else
 	      leadingBlanks = style->left_margin;
@@ -1467,10 +1560,10 @@ doLeftJustify (void)
       int breakAt = 0;
       int leadingBlanks = 0;
       availableCells = startLine ();
-      if (firstLineInParagraph)
+      if (styleSpec->status == startBody)
 	{
 	  leadingBlanks = style->left_margin + style->first_line_indent;
-	  firstLineInParagraph = 0;
+	  styleSpec->status = resumeBody;
 	}
       else
 	leadingBlanks = style->left_margin;
@@ -1548,19 +1641,24 @@ doContents (void)
       int wordTooLong = 0;
       int breakAt = 0;
       int leadingBlanks = 0;
+int lastLineCells;
       if (!sameLine)
 	{
 	  availableCells = startLine ();
-	  if (firstLineInParagraph)
+	  if (styleSpec->status == startBody)
 	    {
 	      leadingBlanks = style->left_margin + style->first_line_indent;
-	      firstLineInParagraph = 0;
+	      styleSpec->status = resumeBody;
 	    }
 	  else
 	    leadingBlanks = style->left_margin;
+if (leadingBlanks < 0)
+leadingBlanks = 0;
 	  if (!insertCharacters (blanks, leadingBlanks))
 	    return 0;
 	  availableCells -= leadingBlanks;
+lastLineCells = availableCells - (orig_translatedLength - 
+translatedLength - 2);
 	}
       if (numbersLength)
 	{
@@ -1579,7 +1677,7 @@ doContents (void)
 	cellsToWrite = translatedLength - charactersWritten;
       else
 	{
-	  for (cellsToWrite = availableCells; cellsToWrite > 0;
+	  for (cellsToWrite = availableCells - 2; cellsToWrite > 0;
 	       cellsToWrite--)
 	    if (translatedBuffer[charactersWritten + cellsToWrite] == ' ')
 	      break;
@@ -1724,26 +1822,54 @@ editTrans (void)
   return 1;
 }
 
-int
-write_paragraph (sem_act action)
+static int
+startStyle (void)
 {
-/* handles all styles and formats*/
+/*Line or page skipping before body*/
+  styleSpec->status = startBody;
+  if (!ud->paragraphs)
+    return 1;
+  if (ud->braille_pages && prevStyle->action != document)
+    {
+      if (style->righthand_page)
+	{
+	  fillPage ();
+	  if (ud->interpoint && !(ud->braille_page_number & 1))
+	    makeBlankPage ();
+	}
+      else if (style->newpage_before)
+	fillPage ();
+      else if (style->lines_before > 0
+	       && prevStyle->lines_after == 0 && ud->lines_on_page > 0)
+	{
+	  if ((ud->lines_per_page - ud->lines_on_page) < 2)
+	    fillPage ();
+	  else if (!makeBlankLines (style->lines_before, 0))
+	    return 0;
+	}
+    }
+  else
+    {
+      if (style->lines_before > 0 && prevStyle->lines_after == 0 &&
+	  prevStyle->action != document)
+	{
+	  if (!makeBlankLines (style->lines_before, 0))
+	    return 0;
+	}
+    }
+  writeOutbuf ();
+  return 1;
+}
 
-/*Initialization*/
-  if (ud->paragraph_interrupted < 2)
-    ud->paragraph_interrupted = 0;
+static int
+styleBody (void)
+{
+  sem_act action = style->action;
   while (ud->translated_length > 0 &&
 	 ud->translated_buffer[ud->translated_length - 1] <= 32)
     ud->translated_length--;
   if (ud->translated_length == 0 || action == no)
     return 1;
-  if (prevStyle != NULL)
-    prevStyle = style;
-  style = style_cases (action);
-  if (style == NULL)
-    return -1;
-  if (prevStyle == NULL)
-    prevStyle = &ud->document_style;
   if (!editTrans ())
     return 0;
   if (style->format != computerCoded && action != document)
@@ -1764,6 +1890,21 @@ write_paragraph (sem_act action)
     translatedLength--;
   if (translatedLength <= 0)
     return 1;
+  if (!ud->paragraphs)
+    {
+      cellsWritten = 0;
+      if (!insertWidechars (translatedBuffer, translatedLength))
+	return 0;
+      if (ud->interline)
+	{
+	  if (!doInterline ())
+	    return 0;
+	}
+      else if (!insertCharacters (ud->lineEnd, strlen (ud->lineEnd)))
+	return 0;
+      writeOutbuf ();
+      return 1;
+    }
   if (action == contentsheader && ud->contents != 2)
     {
       initialize_contents ();
@@ -1786,61 +1927,6 @@ write_paragraph (sem_act action)
 	getBraillePageString ();
       start_heading (action, translatedBuffer, translatedLength);
     }
-/*Line or page skipping before body*/
-  if (!ud->paragraphs)
-    {
-      cellsWritten = 0;
-      if (!insertWidechars (translatedBuffer, translatedLength))
-	return 0;
-      if (ud->interline)
-	{
-	  if (!doInterline ())
-	    return 0;
-	}
-      else if (!insertCharacters (ud->lineEnd, strlen (ud->lineEnd)))
-	return 0;
-      writeOutbuf ();
-      return 1;
-    }
-  if (ud->braille_pages && prevStyle->action != document)
-    {
-      if (!ud->paragraph_interrupted)
-	{
-	  if (style->righthand_page)
-	    {
-	      fillPage ();
-	      if (ud->interpoint && !(ud->braille_page_number & 1))
-		makeBlankPage ();
-	    }
-	  else if (style->newpage_before)
-	    fillPage ();
-	  else if (style->lines_before > 0
-		   && prevStyle->lines_after == 0 && ud->lines_on_page > 0)
-	    {
-	      if ((ud->lines_per_page - ud->lines_on_page) < 2)
-		fillPage ();
-	      else if (!makeBlankLines (style->lines_before, 0))
-		return 0;
-	    }
-	  firstLineInParagraph = 1;
-	}
-      else
-	firstLineInParagraph = 0;
-    }
-  else
-    {
-      if (style->lines_before > 0 && prevStyle->lines_after == 0 &&
-	  prevStyle->action != document)
-	{
-	  if (!makeBlankLines (style->lines_before, 0))
-	    return 0;
-	}
-      if (ud->paragraph_interrupted)
-	firstLineInParagraph = 0;
-      else
-	firstLineInParagraph = 1;
-    }
-/*Process body*/
   switch (style->format)
     {
     case centered:
@@ -1848,8 +1934,6 @@ write_paragraph (sem_act action)
       doCenterRight ();
       break;
     case alignColumnsLeft:
-      doAlignColumns ();
-      break;
     case alignColumnsRight:
       doAlignColumns ();
       break;
@@ -1870,7 +1954,16 @@ write_paragraph (sem_act action)
       doLeftJustify ();
       break;
     }
+  writeOutbuf ();
+  if (ud->contents == 1)
+    finish_heading (action);
+  styleSpec->status = resumeBody;
+  return 1;
+}
 
+static int
+finishStyle (void)
+{
 /*Skip lines or pages after body*/
   if (ud->braille_pages)
     {
@@ -1895,11 +1988,21 @@ write_paragraph (sem_act action)
 	    return 0;
 	}
     }
-
-/*Finished*/
-  if (ud->contents == 1)
-    finish_heading (action);
   writeOutbuf ();
+  return 1;
+}
+
+int
+write_paragraph (sem_act action)
+{
+  StyleType *holdStyle = action_to_style (action);
+  if (!((ud->text_length > 0 || ud->translated_length > 0) &&
+      ud->style_top >= 0))
+    return 1;
+  if (holdStyle == NULL)
+    holdStyle = lookup_style ("para");
+  start_style (holdStyle);
+  end_style (holdStyle);
   return 1;
 }
 
@@ -2235,13 +2338,13 @@ makeLinkOrTarget (xmlNode * node, int which)
   insert_code (node, -1);
   insert_translation (ud->mainBrailleTable);
   saveStyle = style;
-  saveFirst = firstLineInParagraph;
-  firstLineInParagraph = 1;
-  style = &ud->list_style;
+  saveFirst = styleSpec->status;
+  styleSpec->status = startBody;
+  style = lookup_style ("para");
   editTrans ();
   doLeftJustify ();
   style = saveStyle;
-  firstLineInParagraph = saveFirst;
+  styleSpec->status = saveFirst;
   if (ud->outlen_so_far > saveOutlen)
     ud->outlen_so_far -= strlen (ud->lineEnd);
   if (!insertCharacters ("</a>", 4))
@@ -2255,19 +2358,8 @@ makeLinkOrTarget (xmlNode * node, int which)
 int
 insert_linkOrTarget (xmlNode * node, int which)
 {
-  if (ud->text_length == 0 && ud->translated_length == 0)
-    makeLinkOrTarget (node, which);
-  else
-    {
-      StyleType *style = find_current_style ();
-      insert_translation (ud->mainBrailleTable);
-      if (style == NULL)
-	write_paragraph (para);
-      else
-	write_paragraph (style->action);
-      makeLinkOrTarget (node, which);
-      ud->paragraph_interrupted = 1;
-    }
+  fineFormat ();
+  makeLinkOrTarget (node, which);
   return 1;
 }
 
@@ -2303,80 +2395,31 @@ doBoxline (xmlNode * node)
 int
 do_boxline (xmlNode * node)
 {
-  int result;
-  if (ud->text_length == 0 && ud->translated_length == 0)
-    result = doBoxline (node);
-  else
-    {
-      StyleType *style = find_current_style ();
-      insert_translation (ud->mainBrailleTable);
-      if (style == NULL)
-	write_paragraph (para);
-      else
-	write_paragraph (style->action);
-      result = doBoxline (node);
-      ud->paragraph_interrupted = 1;
-    }
-  return result;
+  fineFormat ();
+  return doBoxline (node);
 }
 
 int
 do_newpage (void)
 {
-  StyleType *style;
-  if (ud->text_length == 0 && ud->translated_length == 0)
-    {
-      if (ud->lines_on_page > 0)
-	fillPage ();
-    }
-  else
-    {
-      style = find_current_style ();
-      insert_translation (ud->mainBrailleTable);
-      if (style == NULL)
-	write_paragraph (para);
-      else
-	write_paragraph (style->action);
-      if (ud->lines_on_page > 0)
-	fillPage ();
-      ud->paragraph_interrupted = 1;
-    }
+  fineFormat ();
+  if (ud->lines_on_page > 0)
+    fillPage ();
   return 1;
 }
 
 int
 do_blankline (void)
 {
-  StyleType *style;
-  if (ud->text_length == 0 && ud->translated_length == 0)
-    makeBlankLines (1, 2);
-  else
-    {
-      style = find_current_style ();
-      insert_translation (ud->mainBrailleTable);
-      if (style == NULL)
-	write_paragraph (para);
-      else
-	write_paragraph (style->action);
-      makeBlankLines (1, 2);
-      ud->paragraph_interrupted = 1;
-    }
+  fineFormat ();
+  makeBlankLines (1, 2);
   return 1;
 }
 
 int
 do_softreturn (void)
 {
-  StyleType *style;
-  if (ud->text_length == 0 && ud->translated_length == 0)
-    return 1;
-  style = find_current_style ();
-  insert_translation (ud->mainBrailleTable);
-  if (style == NULL)
-    write_paragraph (para);
-  else
-    write_paragraph (style->action);
-  ud->paragraph_interrupted = 1;
+  fineFormat ();
   return 1;
 }
 
@@ -2386,5 +2429,81 @@ do_righthandpage (void)
   do_newpage ();
   if (ud->braille_pages && ud->interpoint && !(ud->braille_page_number & 1))
     fillPage ();
+  return 1;
+}
+
+void
+do_linespacing (xmlNode * node)
+{
+  widechar spacing;
+  int savedTextLength = ud->text_length;
+  insert_code (node, 0);
+  if (ud->text_length == savedTextLength)
+    spacing = '0';
+  else
+    spacing = ud->text_buffer[savedTextLength];
+  ud->text_length = savedTextLength;
+  if (spacing < '0' || spacing > '3')
+    spacing = '0';
+  ud->line_spacing = spacing - '0';
+}
+
+int
+start_style (StyleType * curStyle)
+{
+  if (curStyle == NULL)
+    curStyle = lookup_style ("para");
+  if (prevStyle == NULL)
+    prevStyle = lookup_style ("document");
+  if (prevStyleSpec == NULL)
+    {
+      prevStyleSpec = &ud->style_stack[STACKSIZE - 1];
+      prevStyleSpec->style = curStyle;
+    }
+  else
+    {
+      prevStyleSpec = styleSpec;
+      prevStyle = style;
+    }
+  if ((ud->text_length > 0 || ud->translated_length > 0) &&
+      ud->style_top >= 0)
+    {
+      /*Continue last style */
+      insert_translation (ud->mainBrailleTable);
+      styleSpec = &ud->style_stack[ud->style_top];
+      style = styleSpec->style;
+      ud->brl_page_num_format = styleSpec->curBrlNumFormat;
+      styleBody ();
+    }
+  if (ud->style_top < (STACKSIZE - 2))
+    ud->style_top++;
+  styleSpec = &ud->style_stack[ud->style_top];
+  style = styleSpec->style = curStyle;
+  styleSpec->status = beforeBody;
+  if (style->brlNumFormat != normal)
+    ud->brl_page_num_format = style->brlNumFormat;
+  styleSpec->curBrlNumFormat = ud->brl_page_num_format;
+  startStyle ();
+  styleSpec->status = startBody;
+  return 1;
+}
+
+int
+end_style (StyleType * curStyle)
+{
+  if (curStyle == NULL)
+    curStyle = lookup_style ("para");
+  styleSpec = &ud->style_stack[ud->style_top];
+  style = styleSpec->style;
+  ud->brl_page_num_format = styleSpec->curBrlNumFormat;
+  insert_translation (ud->mainBrailleTable);
+  styleBody ();
+  finishStyle ();
+  ud->style_top--;
+  if (ud->style_top < 0)
+    ud->style_top = 0;
+  styleSpec = &ud->style_stack[ud->style_top];
+  style = styleSpec->style;
+  ud->brl_page_num_format = styleSpec->curBrlNumFormat;
   return 1;
 }

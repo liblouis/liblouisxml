@@ -36,6 +36,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "louisxml.h"
+#include "sem_names.h"
 
 typedef struct
 {
@@ -742,6 +743,8 @@ compileConfig (FileInfo * nested)
 	      "10",
 	      "rightHandPage",
 	      "11",
+	      "braillePageNumberFormat",
+	      "12",
 	      NULL
 	    };
 	    static const char *formats[] = {
@@ -765,7 +768,17 @@ compileConfig (FileInfo * nested)
 	      "8",
 	      NULL
 	    };
-	    static int styleCount = 0;
+	    static const char *pageNumFormats[] = {
+	      "normal",
+	      "0",
+	      "blank",
+	      "1",
+	      "p",
+	      "2",
+	      "roman",
+	      "3",
+	      NULL
+	    };
 	    StyleType *style;
 	    sem_act styleAction;
 	    if (nested->value == NULL)
@@ -774,28 +787,8 @@ compileConfig (FileInfo * nested)
 				"no style name given in second column");
 		break;
 	      }
-	    styleCount++;
 	    styleAction = find_semantic_number (nested->value);
-	    style = style_cases (styleAction);
-	    if (style == NULL)
-	      {
-		configureError (nested,
-				"invalid style name %s in column two",
-				nested->value);
-		break;
-	      }
-	    if (style->action == document)
-	      {
-		if (styleCount != 1)
-		  {
-		    configureError (nested,
-				    "document style must be the first one specified");
-		    break;
-		  }
-		else
-		  memcpy (&ud->para_style, &ud->document_style,
-			  (&ud->scratch_style - &ud->para_style));
-	      }
+	    style = new_style (nested->value);
 	    style->action = styleAction;
 	    while (parseLine (nested))
 	      {
@@ -851,6 +844,11 @@ compileConfig (FileInfo * nested)
 		    if ((k = checkValues (nested, yesNo)) != NOTFOUND)
 		      style->righthand_page = k;
 		    break;
+		  case 12:
+		    if ((k = checkValues (nested, pageNumFormats)) !=
+			NOTFOUND)
+		      style->brlNumFormat = k;
+		    break;
 		  default:
 		    configureError (nested, "Program error in readconfig.c");
 		    continue;
@@ -899,8 +897,8 @@ initConfigFiles (const char *firstConfigFile, char *fileName)
 }
 
 int
-read_configuration_file (const char *const configFileList, const char
-			 const *logFileName,
+read_configuration_file (const char * configFileList, const char
+			 *logFileName,
 			 const char *configString, unsigned int mode)
 {
 /* read the configuration file and perform other initialization*/
@@ -937,6 +935,12 @@ read_configuration_file (const char *const configFileList, const char
   memset (ud, 0, sizeof (UserData));
   entities = 0;
   ud->top = -1;
+  ud->style_top = -1;
+  for (k = document; k < notranslate; k++)
+    {
+      StyleType *style = new_style ((xmlChar *) semNames[k]);
+      style->action = k;
+    }
   ud->input_encoding = utf8;
   ud->output_encoding = ascii8;
   *ud->print_page_number = '_';
@@ -968,8 +972,8 @@ read_configuration_file (const char *const configFileList, const char
 	  for (k = currentListPos; k < listLength; k++)
 	    if (configFileList[k] == ',')
 	      break;
-	  strncpy (subFile, &configFileList[currentListPos],
-		   k - currentListPos);
+	  strncpy (subFile,
+		   &configFileList[currentListPos], k - currentListPos);
 	  subFile[k - currentListPos] = 0;
 	  config_compileSettings (subFile);
 	  currentListPos = k + 1;
@@ -993,12 +997,7 @@ read_configuration_file (const char *const configFileList, const char
     }
 
   if (errorCount)
-    {
-      lou_logPrint ("%d errors found", errorCount);
-      free (ud);
-      ud = NULL;
-      return 0;
-    }
+    lou_logPrint ("%d errors found, trying to continue", errorCount);
   ud->braille_page_number = ud->beginning_braille_page_number;
   if (entities)
     strcat (ud->xml_header, "]>\n");

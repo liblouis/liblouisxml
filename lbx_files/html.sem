@@ -300,7 +300,7 @@ no a,target,_blank
 quotation blockquote
 no br,class
 no br,class,newline
-center center
+no center
 no h3,class
 no h3,class,sectionHead
 heading4 h4

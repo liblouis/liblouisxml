@@ -15,9 +15,15 @@ AM_LDFLAGS =	\
 	$(BASE_DEPENDENCIES_LDFLAGS)
 
 bin_PROGRAMS = \
-	xml2brl
+	xml2brl \
+	lbx_devonly
 
-bin_SCRIPTS = msword2brl
+bin_SCRIPTS = \
+	msword2brl \
+	rtf2brl
+
 CLEANFILES = $(bin_SCRIPTS)
 
 xml2brl_SOURCES = xml2brl.c
+
+lbx_devonly_SOURCES = lbx_devonly.c

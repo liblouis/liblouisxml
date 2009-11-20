@@ -44,9 +44,9 @@ documentation see liblouisxml.html. */
 char * EXPORT_CALL lbx_version (void);
 /* Returns the version of liblouisxml. */
 
-  void * EXPORT_CALL lbx_initialize (const char *const configFileName, 
+  void * EXPORT_CALL lbx_initialize (const char * configFileName, 
 const char
-			const *logFileName, const char const *settingsString);
+			*logFileName, const char *settingsString);
 
 /* This function initializes the libxml2 library, runs canonical.cfg and
 processes the configuration file given in configFileName, sets up a log
@@ -63,7 +63,7 @@ include louisxml.h */
   } processingModes;
 
   int EXPORT_CALL lbx_translateString
-    (const char *const configFileName,
+    (const char * configFileName,
      char *inbuf, widechar * outbuf, int *outlen, unsigned int mode);
 
 /* This function takes a well-formed xml expression in inbuf and

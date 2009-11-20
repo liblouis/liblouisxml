@@ -36,6 +36,7 @@
 int
 transcribe_paragraph (xmlNode * node, int action)
 {
+  StyleType *style;
   xmlNode *child;
   int branchCount = 0;
   if (node == NULL)
@@ -82,6 +83,11 @@ transcribe_paragraph (xmlNode * node, int action)
       if (action != 0)
 	pop_sem_stack ();
       return 1;
+    case linespacing:
+      do_linespacing;
+      if (action != 0)
+	pop_sem_stack ();
+      return 1;
     case softreturn:
       do_softreturn ();
       if (action != 0)
@@ -123,6 +129,8 @@ transcribe_paragraph (xmlNode * node, int action)
     default:
       break;
     }
+  if ((style = is_style (node)) != NULL)
+    start_style (style);
   child = node->children;
   while (child)
     {
@@ -146,11 +154,8 @@ transcribe_paragraph (xmlNode * node, int action)
     }
   insert_code (node, branchCount);
   insert_code (node, -1);
-  if (style_cases (ud->stack[ud->top]) != NULL)
-    {
-      insert_translation (ud->mainBrailleTable);
-      write_paragraph (ud->stack[ud->top]);
-    }
+  if (style)
+    end_style (style);
   else
     switch (ud->stack[ud->top])
       {
@@ -184,4 +189,3 @@ transcribe_paragraph (xmlNode * node, int action)
     }
   return 1;
 }
-

@@ -14,6 +14,7 @@ lbx_files_DATA = \
 	dtbook3.sem \
 	gutbook.sem \
 	html.sem \
+	math.sem \
 	nemeth.sem \
 	package.sem \
 	preface.sem \

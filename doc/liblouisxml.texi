@@ -98,6 +98,7 @@ Fifth Floor, Boston, MA 02110-1301, USA.
 * Special Formats::             
 * Implementing Braille Mathematics Codes::  
 * Programming with liblouisxml::  
+* Example files::               
 * Configuration Settings Index::  
 * Semantic Action Index::       
 * Function Index::              
@@ -109,6 +110,9 @@ Fifth Floor, Boston, MA 02110-1301, USA.
 Transcribing Documents
 
 * Transcribing XML files with xml2brl::  
+* Transcribing Text Documents::  
+* Transcribing Poorly Formatted Documents::  
+* Transcribing html Documents::  
 * Transcribing Microsoft Word files with msword2brl::  
 * Transcribing RTF files with rtf2brl::  
 
@@ -123,16 +127,27 @@ Connecting with the xml Document - Semantic-Action Files
 
 * Semantic Actions Overview::   
 * Semantic Actions in detail::  
+* Pseudo-actions::              
 
 Special Features
 
 * Table of contents::           
+* Back-translation::            
+* Reformatting::                
+* Interlining::                 
 * Browser-Friendly Output::     
+* CDATA Sections::              
 
 Special Formats
 
 * Tables::                      
+* Reserving Space for Graphics::  
+* Displayed Text::              
+* Displayed Mathematics::       
+* Spatial Layouts in Mathematics::  
+* Arithmetic Examples::         
 * Poetry::                      
+* Dividing a Book Into Volumes::  
 
 Programming with liblouisxml
 
@@ -146,6 +161,21 @@ Programming with liblouisxml
 * lbx_translateTextFile::       
 * lbx_backTranslateFile::       
 * lbx_free::                    
+
+Example files
+
+* canonical.cfg::               
+* default.cfg::                 
+* html.sem::                    
+* nemeth.sem::                  
+* Files for BAUK Maths |ukmaths)::  
+
+Files for BAUK Maths |ukmaths)
+
+* ukmaths.cfg::                 
+* ukmaths.sem::                 
+* ukmaths.ctb::                 
+* ukmaths_edit.ctb::            
 
 @end detailmenu
 @end menu
@@ -194,11 +224,14 @@ Manual}).
 
 @menu
 * Transcribing XML files with xml2brl::  
+* Transcribing Text Documents::  
+* Transcribing Poorly Formatted Documents::  
+* Transcribing html Documents::  
 * Transcribing Microsoft Word files with msword2brl::  
 * Transcribing RTF files with rtf2brl::  
 @end menu
 
-@node  Transcribing XML files with xml2brl, Transcribing Microsoft Word files with msword2brl, Transcribing Documents, Transcribing Documents
+@node  Transcribing XML files with xml2brl, Transcribing Text Documents, Transcribing Documents, Transcribing Documents
 @section Transcribing XML files with xml2brl
 @pindex xml2brl
 
@@ -339,7 +372,7 @@ If only the program name is typed @command{xml2brl} assumes that the
 configuration file is @file{default.cfg}, input is from the standard
 input unit, and output is to the standard output unit.
 
-@node  Transcribing Microsoft Word files with msword2brl, Transcribing RTF files with rtf2brl, Transcribing XML files with xml2brl, Transcribing Documents
+@node Transcribing Text Documents, Transcribing Poorly Formatted Documents, Transcribing XML files with xml2brl, Transcribing Documents
 @section Transcribing Text Documents
 
 See the previous section on using @command{xml2brl}. This program
@@ -348,6 +381,7 @@ the information in the configuration files.  Paragraphs must be
 separated with a blank line. If you want a blank line in the output use
 two blank lines.
 
+@node Transcribing Poorly Formatted Documents, Transcribing html Documents, Transcribing Text Documents, Transcribing Documents
 @section Transcribing Poorly Formatted Documents
 
 @example
@@ -363,6 +397,7 @@ good. Note that it does not work with rtf files. However, if
 @command{rtf2xml} will convert the file, it will work with the resulting 
 xml file.
 
+@node Transcribing html Documents, Transcribing Microsoft Word files with msword2brl, Transcribing Poorly Formatted Documents, Transcribing Documents
 @section Transcribing html Documents
 
 @example
@@ -375,6 +410,7 @@ infile as an xml document. This will produce a lot of error messages.
 @command{xml2brl} will then try the html parser. Note that xhtml 
 documents are actually xml.
 
+@node Transcribing Microsoft Word files with msword2brl, Transcribing RTF files with rtf2brl, Transcribing html Documents, Transcribing Documents
 @section Transcribing Microsoft Word files with msword2brl
 @pindex msword2brl
 
@@ -942,6 +978,7 @@ Paragraph. This is ordinary body text.
 @menu
 * Semantic Actions Overview::   
 * Semantic Actions in detail::  
+* Pseudo-actions::              
 @end menu
 
 @node Semantic Actions Overview, Semantic Actions in detail, Connecting with the xml Document, Connecting with the xml Document
@@ -1286,7 +1323,7 @@ For further discussion of how the third column is used
 not limited to mathematics. It can be used to add characters to
 anything enclosed by an xml tag.
 
-@node Semantic Actions in detail,  , Semantic Actions Overview, Connecting with the xml Document
+@node Semantic Actions in detail, Pseudo-actions, Semantic Actions Overview, Connecting with the xml Document
 @section Semantic Actions in detail
 
 Here is a complete list of the semantic actions which liblouisxml
@@ -1710,6 +1747,7 @@ future.
 
 @end table
 
+@node Pseudo-actions,  , Semantic Actions in detail, Connecting with the xml Document
 @section Pseudo-actions
 
 These actions affect the processing of semantic-action files. They are 
@@ -1742,10 +1780,14 @@ affects all documents.
 
 @menu
 * Table of contents::           
+* Back-translation::            
+* Reformatting::                
+* Interlining::                 
 * Browser-Friendly Output::     
+* CDATA Sections::              
 @end menu
 
-@node Table of contents, Browser-Friendly Output, Special Features, Special Features
+@node  Table of contents, Back-translation, Special Features, Special Features
 @section Table of contents
 
 A table of contents is produced for an xml file if the file contains a
@@ -1800,6 +1842,7 @@ means that if it is negative it is really subtracted. For example, if
 will start in cell 2. If the result of adding these two values is 
 negative it is set to 0.
 
+@node Back-translation, Reformatting, Table of contents, Special Features
 @section Back-translation
 
 @example
@@ -1826,6 +1869,7 @@ space \x001b 1b escape character
 To perform the back-translation operation, @command{xml2brl} uses the 
 liblouisxml function @code{lbx_backTranslateFile}.
 
+@node Reformatting, Interlining, Back-translation, Special Features
 @section Reformatting
 
 @example
@@ -1840,6 +1884,7 @@ page numbers will be generated if @code{braillePages yes} is specified.
 if @code{backFormat html} has been specified, print page numbers will be
 reproduced in the afpropriate places. Some formatting may be lost.
 
+@node  Interlining, Browser-Friendly Output, Reformatting, Special Features
 @section Interlining
 
 Interlining means printing the original text between the lines of 
@@ -1849,7 +1894,7 @@ back-translation. However, it is inadequate for mathematics and depends
 too much on the quality of the liblouis tables. It is scheduled to be 
 repbaced, so you should not use it.
 
-@node Browser-Friendly Output,  , Table of contents, Special Features
+@node   Browser-Friendly Output, CDATA Sections, Interlining, Special Features
 @section Browser-Friendly Output
 
 @example
@@ -1868,6 +1913,7 @@ specified by the configuration.  outfile should have the extension
 part of the above example specifies a configuration setting, which of
 course can also be specified in a configuration file.
 
+@node   CDATA Sections,  , Browser-Friendly Output, Special Features
 @section @code{cdata} Sections
 
 A @code{cdata} section may be given the semantic actions @code{skip}, 
@@ -1882,10 +1928,16 @@ has the same effect as @code{no}.
 
 @menu
 * Tables::                      
+* Reserving Space for Graphics::  
+* Displayed Text::              
+* Displayed Mathematics::       
+* Spatial Layouts in Mathematics::  
+* Arithmetic Examples::         
 * Poetry::                      
+* Dividing a Book Into Volumes::  
 @end menu
 
-@node Tables, Poetry, Special Formats, Special Formats
+@node Tables, Reserving Space for Graphics, Special Formats, Special Formats
 @section Tables
 
 Various methods of handling tables can be devised. one that is in 
@@ -1908,7 +1960,7 @@ third column. your liblouis table must also contain the following line:
 noback always ;\s; 0
 @end example
 
-
+@node Reserving Space for Graphics, Displayed Text, Tables, Special Formats
 @section Reserving Space for Graphics
 
 Your configuration files should contain lines like these:
@@ -1926,28 +1978,32 @@ In particular, you should have another invocation of @samp{graphspace}
 at the end to skip to a new page, or the next right-hand page if you are 
 using interpoint.
 
+@node Displayed Text, Displayed Mathematics, Reserving Space for Graphics, Special Formats
 @section Displayed Text
 
 Conventions for setting off a block of text from the rest vary. you may 
 wish to use the @code{quotation} style or devise a style of your own.
 
+@node Displayed Mathematics, Spatial Layouts in Mathematics, Displayed Text, Special Formats
 @section Displayed Mathematics
 
 Again, conventions vary. you can define your own style for this purpose 
 and invoke it according to the attributes of the @code{math} tag.
 
+@node Spatial Layouts in Mathematics, Arithmetic Examples, Displayed Mathematics, Special Formats
 @section Spatial Layouts in Mathematics
 
 This is also known as 2d mathematics. It spreads out complex fractions 
 and other materials for easier viewing. It is being developed based on 
 the specifications of MathML 3.
 
+@node Arithmetic Examples, Poetry, Spatial Layouts in Mathematics, Special Formats
 @section Arithmetic Examples
 
 This is another format that is being developed using MathML 3. It is 
 difficult in earlier versions.
 
-@node Poetry,  , Tables, Special Formats
+@node Poetry, Dividing a Book Into Volumes, Arithmetic Examples, Special Formats
 @section Poetry
 
 @file{canonical.cfg} defines two styles which can be used to format 
@@ -1977,6 +2033,7 @@ Coleridge's "Rime of the Ancient Mariner":
 Note that when stanzas follow each other liblouisxml will produce only 
 one blank line between them, not two.
 
+@node Dividing a Book Into Volumes,  , Poetry, Special Formats
 @section Dividing a Book Into Volumes
 
 Details are still under development. However, this much can be said. 
@@ -2224,7 +2281,7 @@ always "\s 0
 replaces the baseline or multipurpose indicator followed by a space
 with just a space.
 
-@node Programming with liblouisxml, Configuration Settings Index, Implementing Braille Mathematics Codes, Top
+@node Programming with liblouisxml, Example files, Implementing Braille Mathematics Codes, Top
 @chapter Programming with liblouisxml
 
 @menu
@@ -2357,6 +2414,7 @@ Unix or @samp{.\} for Windows.
 Paths are handled in the @code{paths.c} module. This contains the 
 function @code{set_paths}, which is called from @code{readconfig.c} and 
 in turn calls @code{addPath} in the @code{paths.c} module.
+
 @node lbx_version, lbx_initialize, Files and Paths, Programming with liblouisxml
 @section lbx_version
 
@@ -2529,15 +2587,23 @@ change configuration files during your application, use a @code{mode}
 parameter of 0 on the function call using the new configuration
 information. This will call the @code{lbx_free} function automatically.
 
-@chapter Appendix: Example files
+@node Example files, Configuration Settings Index, Programming with liblouisxml, Top
+@appendix Example files
 
-@section overview
-
-This appendix contains abl the files referenced in this document. They 
+This appendix contains all the files referenced in this document. They 
 are up-to-date at the time of writing, but the actual files used by the 
 software may change. Besides being used for reference, they can be 
 studied to see how things are done.
 
+@menu
+* canonical.cfg::               
+* default.cfg::                 
+* html.sem::                    
+* nemeth.sem::                  
+* Files for BAUK Maths |ukmaths)::  
+@end menu
+
+@node canonical.cfg, default.cfg, Example files, Example files
 @section @file{canonical.cfg}
 
 @example
@@ -2719,6 +2785,7 @@ style trnote
 style volume
 @end example
 
+@node default.cfg, html.sem, canonical.cfg, Example files
 @section @file{default.cfg}
 
 @example
@@ -2744,6 +2811,7 @@ xml
 
 @end example
 
+@node html.sem, nemeth.sem, default.cfg, Example files
 @section @file{html.sem}
 
 @example
@@ -3442,6 +3510,7 @@ no table,class,tabular
 no td,class,td11
 @end example
 
+@node nemeth.sem, Files for BAUK Maths |ukmaths), html.sem, Example files
 @section @file{nemeth.sem}
 
 @example
@@ -3579,8 +3648,17 @@ no mfrac
 no mstyle,scriptlevel,-1
 @end example
 
+@node Files for BAUK Maths |ukmaths),  , nemeth.sem, Example files
 @section Files for BAUK Maths |ukmaths)
 
+@menu
+* ukmaths.cfg::                 
+* ukmaths.sem::                 
+* ukmaths.ctb::                 
+* ukmaths_edit.ctb::            
+@end menu
+
+@node ukmaths.cfg, ukmaths.sem, Files for BAUK Maths |ukmaths), Files for BAUK Maths |ukmaths)
 @subsection @file{ukmaths.cfg}
 
 @example
@@ -3593,10 +3671,11 @@ semanticFiles *,ukmaths.sem
 
 @end example
 
+@node ukmaths.sem, ukmaths.ctb, ukmaths.cfg, Files for BAUK Maths |ukmaths)
 @subsection @file{ukmaths.sem}
 
 @example
-# Licnsed under LGPL
+# Licensed under LGPL
 
 maction maction
 maligngroup maligngroup
@@ -3715,6 +3794,7 @@ no mtd,columnalign,right
 no mstyle,scriptlevel,-1
 @end example
 
+@node ukmaths.ctb, ukmaths_edit.ctb, ukmaths.sem, Files for BAUK Maths |ukmaths)
 @subsection @file{ukmaths.ctb}
 
 @example
@@ -3896,6 +3976,7 @@ pass3 @@16[%lownum1-10]@@12456 *
 pass3 @{mfrac[@@3456%upnum1-10%lownum1-10]@}mfrac *
 @end example
 
+@node ukmaths_edit.ctb,  , ukmaths.ctb, Files for BAUK Maths |ukmaths)
 @subsection @file{ukmaths_edit.ctb}
 
 @example
@@ -3952,7 +4033,7 @@ pass2 @@1b-15 ?
 pass2 @@1b-12-4-4 @@4
 @end example
 
-@node Configuration Settings Index, Semantic Action Index, Programming with liblouisxml, Top
+@node Configuration Settings Index, Semantic Action Index, Example files, Top
 @unnumbered Configuration Settings Index
 
 @printindex tp

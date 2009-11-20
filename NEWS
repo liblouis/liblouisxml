@@ -1,30 +1,24 @@
 liblouisxml NEWS -- history of user-visible changes.
 
-Noteworthy changes in release 2.1.0 (2009-11-19)
+* Noteworthy changes in release 2.1.0 (2009-11-19)
 
-* New Features
+** New Features
 
-- User-defined styles
+  - User-defined styles
+  - styles can be nested in a document
+  - Persistent style settings
+  - roman page numbering
+  - "newentries no" semantic action
+  - Tools are now GPL and accept the standard --version and --help
+    options
+  - man pages are generated for all tools
+  - rtf2brl tool added
 
-- styles can be nested in a document
+** Documentation
 
-- Persistent style settings
-
-- roman page numbering
-
-- "newentries no" semantic action
-
-- Tools are now GPL and use the gnulib options functions
-
-- rtf2brl tool added
-
-* Documentation
-
-- Still in process
-
-- Many new sections added to make features more explicit
-
-- New features documented
+  - Still in process
+  - Many new sections added to make features more explicit
+  - New features documented
 
 * Noteworthy changes in release 2.0.0 (2009-08-21)
 

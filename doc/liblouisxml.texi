@@ -168,7 +168,7 @@ Example files
 * default.cfg::                 
 * html.sem::                    
 * nemeth.sem::                  
-* Files for BAUK Maths |ukmaths)::  
+* Files for BAUK Maths (ukmaths)::  
 
 Files for BAUK Maths |ukmaths)
 
@@ -475,7 +475,8 @@ that the application program has access to the information in the
 configuration files by calling the liblouisxml function
 @code{lbx_initialize}. This function returns a pointer to a data
 structure containing the configuration information. The calling program 
-must include the header file @code{louisxml.h}.
+must include the header file @code{louisxml.h}. You do not need to call 
+@code{lbx_initialize} unless you need the facilities which it provides.
 
 A configuration file specification may contain more than one file name,
 separated by commas. liblouisxml will process these files in sequence.
@@ -2601,7 +2602,7 @@ studied to see how things are done.
 * default.cfg::                 
 * html.sem::                    
 * nemeth.sem::                  
-* Files for BAUK Maths |ukmaths)::  
+* Files for BAUK Maths (ukmaths)::  
 @end menu
 
 @node canonical.cfg, default.cfg, Example files, Example files
@@ -3511,7 +3512,7 @@ no table,class,tabular
 no td,class,td11
 @end example
 
-@node nemeth.sem, Files for BAUK Maths |ukmaths), html.sem, Example files
+@node nemeth.sem, Files for BAUK Maths (ukmaths), html.sem, Example files
 @section @file{nemeth.sem}
 
 @example
@@ -3649,8 +3650,8 @@ no mfrac
 no mstyle,scriptlevel,-1
 @end example
 
-@node Files for BAUK Maths |ukmaths),  , nemeth.sem, Example files
-@section Files for BAUK Maths |ukmaths)
+@node Files for BAUK Maths (ukmaths),  , nemeth.sem, Example files
+@section Files for BAUK Maths (ukmaths)
 
 @menu
 * ukmaths.cfg::                 
@@ -3659,7 +3660,7 @@ no mstyle,scriptlevel,-1
 * ukmaths_edit.ctb::            
 @end menu
 
-@node ukmaths.cfg, ukmaths.sem, Files for BAUK Maths |ukmaths), Files for BAUK Maths |ukmaths)
+@node ukmaths.cfg, ukmaths.sem, Files for BAUK Maths (ukmaths), Files for BAUK Maths (ukmaths)
 @subsection @file{ukmaths.cfg}
 
 @example
@@ -3672,7 +3673,7 @@ semanticFiles *,ukmaths.sem
 
 @end example
 
-@node ukmaths.sem, ukmaths.ctb, ukmaths.cfg, Files for BAUK Maths |ukmaths)
+@node ukmaths.sem, ukmaths.ctb, ukmaths.cfg, Files for BAUK Maths (ukmaths)
 @subsection @file{ukmaths.sem}
 
 @example
@@ -3795,7 +3796,7 @@ no mtd,columnalign,right
 no mstyle,scriptlevel,-1
 @end example
 
-@node ukmaths.ctb, ukmaths_edit.ctb, ukmaths.sem, Files for BAUK Maths |ukmaths)
+@node ukmaths.ctb, ukmaths_edit.ctb, ukmaths.sem, Files for BAUK Maths (ukmaths)
 @subsection @file{ukmaths.ctb}
 
 @example
@@ -3977,7 +3978,7 @@ pass3 @@16[%lownum1-10]@@12456 *
 pass3 @{mfrac[@@3456%upnum1-10%lownum1-10]@}mfrac *
 @end example
 
-@node ukmaths_edit.ctb,  , ukmaths.ctb, Files for BAUK Maths |ukmaths)
+@node ukmaths_edit.ctb,  , ukmaths.ctb, Files for BAUK Maths (ukmaths)
 @subsection @file{ukmaths_edit.ctb}
 
 @example

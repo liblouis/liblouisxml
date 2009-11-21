@@ -333,9 +333,9 @@ The document is an h(t)ml file, not xhtml. This option is useful with
 files downloaded from the Web in source form. Without it, the program
 will first try to parse the file as an xml document, producing lots of
 error messages. It will then try the html parser. With this option, it
-goes directly to the html parser. See also the formatFor configuration
-(@pxref{formatFor setting}) file setting, which enables you to format
-the braille output for viewing in a browser.
+goes directly to the html parser. See also the @code{formatFor}
+configuration (@pxref{formatFor setting}) file setting, which enables
+you to format the braille output for viewing in a browser.
 
 @item infile 
 This is the name of the input file containing the material to be
@@ -388,13 +388,14 @@ two blank lines.
 xml2brl -p infile outfile
 @end example
 
-Some text documents, such as those derived from pdf files, and even some 
-xml and html documents, are so poorly formatted that you can get better 
-braille by ignoring whatever markup they contain. The @option{-p} option 
-of @command{mml2brl} does this. It ignores xml or html markup and uses 
-heuristics to find the beginning of paragraphs. Its choices are usually 
-good. Note that it does not work with rtf files. However, if 
-@command{rtf2xml} will convert the file, it will work with the resulting 
+Some text documents, such as those derived from pdf files, and even
+some xml and html documents, are so poorly formatted that you can get
+better braille by ignoring whatever markup they contain. The
+@option{-p} option of @command{xml2brl} does this. It ignores xml or
+html markup and uses heuristics to find the beginning of paragraphs.
+Its choices are usually good. Note that it does not work with rtf
+files. However, if @command{rtf2xml} (@pxref{Transcribing RTF files
+with rtf2brl}) will convert the file, it will work with the resulting
 xml file.
 
 @node Transcribing html Documents, Transcribing Microsoft Word files with msword2brl, Transcribing Poorly Formatted Documents, Transcribing Documents
@@ -760,7 +761,7 @@ The following sections all deal with styles. Each style has its own
 section. Style section names are unlike other section names in that they
 consist of the word style, followed by a space, followed by a style
 name. With some exceptions, styles are not hard-coded. The user may
-define any style desired, with any name exceps @code{document},
+define any style desired, with any name except @code{document},
 @code{para}, @code{heading1}, @code{heading2}, @code{heading3},
 @code{heading4}, @code{contentsheader}, @code{contents1},
 @code{contents2}, @code{contents3} and @code{contents4}. The first two 
@@ -774,7 +775,7 @@ Styles can be nested. That is, a document may contain a section of one
 style, and inside this may be a section of another style. For example, 
 you might have styles named frontMatter, titlePage, dedication, 
 contents, and so on. Your document might contain a section of style 
-fromtMatter. Inside this section might be subsections of styles 
+frontMatter. Inside this section might be subsections of styles 
 titlePage, dedication, contenss, and so on. Inside the titlePage section 
 there might be other sections with styles heading1, para, centered, etc.
 

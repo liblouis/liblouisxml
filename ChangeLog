@@ -1,3 +1,7 @@
+2009-11-23 John J. Boyer <john.boyer@abilitiessoft.com>
+
+	* Release 2.1.0: Many new features, see NEWS
+
 2009-11-04  Christian Egli  <christian.egli@sbszh.ch>
 
 	* Makefile.am:

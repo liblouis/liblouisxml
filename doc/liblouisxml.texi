@@ -777,7 +777,7 @@ style, and inside this may be a section of another style. For example,
 you might have styles named frontMatter, titlePage, dedication, 
 contents, and so on. Your document might contain a section of style 
 frontMatter. Inside this section might be subsections of styles 
-titlePage, dedication, contenss, and so on. Inside the titlePage section 
+titlePage, dedication, contents, and so on. Inside the titlePage section 
 there might be other sections with styles heading1, para, centered, etc.
 
 Your frontMatter style might also define the "persistent" style setting 
@@ -934,7 +934,7 @@ This style is used for main headings, such as chapter titles.
 
 @subsection style heading2
 
-The first level of subreadings after the main heading.
+The first level of subheadings after the main heading.
 
 @table @code
 
@@ -1014,7 +1014,7 @@ than just the name of the element. More of this later). The first
 is dealing with. This element is called the "root element" because the
 document is visualized as branching out from it like a tree. Some
 examples of root elements are @code{<html>}, @code{<math>},
-@code{<book>}, @code{<dtbook} and @code{<wordDocument>}. Whenever
+@code{<book>}, @code{<dtbook>} and @code{<wordDocument>}. Whenever
 liblouisxml encounters a root element that it doesn't know about it
 creates a new file called a semantic-action file. The name of this file
 is formed by stripping the angle brackets from the root element, putting
@@ -1063,22 +1063,22 @@ However, the computer still does not know what to do when it
 encounters an element. The semantic-action file tells it that.
 
 Consider @file{html.sem}. A copy is included as part of this
-documentation with the name @file{example_html.sem}. It may differ from 
-the
-file that liblouisxml is currently using. You will see that it begins
-with some lines about copyrights. Each line begins with a number sign
-(@samp{#}). This indicates that it is a "comment", intended for the
-human reader and the computer should ignore it. Then there is a blank
-line. Finally, there are two other comments explaining that the file
-must be edited to get proper output. This is because a human being
-must tell the computer what to do with each element. The semantic
-files for common types of documents have already been edited, so you
-generally don't have to worry about this. But if you encounter a new
-type of document or wish to specify special handling for styles or
-mathematics you may have to edit the semantic-action file or send it
-to the maintainer for editing. In any case the rest of this section is
-essential for understanding how liblouisxml handles documents and for
-making changes if the way it does so is not correct.
+documentation with the name @file{example_html.sem}
+(@pxref{html.sem}). It may differ from the file that liblouisxml is
+currently using. You will see that it begins with some lines about
+copyrights. Each line begins with a number sign (@samp{#}). This
+indicates that it is a "comment", intended for the human reader and
+the computer should ignore it. Then there is a blank line. Finally,
+there are two other comments explaining that the file must be edited
+to get proper output. This is because a human being must tell the
+computer what to do with each element. The semantic files for common
+types of documents have already been edited, so you generally don't
+have to worry about this. But if you encounter a new type of document
+or wish to specify special handling for styles or mathematics you may
+have to edit the semantic-action file or send it to the maintainer for
+editing. In any case the rest of this section is essential for
+understanding how liblouisxml handles documents and for making changes
+if the way it does so is not correct.
 
 After another blank line you will see a table consisting of two, and
 sometimes three, columns. The first column contains a word which tells
@@ -1251,16 +1251,16 @@ tables in braille do not have borders.
 
 Now let's look at the file which is included at the beginning of the
 @file{html.sem} file. This is @file{nemeth.sem}. As with
-@file{html.sem}, a copy is included in the documentation directory
-with the name @file{example_nemeth.sem} , but it is not necessarily
-the one that liblouisxml is currently using. It illustrates several
-more things about how liblouisxml uses semantic-action files.
+@file{html.sem}, a copy is included in the appendix
+(@pxref{nemeth.sem}), but it is not necessarily the one that
+liblouisxml is currently using. It illustrates several more things
+about how liblouisxml uses semantic-action files.
 
 The first thing you will notice is that for quite a few lines the
 first and second columns are identical. This is because the MathML
 element and attribute names are part of a standard, and it was
 simplest to use the element names for the semantic actions as well. Most 
-of these actions do not do anything and ceuld be replaced with the 
+of these actions do not do anything and could be replaced with the 
 @code{generic} semantic action. They are retained for backward 
 compatibility.
 
@@ -1514,7 +1514,7 @@ placed after the last branch, no matter how many branches there may be.
 
 @semanticAction{graphic, elementSpecifier}
 
-When a mudule which can handle SVG graphics is ready this semantic 
+When a module which can handle SVG graphics is ready this semantic 
 action will invoke it.
 
 @semanticAction{htmllink, elementSpecifier}
@@ -1651,7 +1651,7 @@ semantic-action file must contain @code{\*\er} in the third column for
 the @code{matrix} style, indicating the end of the row. Other things may 
 also need to be specified using the liblouis @code{exactdots} feature. 
 Note that rows are not declared as styles nested inside the 
-@code{matrix} style. This is because the table must be contidered as a 
+@code{matrix} style. This is because the table must be considered as a 
 whole.
 
 @semanticAction{munder, elementSpecifier}
@@ -1660,7 +1660,7 @@ whole.
 
 @semanticAction{music, elementSpecifier}
 
-When a mudule which can interpret MusicML and produce braille music 
+When a module which can interpret MusicML and produce braille music 
 notation is ready this semantic action will invoke it.
 
 @semanticAction{newpage, elementSpecifier}
@@ -1679,7 +1679,7 @@ parts of the text would run together, so this is now its action.
 
 @semanticAction{none, elementSpecifier}
 
-This is a MathML elemnt.
+This is a MathML element.
 
 @semanticAction{notranslate, elementSpecifier}
 
@@ -1851,18 +1851,17 @@ negative it is set to 0.
 xml2brl -b infile outfile
 @end example
 
-infile must be a braille file. It can have either upper-case or 
-lower-case letters, etc. outfile will contain the back-translation 
-according 
-to the configuration specifications. It can be in two formats according 
-to the value of @code{backFormat}. @samp{ascii} produces plain text 
-output. The lines will generally correspond to the lines in the original 
-braille file. @samp{html} produces a file in xhtml format. This is 
-recommended, since it preserves print page numbers, if present and some 
-of the formatting of the original. It can also be loaded into a browser 
-or word phocessor, which will format it for good readability. Note that 
-for html format to work your liblouis table must contain the foblowing 
-line:
+infile must be a braille file. It can have either upper-case or
+lower-case letters, etc. outfile will contain the back-translation
+according to the configuration specifications. It can be in two
+formats according to the value of @code{backFormat}. @samp{ascii}
+produces plain text output. The lines will generally correspond to the
+lines in the original braille file. @samp{html} produces a file in
+xhtml format. This is recommended, since it preserves print page
+numbers, if present and some of the formatting of the original. It can
+also be loaded into a browser or word processor, which will format it
+for good readability. Note that for html format to work your liblouis
+table must contain the following line:
 
 @example
 space \x001b 1b escape character
@@ -1879,12 +1878,12 @@ xml2brl -r infile outfile
 @end example
 
 As in the previous section, infile must be a braille file. It is
-back-translated and then forward-translated to pruduce a braille file in
+back-translated and then forward-translated to produce a braille file in
 outfile which conforms to configuration specifications. It is useful for
 changing the line length and page length of a braille file. New braille
 page numbers will be generated if @code{braillePages yes} is specified. 
-if @code{backFormat html} has been specified, print page numbers will be
-reproduced in the afpropriate places. Some formatting may be lost.
+If @code{backFormat html} has been specified, print page numbers will be
+reproduced in the appropriate places. Some formatting may be lost.
 
 @node  Interlining, Browser-Friendly Output, Reformatting, Special Features
 @section Interlining
@@ -1894,7 +1893,7 @@ translated braille. It requires special embossers or special methods.
 The present way in which liblouisxml produces interlining relies on 
 back-translation. However, it is inadequate for mathematics and depends 
 too much on the quality of the liblouis tables. It is scheduled to be 
-repbaced, so you should not use it.
+replaced, so you should not use it.
 
 @node   Browser-Friendly Output, CDATA Sections, Interlining, Special Features
 @section Browser-Friendly Output
@@ -1916,7 +1915,7 @@ part of the above example specifies a configuration setting, which of
 course can also be specified in a configuration file.
 
 @node   CDATA Sections,  , Browser-Friendly Output, Special Features
-@section @code{cdata} Sections
+@section @code{CDATA} Sections
 
 A @code{cdata} section may be given the semantic actions @code{skip}, 
 @code{no} or @code{code}. In the first case, the data in the 
@@ -1942,8 +1941,8 @@ has the same effect as @code{no}.
 @node Tables, Reserving Space for Graphics, Special Formats, Special Formats
 @section Tables
 
-Various methods of handling tables can be devised. one that is in 
-cuhrent use requires the following lines in a semantic-action file:
+Various methods of handling tables can be devised. One that is in 
+current use requires the following lines in a semantic-action file:
 
 @example
 list tr \*;
@@ -2817,7 +2816,7 @@ xml
 @section @file{html.sem}
 
 @example
-# This file was produced by liblouisxml and is considered paot of
+# This file was produced by liblouisxml and is considered part of
 # the code. See the file copyright-notice for permissions and
 # restrictions. This notice also applies to any files with names
 # beginning with 'appended_'.

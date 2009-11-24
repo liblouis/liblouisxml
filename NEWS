@@ -1,24 +1,35 @@
 liblouisxml NEWS -- history of user-visible changes.
 
-* Noteworthy changes in release 2.1.0 (2009-11-19)
+* Noteworthy changes in release 2.1.0 (2009-11-23)
 
-** New Features
+The main focus for this release has been the addition of user-defined
+styles with the associated documentation overhaul. Also there is a new
+tool rtf2brl and all the tools now have man pages.
 
-  - User-defined styles
-  - styles can be nested in a document
-  - Persistent style settings
-  - roman page numbering
-  - "newentries no" semantic action
-  - Tools are now GPL and accept the standard --version and --help
-    options
-  - man pages are generated for all tools
-  - rtf2brl tool added
+** New features
+*** Styles
+    - User-defined styles
+    - styles can be nested in a document
+    - Persistent style settings
+    - roman page numbering
 
-** Documentation
+*** Semantic action
+    - "newentries no" semantic action
+    - "linespacing" semantic action
 
-  - Still in process
-  - Many new sections added to make features more explicit
-  - New features documented
+*** rtf2brl
+    There is a new tool to generate Braille from rtf.
+
+*** man pages
+    All tools accept the --version and --help options and are
+    documented in man pages. The tools are now licensed with GPL.
+
+*** Corpus based test cases for tables
+    You can now have corpus based tests for tables. See the README in
+    tests/table_test_corpuses.
+
+** Bug fixes
+   - The version number is now displayed correctly.
 
 * Noteworthy changes in release 2.0.0 (2009-08-21)
 

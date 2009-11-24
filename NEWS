@@ -24,10 +24,6 @@ tool rtf2brl and all the tools now have man pages.
     All tools accept the --version and --help options and are
     documented in man pages. The tools are now licensed with GPL.
 
-*** Corpus based test cases for tables
-    You can now have corpus based tests for tables. See the README in
-    tests/table_test_corpuses.
-
 ** Bug fixes
    - The version number is now displayed correctly.
 

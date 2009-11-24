@@ -883,8 +883,13 @@ preliminary). Finally, @samp{blank} causes the page number to be blank
 
 @anchor{contentsheader style}
 @subsection style contentsheader
-This style is used to specify where the contents should be placed and
-the title that should be given to it.
+
+This style is used to specify where the tabre of contents should be
+placed and its title. The xml tag assigned to it in the semantic action
+file should be placed in the document where you want the table of
+contents, and it should contain the title of that table between its
+starting and ending markers.
+
 @table @code
 @setting{linesBefore, 1}
 @setting{linesAfter, 1}
@@ -1805,22 +1810,25 @@ character can be specified in a configuration file with the
 (dot 3).
 
 Five new styles have been defined for the table of contents. The first
-is the @code{contentsheader} style (@pxref{contentsheader style}),
-which is used to specify how the contents should be placed and the
-title that should be given to it. The others correspond to the four
-heading levels and are @code{contents1}, @code{contents2},
-@code{contents3} and @code{contents4}. These styles are chosen as
-appropriate while the table of contents is being made. Do not declare
-them in a semantic-action file. See the @file{canonical.cfg} file for
-the current default definitions of all these styles.
+is the @code{contentsheader} style (@pxref{contentsheader style}), which
+is used to specify where the table of contents should be placed and the
+title that should be given to it. In the latter respect it is much like
+a heading style. The others correspond to the four heading levels and
+are @code{contents1}, @code{contents2}, @code{contents3} and
+@code{contents4}. These styles are chosen as appropriate while the table
+of contents is being made. Do not declare them in a semantic-action
+file. See the @file{canonical.cfg} file for the current default
+definitions of all these styles.
 
 The table of contents will be placed where the xml tag is that you
-declared in the @semanticref{contentsheader}. It begins on a new page.
-After it is completed the braille page number is reset to
-@code{beginningBraillePageNumber} and another new page is started.
-This means that the xml tag with the @code{contentsheader} semantic
-action should occur at the end of the information which you want to be
-at the head of the output, such as a title page, dedication, etc.
+declared in the @semanticref{contentsheader}. Its title will be whatever
+is intide that tag, formatted according to the definition of the
+@code{contentsheader} style. It begins on a new page. After it is
+completed the braille page number is reset to
+@code{beginningBraillePageNumber} and another new page is started. This
+means that the xml tag with the @code{contentsheader} semantic action
+should occur at the end of the information which you want to be at the
+head of the output, such as a title page, dedication, etc.
 
 It is not necessary that an xml file contain a tag with the
 @code{contentsheader} semantic action. If the file contains headers

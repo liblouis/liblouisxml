@@ -27,13 +27,14 @@ cimport stdlib
 
 from louisxml cimport *
 
+cdef char *lbx_encoding
 if sizeof(widechar) == 2:
-    DEF lbx_encoding = u"utf_16_le"
+    lbx_encoding = u"utf_16_le"
 elif sizeof(widechar) == 4:
-    DEF lbx_encoding = u"utf_32_le"
+    lbx_encoding = u"utf_32_le"
 if PY_MAJOR_VERSION == 2 and PY_MINOR_VERSION < 6:
     import PyICU
-cdef object get_unicode(char* buftxt, int buflen):
+cdef object get_unicode(widechar* buftxt, int buflen):
     if PY_MAJOR_VERSION == 2 and PY_MINOR_VERSION < 6:
         tmp_unicode = PyICU.UnicodeString((<char *>buftxt)[:buflen],
                                          lbx_encoding.encode("ascii"))

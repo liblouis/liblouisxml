@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: louisxml
-Version: 1.0
+Version: 1.1
 Summary: Python interface for liblouisxml
 Home-page: http://pypi.python.org/pypi/louisxml
 Author: Michael Whapples
@@ -19,5 +19,6 @@ Platform: UNKNOWN
 Classifier: Development Status :: 5 - Production/Stable
 Classifier: License :: OSI Approved :: Artistic License
 Classifier: Intended Audience :: Developers
-Classifier: Topic :: System :: Hardware
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
 Classifier: Operating System :: POSIX
+Classifier: Operating System :: Microsoft

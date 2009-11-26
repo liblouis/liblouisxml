@@ -4,7 +4,7 @@ from distutils.extension import Extension
 
 setup(
     name = "louisxml",
-    version = "1.0",
+    version = "1.1",
     url = "http://pypi.python.org/pypi/louisxml",
     description = """Python interface for liblouisxml""",
     long_description =
@@ -24,7 +24,8 @@ setup(
         "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: Artistic License",
         "Intended Audience :: Developers",
-        "Topic :: System :: Hardware",
-        "Operating System :: POSIX"
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Operating System :: POSIX",
+        "Operating System :: Microsoft"
     ]
 )

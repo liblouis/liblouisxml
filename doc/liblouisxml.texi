@@ -884,7 +884,7 @@ preliminary). Finally, @samp{blank} causes the page number to be blank
 @anchor{contentsheader style}
 @subsection style contentsheader
 
-This style is used to specify where the tabre of contents should be
+This style is used to specify where the table of contents should be
 placed and its title. The xml tag assigned to it in the semantic action
 file should be placed in the document where you want the table of
 contents, and it should contain the title of that table between its
@@ -1822,7 +1822,7 @@ definitions of all these styles.
 
 The table of contents will be placed where the xml tag is that you
 declared in the @semanticref{contentsheader}. Its title will be whatever
-is intide that tag, formatted according to the definition of the
+is inside that tag, formatted according to the definition of the
 @code{contentsheader} style. It begins on a new page. After it is
 completed the braille page number is reset to
 @code{beginningBraillePageNumber} and another new page is started. This

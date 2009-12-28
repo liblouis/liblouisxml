@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "louisxml.h"
+#include <libxml/xpath.h>
 #include "sem_names.h"
 
 typedef struct
@@ -56,11 +57,18 @@ typedef struct
   widechar charInserts[MAXINSERTS];
 } InsertsType;
 
+typedef enum
+{
+  styleEntry = 1,
+  xpathEntry = 2
+} EntryType;
+
 typedef struct
 {
   void *next;
   unsigned char *key;
-  int value;
+  EntryType type;
+  int semNum;
   InsertsType *inserts;
   StyleType *style;
 } HashEntry;
@@ -140,7 +148,7 @@ hashFree (HashTable * table)
 	free (e->key);
 	if (e->inserts != NULL)
 	  free (e->inserts);
-	if (e->value == -100)
+	if (e->type & styleEntry)
 	  free (e->style);
 	free (e);
       }
@@ -150,6 +158,12 @@ hashFree (HashTable * table)
 static HashEntry *
 hashScan (HashTable * table)
 {
+/* This function should be called in a statement like
+* while ((curEnt=y = hashScan (tablename)))
+* where
+* HasEntry *curEntry;
+/ It returns a table entry at each call, in no order. When it reaches 
+* the end of the table it resets itself and returns NULL. */
   HashEntry *e;
   if (table == NULL)
     return NULL;
@@ -180,8 +194,8 @@ static HashEntry *latestEntry;
 
 /* assumes that key is not already present! */
 static void
-hashInsert (HashTable * table, const unsigned char *key, int value,
-	    InsertsType * inserts, StyleType * style)
+hashInsert (HashTable * table, const unsigned char *key, int type, int
+	    semNum, InsertsType * inserts, StyleType * style)
 {
   int i;
   if (table == NULL || key == NULL)
@@ -191,7 +205,8 @@ hashInsert (HashTable * table, const unsigned char *key, int value,
   latestEntry->next = table->entries[i];
   latestEntry->key = malloc (strlen ((char *) key) + 1);
   strcpy ((char *) latestEntry->key, (char *) key);
-  latestEntry->value = value;
+  latestEntry->type = type;
+  latestEntry->semNum = semNum;
   latestEntry->inserts = inserts;
   latestEntry->style = style;
   table->entries[i] = latestEntry;
@@ -218,7 +233,7 @@ hashLookup (HashTable * table, const unsigned char *key)
 	if (key[k] != latestEntry->key[k])
 	  break;
       if (k == keyLength)
-	return latestEntry->value;
+	return latestEntry->semNum;
     }
   return notFound;
 }
@@ -242,12 +257,12 @@ find_semantic_number (const char *name)
     {
       actionTable = hashNew ();
       for (k = 0; k < end_all; k++)
-	hashInsert (actionTable, (xmlChar *) semNames[k], k, NULL, NULL);
+	hashInsert (actionTable, (xmlChar *) semNames[k], 0, k, NULL, NULL);
       k = 0;
       while (pseudoActions[k] != NULL)
 	{
 	  hashInsert (actionTable, (xmlChar *) pseudoActions[k],
-		      k + end_all + 1, NULL, NULL);
+		      0, k + end_all + 1, NULL, NULL);
 	  k++;
 	}
     }
@@ -498,7 +513,7 @@ countAttrValues (xmlChar * key)
 	return 1;
       if (curCount >= NUMCOUNTS)
 	return 0;
-      hashInsert (attrValueCountsTable, key, curCount, NULL, NULL);
+      hashInsert (attrValueCountsTable, key, 0, curCount, NULL, NULL);
       curCount++;
       return 1;
     case 3:
@@ -509,7 +524,7 @@ countAttrValues (xmlChar * key)
       if (thisCount == notFound)
 	{
 	  attrValueCounts[curCount]++;
-	  hashInsert (attrValueCountsTable, key, curCount, NULL, NULL);
+	  hashInsert (attrValueCountsTable, key, 0, curCount, NULL, NULL);
 	  curCount++;
 	}
       key[lastComma] = ',';
@@ -536,11 +551,30 @@ destroyattrValueCountsTable (void)
 }
 static int sem_compileFile (const char *fileName);
 
+int
+find_group_length (const char groupSym[2], const char *groupStart)
+{
+  int level = 0;
+  int k;
+  if (*groupStart != groupSym[0])
+    return - 1;
+  for (k = 0; groupStart[k]; k++)
+    {
+      if (groupStart[k] == groupSym[0])
+	level++;
+      if (groupStart[k] == groupSym[1])
+	level--;
+      if (level = 0)
+	return k + 1;
+    }
+  return -1;
+}
 static int
 compileLine (FileInfo * nested)
 {
   char *curchar = NULL;
   int ch = 0;
+  EntryType type = 0;
   char *action = NULL;
   int actionLength = 0;
   char *lookFor;
@@ -569,8 +603,17 @@ compileLine (FileInfo * nested)
       return 0;
     }
   lookFor = curchar - 1;
-  while (*curchar++ > 32);
-  lookForLength = curchar - lookFor - 1;
+  if (*lookFor == '&')
+    {
+      /*xpath or other special case */
+      find_group_length ("()", lookFor);
+
+    }
+  else
+    {
+      while (*curchar++ > 32);
+      lookForLength = curchar - lookFor - 1;
+    }
   lookFor[lookForLength] = 0;
   actionNum = find_semantic_number (action);
   style = lookup_style (action);
@@ -619,7 +662,8 @@ compileLine (FileInfo * nested)
     }
   if (actionNum < 0)
     actionNum = generic;
-  hashInsert (semanticTable, (xmlChar *) lookFor, actionNum, inserts, style);
+  hashInsert (semanticTable, (xmlChar *) lookFor, type, actionNum,
+	      inserts, style);
   nested->numEntries++;
   return 1;
 }
@@ -809,6 +853,39 @@ compile_semantic_table (xmlNode * rootElement)
 
 static void addNewEntries (const xmlChar * key);
 
+int
+do_xpath_expr (xmlDoc * doc)
+{
+  xmlXPathContext *xpathCtx;
+  xmlXPathObject *xpathObj;
+  HashEntry *curEntry;
+  if (doc == NULL)
+    return 0;
+  xpathCtx = xmlXPathNewContext (doc);
+  while ((curEntry = hashScan (semanticTable)))
+    {
+      if (curEntry->type & xpathEntry)
+	{
+	  xmlNodeSet *nodeSet;
+	  xmlNode *node;
+	  int k;
+	  xpathObj = xmlXPathEvalExpression (curEntry->key, xpathCtx);
+	  if (xpathObj == NULL || xpathObj->type != XPATH_NODESET)
+	    continue;
+	  nodeSet = xpathObj->nodesetval;
+	  for (k = 0; k < nodeSet->nodeNr; k++)
+	    {
+	      node = nodeSet->nodeTab[k];
+	      if (node->_private == NULL)
+		node->_private = curEntry;
+	    }
+	  xmlXPathFreeObject (xpathObj);
+	}
+    }
+  xmlXPathFreeContext (xpathCtx);
+  return 1;
+}
+
 sem_act
 set_sem_attr (xmlNode * node)
 {
@@ -818,6 +895,8 @@ set_sem_attr (xmlNode * node)
   int k;
   int oldKeyLength = 0;
   const xmlChar *name;
+  if (node->_private != NULL)
+    return get_sem_attr (node);
   if (node->type == XML_CDATA_SECTION_NODE)
     name = (xmlChar *) "cdata-section";
   else
@@ -881,7 +960,7 @@ get_sem_attr (xmlNode * node)
 {
   HashEntry *nodeEntry = (HashEntry *) node->_private;
   if (nodeEntry != NULL)
-    return nodeEntry->value;
+    return nodeEntry->semNum;
   else
     return no;
 }
@@ -958,7 +1037,7 @@ addNewEntries (const xmlChar * newEntry)
     }
   if (hashLookup (newEntriesTable, newEntry) != notFound)
     return;
-  hashInsert (newEntriesTable, newEntry, 0, NULL, NULL);
+  hashInsert (newEntriesTable, newEntry, 0, 0, NULL, NULL);
 }
 
 void
@@ -1058,7 +1137,7 @@ new_style (xmlChar * name)
     return latestEntry->style;
   style = malloc (sizeof (StyleType));
   memset (style, 0, sizeof (StyleType));
-  hashInsert (semanticTable, key, -100, NULL, style);
+  hashInsert (semanticTable, key, styleEntry, 0, NULL, style);
   return style;
 }
 

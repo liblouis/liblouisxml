@@ -82,6 +82,7 @@ processXmlDocument (xmlDoc * doc)
   if (rootElement == NULL)
     return -1;
   haveSemanticFile = compile_semantic_table (rootElement);
+  do_xpath_expr (doc);
   examine_document (rootElement);
   append_new_entries ();
   if (!haveSemanticFile)

@@ -368,18 +368,27 @@ ignoreCaseComp (const char *str1, const char *str2, int length)
   return 0;
 }
 
+int
+find_action (const char **actions, const char *action)
+{
+  int actionLength = strlen (action);
+  int k;
+  for (k = 0; actions[k]; k += 2)
+    if (actionLength == strlen (actions[k])
+	&& ignoreCaseComp (actions[k], action, actionLength) == 0)
+      break;
+  if (actions[k] == NULL)
+    return -1;
+  return atoi (actions[k + 1]);
+}
+
 static int
 checkActions (FileInfo * nested, const char **actions)
 {
-  int k;
-  for (k = 0; actions[k]; k += 2)
-    if (nested->actionLength == strlen (actions[k]) &&
-	ignoreCaseComp
-	(actions[k], nested->action, nested->actionLength) == 0)
-      break;
-  if (actions[k] == NULL)
+  int actionNum = find_action (actions, nested->action);
+  if (actionNum == -1)
     return NOTFOUND;
-  return atoi (actions[k + 1]);
+  return actionNum;
 }
 
 static int
@@ -499,54 +508,23 @@ compileConfig (FileInfo * nested)
     "formatFor",
     "31",
     "inputTextEncoding",
-    "32",
-    "contents",
-    "33",
-    "linefill",
-    "34",
-    "style",
-    "90",
-    NULL
+    "32", "contents", "33", "linefill", "34", "style", "90", NULL
   };
   static const char *yesNo[] = {
-    "no",
-    "0",
-    "yes",
-    "1",
-    NULL
+    "no", "0", "yes", "1", NULL
   };
   static const char *topBottom[] = {
-    "bottom",
-    "0",
-    "top",
-    "1",
-    NULL
+    "bottom", "0", "top", "1", NULL
   };
   static const char *encodings[] = {
-    "utf8",
-    "0",
-    "utf16",
-    "1",
-    "utf32",
-    "2",
-    "ascii8",
-    "3",
-    NULL
+    "utf8", "0", "utf16", "1", "utf32", "2", "ascii8", "3", NULL
   };
   static const char *backFormats[] = {
-    "plain",
-    "0",
-    "html",
-    "1",
-    NULL
+    "plain", "0", "html", "1", NULL
   };
 
   static const char *formatFor[] = {
-    "textDevice",
-    "0",
-    "browser",
-    "1",
-    NULL
+    "textDevice", "0", "browser", "1", NULL
   };
 
   int k;
@@ -691,7 +669,9 @@ compileConfig (FileInfo * nested)
 	  break;
 	case 30:
 	  {
-	    static const char *actions[] = { NULL };
+	    static const char *actions[] = {
+	      NULL
+	    };
 	    if (nested->value == NULL)
 	      configureError (nested, "a file name in column 2 is required");
 	    else
@@ -742,10 +722,7 @@ compileConfig (FileInfo * nested)
 	      "newPageAfter",
 	      "10",
 	      "rightHandPage",
-	      "11",
-	      "braillePageNumberFormat",
-	      "12",
-	      NULL
+	      "11", "braillePageNumberFormat", "12", NULL
 	    };
 	    static const char *formats[] = {
 	      "leftJustified",
@@ -761,23 +738,10 @@ compileConfig (FileInfo * nested)
 	      "listColumns",
 	      "5",
 	      "listLines",
-	      "6",
-	      "computerCoded",
-	      "7",
-	      "contents",
-	      "8",
-	      NULL
+	      "6", "computerCoded", "7", "contents", "8", NULL
 	    };
 	    static const char *pageNumFormats[] = {
-	      "normal",
-	      "0",
-	      "blank",
-	      "1",
-	      "p",
-	      "2",
-	      "roman",
-	      "3",
-	      NULL
+	      "normal", "0", "blank", "1", "p", "2", "roman", "3", NULL
 	    };
 	    StyleType *style;
 	    sem_act styleAction;
@@ -897,7 +861,7 @@ initConfigFiles (const char *firstConfigFile, char *fileName)
 }
 
 int
-read_configuration_file (const char * configFileList, const char
+read_configuration_file (const char *configFileList, const char
 			 *logFileName,
 			 const char *configString, unsigned int mode)
 {

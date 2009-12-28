@@ -51,7 +51,7 @@ examine_document (xmlNode * node)
       doConfigfile (node);
       break;
     case configstring:
-do_configstring (node);
+      do_configstring (node);
       break;
     case code:
       ud->has_comp_code = 1;
@@ -100,6 +100,7 @@ do_configstring (node);
 
 static void
 examText (xmlNode * node)
+/*We may want to examine text content in the future*/
 {
   switch (ud->stack[ud->top])
     {

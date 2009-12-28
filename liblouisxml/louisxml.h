@@ -210,6 +210,7 @@ int read_configuration_file (const char *configFileName,
 			     const char *logFileName, const char
 			     *settingsString, unsigned int mode);
 int config_compileSettings (const char *fileName);
+int do_xpath_expr (xmlDoc * doc);
 int examine_document (xmlNode * node);
 int transcribe_document (xmlNode * node);
 int transcribe_math (xmlNode * node, int action);
@@ -260,4 +261,6 @@ void insert_text (xmlNode * node);
 int insert_linkOrTarget (xmlNode * node, int which);
 int start_style (StyleType * curStyle);
 int end_style (StyleType * curStyle);
+int find_action (const char **actions, const char *action);
+int find_group_length (const char groupSym[2], const char *groupStart);
 #endif /*louisxml_h */

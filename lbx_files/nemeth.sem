@@ -117,16 +117,7 @@ no mi,mathvariant,fraktur
 no mi,mathvariant,bold-sans
 
 no mi,mathvariant,double-struck
-no mi,mathvariant,double-struck
-no mi,mathvariant,double-struck
 no menclose,notation
 no mtd,columnalign
 no menclose,notation,longdiv
 no mtd,columnalign,right
-no mfrac
-no mfrac
-no mfrac
-no mfrac
-no mfrac
-no mfrac
-no mstyle,scriptlevel,-1

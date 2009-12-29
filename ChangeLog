@@ -1,3 +1,10 @@
+2009-12-28 John J. Boyer <john.boyer@abilitiessoft.com>
+
+	* implemented handling of xpath expressions
+
+	 * Added pdf2brl tool
+
+
 2009-11-24  Christian Egli  <christian.egli@sbszh.ch>
 
 	* doc/liblouisxml.texi (html.sem): Fix some typos and add

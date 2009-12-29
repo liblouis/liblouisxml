@@ -48,7 +48,6 @@ no prodnote,render
 no table,border
 no h1,class
 no docTitle
-no a,href
 no level4,class
 no pre,id
 no code,id

@@ -557,7 +557,7 @@ find_group_length (const char groupSym[2], const char *groupStart)
   int level = 0;
   int k;
   if (*groupStart != groupSym[0])
-    return - 1;
+    return -1;
   for (k = 0; groupStart[k]; k++)
     {
       if (groupStart[k] == groupSym[0])
@@ -574,6 +574,7 @@ compileLine (FileInfo * nested)
 {
   char *curchar = NULL;
   int ch = 0;
+  int func;			/*function number for xpath, etc. */
   EntryType type = 0;
   char *action = NULL;
   int actionLength = 0;
@@ -606,8 +607,28 @@ compileLine (FileInfo * nested)
   if (*lookFor == '&')
     {
       /*xpath or other special case */
-      find_group_length ("()", lookFor);
-
+      static const char *funcNames[] = {
+	"xpath",
+	"1",
+	NULL
+      };
+      char *funcName;
+      int funcNameLength;
+      char *argsStart;
+      int argsLength;
+      while ((ch = *curchar++) <= 32 && ch != 0);
+      funcName = curchar - 1;
+      while ((ch = *curchar++) > 32 && ch != '(');
+      funcNameLength = curchar - funcName - 1;
+      funcName[funcNameLength] = 0;
+      func = find_action (funcNames, funcName);
+      funcName[funcNameLength] = ch;
+      if (ch != '(')
+	while ((ch = *curchar++) <= 32 && ch != 0);
+      argsStart = curchar - 1;
+      argsLength = find_group_length ("()", argsStart);
+      lookFor = argsStart + 1;
+      lookForLength = argsLength - 1;
     }
   else
     {
@@ -641,7 +662,10 @@ compileLine (FileInfo * nested)
       return 1;
     }
   if (hashLookup (semanticTable, (xmlChar *) lookFor) != notFound)
-    return 1;
+    {
+      semanticError (nested, "duplicate entry in column 2");
+      return 1;
+    }
   countAttrValues ((xmlChar *) lookFor);
   inserts = NULL;
   while ((ch = *curchar++) <= 32 && ch != 0);
@@ -662,6 +686,14 @@ compileLine (FileInfo * nested)
     }
   if (actionNum < 0)
     actionNum = generic;
+  switch (func)
+    {
+    case 1:
+      type = xpathEntry;
+      break;
+    default:
+      break;
+    }
   hashInsert (semanticTable, (xmlChar *) lookFor, type, actionNum,
 	      inserts, style);
   nested->numEntries++;

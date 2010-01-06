@@ -1,6 +1,6 @@
 # Only build man pages if configure found the HELP2MAN tool
 if HAVE_HELP2MAN
-man_MANS = xml2brl.1 msword2brl.1
+man_MANS = xml2brl.1 msword2brl.1 rtf2brl.1 pdf2brl.1
 endif
 
 CLEANFILES = $(man_MANS)
@@ -24,4 +24,10 @@ xml2brl.1: $(top_srcdir)/tools/xml2brl.c $(common_mandeps)
 
 msword2brl.1: $(top_srcdir)/tools/msword2brl $(common_mandeps)
 	$(HELP2MAN) ../tools/msword2brl --info-page=$(PACKAGE) --output=$@
+
+rtf2brl.1: $(top_srcdir)/tools/rtf2brl $(common_mandeps)
+	$(HELP2MAN) ../tools/rtf2brl --info-page=$(PACKAGE) --output=$@
+
+pdf2brl.1: $(top_srcdir)/tools/pdf2brl $(common_mandeps)
+	$(HELP2MAN) ../tools/pdf2brl --info-page=$(PACKAGE) --output=$@
 

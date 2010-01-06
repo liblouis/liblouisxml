@@ -9,14 +9,13 @@ Options:
   --help     Print this message
   --version  Print version information
 
-Infile must be a pdf file. The script first calls the
-`pdftotext' program, so you must have this installed on your machine.
-It is part of xpdf.
-`pdftotext' is called with the '-raw' and '-' options, which cause it to 
-place its output on stdout. This is piped to `xml2brl', which is called 
-with the '-p' option, since output from `pdftotext' is likely to be 
-poorly formatted. The output file from
-`xml2brl' is mostly in sensible paragraphs.
+Infile must be a pdf file. The script first calls the `pdftotext'
+program, so you must have this installed on your machine. It is part
+of xpdf. `pdftotext' is called with the '-raw' and '-' options, which
+cause it to place its output on stdout. This is piped to `xml2brl',
+which is called with the '-p' option, since output from `pdftotext' is
+likely to be poorly formatted. The output file from `xml2brl' is
+mostly in sensible paragraphs.
 EOF
 }
 

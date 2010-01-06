@@ -115,6 +115,7 @@ Transcribing Documents
 * Transcribing html Documents::  
 * Transcribing Microsoft Word files with msword2brl::  
 * Transcribing RTF files with rtf2brl::  
+* Transcribing PDF files with pdf2brl::  
 
 Customization: Configuring liblouisxml
 
@@ -170,7 +171,7 @@ Example files
 * nemeth.sem::                  
 * Files for BAUK Maths (ukmaths)::  
 
-Files for BAUK Maths |ukmaths)
+Files for BAUK Maths (ukmaths)
 
 * ukmaths.cfg::                 
 * ukmaths.sem::                 
@@ -229,6 +230,7 @@ Manual}).
 * Transcribing html Documents::  
 * Transcribing Microsoft Word files with msword2brl::  
 * Transcribing RTF files with rtf2brl::  
+* Transcribing PDF files with pdf2brl::  
 @end menu
 
 @node  Transcribing XML files with xml2brl, Transcribing Text Documents, Transcribing Documents, Transcribing Documents
@@ -426,7 +428,7 @@ causes the output to be in docbook format. This is piped to
 @command{xml2brl}. The output file from @command{xml2brl} contains
 much of the formatting, including emphasis, of the word file.
 
-@node Transcribing RTF files with rtf2brl,  , Transcribing Microsoft Word files with msword2brl, Transcribing Documents
+@node  Transcribing RTF files with rtf2brl, Transcribing PDF files with pdf2brl, Transcribing Microsoft Word files with msword2brl, Transcribing Documents
 @section Transcribing RTF files with rtf2brl
 @pindex rtf2brl
 
@@ -443,6 +445,26 @@ is piped to @command{xml2brl}. The output of @command{rtf2xml} is xml
 with the root element @code{doc}. The file @file{doc.sem} is fairly
 complete, so the output of @command{xml2brl} contains much of the
 formatting, including emphasis, of the original rtf file.
+
+@node Transcribing PDF files with pdf2brl,  , Transcribing RTF files with rtf2brl, Transcribing Documents
+@section Transcribing PDF files with pdf2brl
+@pindex pdf2brl
+
+@example
+pdf2brl infile outfile
+@end example
+
+Infile must be a PDF (Portable Document Format) file. The script first
+calls the @command{pdftotext} program, so you must have this installed
+on your machine. It is part of xpdf and most likely already installed
+if you're on a modern Linux distribution. Otherwise, you can get it
+from either @uref{http://poppler.freedesktop.org} or
+@uref{http://www.foolabs.com/xpdf/download.html}. @command{pdftotext}
+is called with the @option{-raw} and @option{-} options, which cause
+it to place its output on stdout. This is piped to @command{xml2brl},
+which is called with the @option{-p} option, since output from
+@command{pdftotext} is likely to be poorly formatted. The output file
+from @command{xml2brl} is mostly in sensible paragraphs.
 
 @node Customization Configuring liblouisxml, Connecting with the xml Document, Transcribing Documents, Top
 @chapter Customization: Configuring liblouisxml

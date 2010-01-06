@@ -20,7 +20,8 @@ bin_PROGRAMS = \
 
 bin_SCRIPTS = \
 	msword2brl \
-	rtf2brl
+	rtf2brl \
+	pdf2brl
 
 CLEANFILES = $(bin_SCRIPTS)
 

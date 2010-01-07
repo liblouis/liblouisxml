@@ -100,8 +100,7 @@ semanticError (FileInfo * nested, char *format, ...)
 #endif
   va_end (arguments);
   if (nested)
-    lou_logPrint ("File %s line %d: %s",
-		  nested->fileName, nested->lineNumber, buffer);
+    lou_logPrint ("%s:%d: %s", nested->fileName, nested->lineNumber, buffer);
   else
     lou_logPrint ("%s", buffer);
   errorCount++;
@@ -622,11 +621,13 @@ compileLine (FileInfo * nested)
       funcNameLength = curchar - funcName - 1;
       funcName[funcNameLength] = 0;
       func = find_action (funcNames, funcName);
-if (func > 0)
-{
-semanticError (nested, "function name in column 2 not recognized");
-return 0;
-}
+      if (func < 0)
+	{
+	  semanticError (nested,
+			 "function name '%s' in column 2 not recognized",
+			 funcName);
+	  return 0;
+	}
       funcName[funcNameLength] = ch;
       if (ch != '(')
 	while ((ch = *curchar++) <= 32 && ch != 0);
@@ -668,7 +669,7 @@ return 0;
     }
   if (hashLookup (semanticTable, (xmlChar *) lookFor) != notFound)
     {
-      semanticError (nested, "duplicate entry in column 2");
+      semanticError (nested, "duplicate entry '%s' in column 2", lookFor);
       return 1;
     }
   countAttrValues ((xmlChar *) lookFor);

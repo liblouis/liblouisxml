@@ -622,6 +622,11 @@ compileLine (FileInfo * nested)
       funcNameLength = curchar - funcName - 1;
       funcName[funcNameLength] = 0;
       func = find_action (funcNames, funcName);
+if (func > 0)
+{
+semanticError (nested, "function name in column 2 not recognized");
+return 0;
+}
       funcName[funcNameLength] = ch;
       if (ch != '(')
 	while ((ch = *curchar++) <= 32 && ch != 0);

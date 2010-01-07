@@ -178,7 +178,7 @@ main (int argc, char **argv)
     whichProc = 'x';
   if (configSettings != NULL)
     for (k = 0; configSettings[k]; k++)
-      if (configSettings[k] == '=')
+      if (configSettings[k] == '=' && configSettings[k - 1] != ' ')
 	configSettings[k] = ' ';
   if ((ud = lbx_initialize (configFileName, logFileName,
 			    configSettings)) == NULL)

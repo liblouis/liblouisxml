@@ -36,7 +36,8 @@
 
 #define LETSIGN "\\_"
 static StyleRecord *styleSpec;
-static StyleRecord *prevStyleSpec;
+/* Note that the following is an actual data area, not a pointer*/
+static StyleRecord prevStyleSpec;
 static StyleType *style;
 static StyleType *prevStyle;
 static int styleBody (void);
@@ -90,7 +91,7 @@ start_document (void)
   else
     ud->braille_page_number = ud->beginning_braille_page_number;
   ud->outlen_so_far = 0;
-  styleSpec = prevStyleSpec = NULL;
+  styleSpec = NULL;
   style = prevStyle = lookup_style ("document");
   if (ud->outFile && ud->output_encoding == utf16)
     {
@@ -2453,18 +2454,6 @@ start_style (StyleType * curStyle)
 {
   if (curStyle == NULL)
     curStyle = lookup_style ("para");
-  if (prevStyle == NULL)
-    prevStyle = lookup_style ("document");
-  if (prevStyleSpec == NULL)
-    {
-      prevStyleSpec = &ud->style_stack[STACKSIZE - 1];
-      prevStyleSpec->style = curStyle;
-    }
-  else
-    {
-      prevStyleSpec = styleSpec;
-      prevStyle = style;
-    }
   if ((ud->text_length > 0 || ud->translated_length > 0) &&
       ud->style_top >= 0)
     {
@@ -2499,6 +2488,8 @@ end_style (StyleType * curStyle)
   insert_translation (ud->mainBrailleTable);
   styleBody ();
   finishStyle ();
+  memcpy (&prevStyleSpec, styleSpec, sizeof (prevStyleSpec));
+  prevStyle = prevStyleSpec.style;
   ud->style_top--;
   if (ud->style_top < 0)
     ud->style_top = 0;

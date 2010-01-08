@@ -91,8 +91,9 @@ start_document (void)
   else
     ud->braille_page_number = ud->beginning_braille_page_number;
   ud->outlen_so_far = 0;
-  styleSpec = NULL;
+  styleSpec = &prevStyleSpec;
   style = prevStyle = lookup_style ("document");
+  prevStyleSpec.style = prevStyle;
   if (ud->outFile && ud->output_encoding == utf16)
     {
       /*Little Endian indicator */
@@ -1044,7 +1045,6 @@ writeOutbuf (void)
 {
   int k;
   unsigned char *utf8Str;
-  ud->translated_length = 0;
   if (ud->outlen_so_far == 0 || ud->outFile == NULL)
     return 1;			/*output stays in ud->outbuf */
   switch (ud->output_encoding)
@@ -1869,7 +1869,7 @@ styleBody (void)
   while (ud->translated_length > 0 &&
 	 ud->translated_buffer[ud->translated_length - 1] <= 32)
     ud->translated_length--;
-  if (ud->translated_length == 0 || action == no)
+  if (ud->translated_length == 0)
     return 1;
   if (!editTrans ())
     return 0;
@@ -1890,7 +1890,10 @@ styleBody (void)
 	 translatedBuffer[translatedLength - 1] != escapeChar)
     translatedLength--;
   if (translatedLength <= 0)
+{
+ud->translated_length = 0;
     return 1;
+}
   if (!ud->paragraphs)
     {
       cellsWritten = 0;
@@ -1904,6 +1907,7 @@ styleBody (void)
       else if (!insertCharacters (ud->lineEnd, strlen (ud->lineEnd)))
 	return 0;
       writeOutbuf ();
+ud->translated_length = 0;
       return 1;
     }
   if (action == contentsheader && ud->contents != 2)
@@ -1959,6 +1963,7 @@ styleBody (void)
   if (ud->contents == 1)
     finish_heading (action);
   styleSpec->status = resumeBody;
+  ud->translated_length = 0;
   return 1;
 }
 
@@ -2002,7 +2007,18 @@ write_paragraph (sem_act action)
     return 1;
   if (holdStyle == NULL)
     holdStyle = lookup_style ("para");
-  start_style (holdStyle);
+  /* We must do some of the work of start_styl**/
+  if (ud->style_top < (STACKSIZE - 2))
+    ud->style_top++;
+  styleSpec = &ud->style_stack[ud->style_top];
+  style = styleSpec->style = holdStyle;
+  styleSpec->status = beforeBody;
+  if (style->brlNumFormat != normal)
+    ud->brl_page_num_format = style->brlNumFormat;
+  styleSpec->curBrlNumFormat = ud->brl_page_num_format;
+  startStyle ();
+  insert_translation (ud->mainBrailleTable);
+  styleBody ();
   end_style (holdStyle);
   return 1;
 }

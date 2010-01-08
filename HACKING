@@ -55,10 +55,6 @@ to do a fresh build. Then run configure as usual:
 
   ./configure
 
-You have the choice to compile liblouis for either 16- or 32-bit
-Unicode. By default it is compiled for the former. To get 32-bit
-Unicode run configure with --enable-ucs4 .
-
 After running configure run "make" and then "make install". You must
 have root privileges for the installation step.
 

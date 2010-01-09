@@ -1629,6 +1629,13 @@ doContents (void)
       doLeftJustify ();
       return 1;
     }
+  if (translatedBuffer[translatedLength - 1] == 0xa0)
+    {
+      /* No page numbers anyway*/
+      translatedLength--;
+      doLeftJustify ();
+      return 1;
+    }
   orig_translatedLength = translatedLength;
   for (k = translatedLength - 1; k > 0 && translatedBuffer[k] != 32; k--);
   if (k == 0)

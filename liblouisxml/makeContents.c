@@ -102,6 +102,7 @@ finish_heading (sem_act action)
 {
   int k;
   int headingSize = sizeof (heading) - MAXHEADINGSIZE * CHARSIZE;
+  int initHeadingLength = heading.headingLength;
   SaveHeading *headingPtr;
   if (!(ud->contents && (action == heading1 || action == heading2 ||
 			 action == heading3 || action == heading4 ||
@@ -130,6 +131,9 @@ finish_heading (sem_act action)
 	      ud->braille_page_string[k++];
 	}
     }
+  if (initHeadingLength == heading.headingLength)
+    /* No page numbers*/
+    heading.headingChars[heading.headingLength++] = 0xa0;
   headingSize += heading.headingLength * CHARSIZE;
   headingPtr = malloc (headingSize);
   memcpy (headingPtr, &heading, headingSize);

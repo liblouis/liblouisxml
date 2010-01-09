@@ -632,7 +632,7 @@ compileLine (FileInfo * nested)
       if (ch != '(')
 	while ((ch = *curchar++) <= 32 && ch != 0);
       argsStart = curchar - 1;
-      argsLength = find_group_length ("()", argsStart);
+      argsLength = find_group_length ("()", argsStart) - 2;
       lookFor = argsStart + 1;
       lookForLength = argsLength - 1;
     }

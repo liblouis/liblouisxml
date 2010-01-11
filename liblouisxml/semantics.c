@@ -563,7 +563,7 @@ find_group_length (const char groupSym[2], const char *groupStart)
 	level++;
       if (groupStart[k] == groupSym[1])
 	level--;
-      if (level = 0)
+      if (level == 0)
 	return k + 1;
     }
   return -1;
@@ -573,7 +573,7 @@ compileLine (FileInfo * nested)
 {
   char *curchar = NULL;
   int ch = 0;
-  int func;			/*function number for xpath, etc. */
+  int func = 0;
   EntryType type = 0;
   char *action = NULL;
   int actionLength = 0;
@@ -632,8 +632,23 @@ compileLine (FileInfo * nested)
       if (ch != '(')
 	while ((ch = *curchar++) <= 32 && ch != 0);
       argsStart = curchar - 1;
-      argsLength = find_group_length ("()", argsStart) - 2;
-      lookFor = argsStart + 1;
+      argsLength = find_group_length ("()", argsStart);
+      if (argsLength < 0)
+	{
+	  semanticError (nested, "unmatched parentheses in column 2 '%s'",
+			 lookFor);
+	  return 0;
+	}
+  switch (func)
+    {
+    case 1:
+      type |= xpathEntry;
+      break;
+    default:
+      break;
+    }
+      lookFor = argsStart;
+      *lookFor = '&';
       lookForLength = argsLength - 1;
     }
   else
@@ -692,14 +707,6 @@ compileLine (FileInfo * nested)
     }
   if (actionNum < 0)
     actionNum = generic;
-  switch (func)
-    {
-    case 1:
-      type = xpathEntry;
-      break;
-    default:
-      break;
-    }
   hashInsert (semanticTable, (xmlChar *) lookFor, type, actionNum,
 	      inserts, style);
   nested->numEntries++;
@@ -907,7 +914,9 @@ do_xpath_expr (xmlDoc * doc)
 	  xmlNodeSet *nodeSet;
 	  xmlNode *node;
 	  int k;
-	  xpathObj = xmlXPathEvalExpression (curEntry->key, xpathCtx);
+semanticError (NULL, "xpath");
+	  xpathObj = xmlXPathEvalExpression (&curEntry->key[1], 
+xpathCtx);
 	  if (xpathObj == NULL || xpathObj->type != XPATH_NODESET)
 	    continue;
 	  nodeSet = xpathObj->nodesetval;

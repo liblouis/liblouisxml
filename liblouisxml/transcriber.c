@@ -1617,11 +1617,14 @@ doLeftJustify (void)
 static int
 doContents (void)
 {
+int  lastWord;
+int lastWordLength;
   int orig_translatedLength = 0;
   int charactersWritten = 0;
   int cellsToWrite = 0;
   int availableCells = 0;
   int k;
+int numbersStart;
   int numbersLength = 0;
   int sameLine = 0;
   if ((!ud->braille_pages && !ud->print_pages) || ud->line_fill == ' ')
@@ -1631,7 +1634,7 @@ doContents (void)
     }
   if (translatedBuffer[translatedLength - 1] == 0xa0)
     {
-      /* No page numbers anyway*/
+      /* No page numbers anyway */
       translatedLength--;
       doLeftJustify ();
       return 1;
@@ -1643,13 +1646,18 @@ doContents (void)
       doLeftJustify ();
       return 1;
     }
+  numbersStart = k + 1;
+  numbersLength = orig_translatedLength - translatedLength;
   translatedLength = k;
+for (; k >= 0 && translatedBuffer[k] > 32; k--);
+lastWord = k;
+lastWordLength = translatedLength - lastWord;
   while (charactersWritten < translatedLength)
     {
       int wordTooLong = 0;
       int breakAt = 0;
       int leadingBlanks = 0;
-int lastLineCells;
+      int lastLineCells;
       if (!sameLine)
 	{
 	  availableCells = startLine ();
@@ -1660,13 +1668,13 @@ int lastLineCells;
 	    }
 	  else
 	    leadingBlanks = style->left_margin;
-if (leadingBlanks < 0)
-leadingBlanks = 0;
+	  if (leadingBlanks < 0)
+	    leadingBlanks = 0;
 	  if (!insertCharacters (blanks, leadingBlanks))
 	    return 0;
 	  availableCells -= leadingBlanks;
-lastLineCells = availableCells - (orig_translatedLength - 
-translatedLength - 2);
+	  lastLineCells = availableCells - (orig_translatedLength -
+					    translatedLength - 2);
 	}
       if (numbersLength)
 	{
@@ -1897,10 +1905,10 @@ styleBody (void)
 	 translatedBuffer[translatedLength - 1] != escapeChar)
     translatedLength--;
   if (translatedLength <= 0)
-{
-ud->translated_length = 0;
-    return 1;
-}
+    {
+      ud->translated_length = 0;
+      return 1;
+    }
   if (!ud->paragraphs)
     {
       cellsWritten = 0;
@@ -1914,7 +1922,7 @@ ud->translated_length = 0;
       else if (!insertCharacters (ud->lineEnd, strlen (ud->lineEnd)))
 	return 0;
       writeOutbuf ();
-ud->translated_length = 0;
+      ud->translated_length = 0;
       return 1;
     }
   if (action == contentsheader && ud->contents != 2)
@@ -2010,11 +2018,11 @@ write_paragraph (sem_act action)
 {
   StyleType *holdStyle = action_to_style (action);
   if (!((ud->text_length > 0 || ud->translated_length > 0) &&
-      ud->style_top >= 0))
+	ud->style_top >= 0))
     return 1;
   if (holdStyle == NULL)
     holdStyle = lookup_style ("para");
-  /* We must do some of the work of start_styl**/
+  /* We must do some of the work of start_styl* */
   if (ud->style_top < (STACKSIZE - 2))
     ud->style_top++;
   styleSpec = &ud->style_stack[ud->style_top];

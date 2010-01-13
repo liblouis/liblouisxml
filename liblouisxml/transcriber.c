@@ -1645,9 +1645,9 @@ doContents (void)
   for (--k; k >= 0 && translatedBuffer[k] > 32; k--);
   lastWord = k + 1;
   lastWordLength = numbersStart - lastWord;
-for (k = numbersStart; k < translatedLength; k++)
-if (translatedBuffer[k] == 0xa0)
-translatedBuffer[k] = ' ';
+  for (k = numbersStart; k < translatedLength; k++)
+    if (translatedBuffer[k] == 0xa0)
+      translatedBuffer[k] = ' ';
   untilLastWord = lastWord - 1;
   while (charactersWritten < untilLastWord)
     {
@@ -1734,8 +1734,8 @@ translatedBuffer[k] = ' ';
     }
   if ((lastWordLength + numbersLength + 2) < availableCells)
     {
-insertCharacters (blanks, 1);
-availableCells--;
+      insertCharacters (blanks, 1);
+      availableCells--;
       if (!insertWidechars (&translatedBuffer[lastWord], lastWordLength))
 	return 0;
       availableCells -= lastWordLength;

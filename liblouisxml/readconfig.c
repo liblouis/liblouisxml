@@ -959,9 +959,6 @@ read_configuration_file (const char *configFileList, const char
 	  memset (ud->typeform, 0, sizeof (ud->typeform));
 	}
     }
-
-  if (errorCount)
-    lou_logPrint ("%d errors found, trying to continue", errorCount);
   ud->braille_page_number = ud->beginning_braille_page_number;
   if (entities)
     strcat (ud->xml_header, "]>\n");

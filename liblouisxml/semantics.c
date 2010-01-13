@@ -913,13 +913,14 @@ do_xpath_expr (xmlDoc * doc)
 	{
 	  xmlNodeSet *nodeSet;
 	  xmlNode *node;
+	  int size;
 	  int k;
 	  semanticError (NULL, "xpath");
 	  xpathObj = xmlXPathEvalExpression (&curEntry->key[1], xpathCtx);
 	  if (xpathObj == NULL || xpathObj->type != XPATH_NODESET)
 	    continue;
 	  nodeSet = xpathObj->nodesetval;
-	  int size = (nodeSet) ? nodeSet->nodeNr : 0;
+	   size = (nodeSet) ? nodeSet->nodeNr : 0;
 
 	  for (k = 0; k < size; k++)
 	    {

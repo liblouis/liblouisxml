@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dtbook xmlns="http://www.daisy.org/z3986/2005/dtbook/"
+	version="2005-3" xml:lang="en-US">
+  <head />
+  <book>
+    <frontmatter>
+      <doctitle>Not defined Title</doctitle>
+      <docauthor>Not defined Creator</docauthor>
+    </frontmatter>
+    <bodymatter>
+      <level>
+	<h>Heading 1.1</h>
+	<p>A line</p>
+	<level>
+	  <h>Heading 2.1</h>
+	  <p>A line</p>
+	</level>
+	<level>
+	  <h>Heading 2.2</h>
+	  <p>A line</p>
+	</level>
+      </level>
+      <level>
+	<h>Heading 1.2</h>
+	<p>A line</p>
+	<level>
+	  <h>Heading 2.3</h>
+	  <p>A line</p>
+	  <level>
+	    <h>Heading 3.1</h>
+	    <p>A line</p>
+	    <level>
+	      <h>Heading 4.1</h>
+	      <p>A line</p>
+	      <level>
+		<h>Heading 5.1</h>
+		<p>A line</p>
+		<level>
+		  <h>Heading 6.1</h>
+		  <p>A line</p>
+		</level>
+	      </level>
+	    </level>
+	  </level>
+	</level>
+      </level>
+    </bodymatter>
+  </book>
+</dtbook>

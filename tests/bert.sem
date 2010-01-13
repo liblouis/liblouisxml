@@ -1,0 +1,20 @@
+document dtbook
+skip head
+no book
+pagenum pagenum
+no frontmatter
+no bodymatter
+no rearmatter
+no level
+
+heading1 doctitle
+heading1 docauthor
+
+heading1 &xpath(//*[local-name()='level']/*[local-name()='h'])
+heading2 &xpath(/level/level/h)
+heading3 &xpath(/level/level/level/h)
+heading4 &xpath(/level/level/level/level/h)
+heading4 &xpath(/level/level/level/level/level/h)
+heading4 &xpath(/level/level/level/level/level/level/h)
+
+para p

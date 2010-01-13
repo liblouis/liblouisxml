@@ -40,11 +40,14 @@ and "make install". You will need root privileges for the installation
 step.
 
 This will produce the liblouisxml library and the programs xml2brl and
-the script msword2brl.
+the script msword2brl, rtf2brl and pdf2brl.
 
 Note that that the library and programs will not work properly unless
 you have first installed the latest version of liblouis. msword2brl
-requires the installation of antiword.
+requires the installation of antiword. rtf2brl requires rtf2xml which
+can be obtained from http://rtf2xml.sourceforge.net/. pdf2brl requires
+pdf2text which is part of poppler (http://poppler.freedesktop.org/) or
+also xpdf (http://www.foolabs.com/xpdf/download.html).
 
 RELEASE NOTES 
 

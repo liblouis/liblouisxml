@@ -1617,29 +1617,23 @@ doLeftJustify (void)
 static int
 doContents (void)
 {
-int  lastWord;
-int lastWordLength;
-  int orig_translatedLength = 0;
+  int lastWord;
+  int lastWordLength;
+  int untilLastWord;
+  int numbersStart;
+  int numbersLength;
+  int leadingBlanks = 0;
   int charactersWritten = 0;
   int cellsToWrite = 0;
   int availableCells = 0;
   int k;
-int numbersStart;
-  int numbersLength = 0;
-  int sameLine = 0;
-  if ((!ud->braille_pages && !ud->print_pages) || ud->line_fill == ' ')
-    {
-      doLeftJustify ();
-      return 1;
-    }
   if (translatedBuffer[translatedLength - 1] == 0xa0)
     {
-      /* No page numbers anyway */
+      /* No page numbers */
       translatedLength--;
       doLeftJustify ();
       return 1;
     }
-  orig_translatedLength = translatedLength;
   for (k = translatedLength - 1; k > 0 && translatedBuffer[k] != 32; k--);
   if (k == 0)
     {
@@ -1647,50 +1641,33 @@ int numbersStart;
       return 1;
     }
   numbersStart = k + 1;
-  numbersLength = orig_translatedLength - translatedLength;
-  translatedLength = k;
-for (; k >= 0 && translatedBuffer[k] > 32; k--);
-lastWord = k;
-lastWordLength = translatedLength - lastWord;
-  while (charactersWritten < translatedLength)
+  numbersLength = translatedLength - numbersStart;
+  for (--k; k >= 0 && translatedBuffer[k] > 32; k--);
+  lastWord = k + 1;
+  lastWordLength = numbersStart - lastWord;
+for (k = numbersStart; k < translatedLength; k++)
+if (translatedBuffer[k] == 0xa0)
+translatedBuffer[k] = ' ';
+  untilLastWord = lastWord - 1;
+  while (charactersWritten < untilLastWord)
     {
       int wordTooLong = 0;
       int breakAt = 0;
-      int leadingBlanks = 0;
-      int lastLineCells;
-      if (!sameLine)
+      availableCells = startLine ();
+      if (styleSpec->status == startBody)
 	{
-	  availableCells = startLine ();
-	  if (styleSpec->status == startBody)
-	    {
-	      leadingBlanks = style->left_margin + style->first_line_indent;
-	      styleSpec->status = resumeBody;
-	    }
-	  else
-	    leadingBlanks = style->left_margin;
-	  if (leadingBlanks < 0)
-	    leadingBlanks = 0;
-	  if (!insertCharacters (blanks, leadingBlanks))
-	    return 0;
-	  availableCells -= leadingBlanks;
-	  lastLineCells = availableCells - (orig_translatedLength -
-					    translatedLength - 2);
+	  leadingBlanks = style->left_margin + style->first_line_indent;
+	  styleSpec->status = resumeBody;
 	}
-      if (numbersLength)
-	{
-	  if ((availableCells - numbersLength) <= 3)
-	    insertCharacters (blanks, availableCells - numbersLength);
-	  else
-	    {
-	      insertCharacters (blanks, 1);
-	      for (k = availableCells - (numbersLength + 1); k > 0; k--)
-		insertCharacters (&ud->line_fill, 1);
-	      insertCharacters (blanks, 1);
-	    }
-	  availableCells = numbersLength;
-	}
-      if ((charactersWritten + availableCells) >= translatedLength)
-	cellsToWrite = translatedLength - charactersWritten;
+      else
+	leadingBlanks = style->left_margin;
+      if (leadingBlanks < 0)
+	leadingBlanks = 0;
+      if (!insertCharacters (blanks, leadingBlanks))
+	return 0;
+      availableCells -= leadingBlanks;
+      if ((charactersWritten + availableCells) >= untilLastWord)
+	cellsToWrite = untilLastWord - charactersWritten;
       else
 	{
 	  for (cellsToWrite = availableCells - 2; cellsToWrite > 0;
@@ -1727,19 +1704,76 @@ lastWordLength = translatedLength - lastWord;
 	  if (!insertDubChars (litHyphen, strlen (litHyphen)))
 	    return 0;
 	}
-      if (charactersWritten >= translatedLength && !numbersLength)
+      if (charactersWritten < untilLastWord)
+	finishLine ();
+      else
 	{
-	  numbersLength = orig_translatedLength - translatedLength;
-	  translatedLength = orig_translatedLength;
-	  if ((availableCells - cellsToWrite) < (numbersLength + 2))
-	    finishLine ();
-	  else
+	  availableCells -= cellsToWrite;
+	  if (availableCells <= 0)
 	    {
-	      availableCells -= cellsToWrite;
-	      sameLine = 1;
+	      finishLine ();
+	      availableCells = 0;
 	    }
-	  continue;
 	}
+    }
+  if (availableCells == 0)
+    {
+      availableCells = startLine ();
+      if (styleSpec->status == startBody)
+	{
+	  leadingBlanks = style->left_margin + style->first_line_indent;
+	  styleSpec->status = resumeBody;
+	}
+      else
+	leadingBlanks = style->left_margin;
+      if (leadingBlanks < 0)
+	leadingBlanks = 0;
+      if (!insertCharacters (blanks, leadingBlanks))
+	return 0;
+      availableCells -= leadingBlanks;
+    }
+  if ((lastWordLength + numbersLength + 2) < availableCells)
+    {
+insertCharacters (blanks, 1);
+availableCells--;
+      if (!insertWidechars (&translatedBuffer[lastWord], lastWordLength))
+	return 0;
+      availableCells -= lastWordLength;
+      if ((availableCells - numbersLength) < 3)
+	insertCharacters (blanks, availableCells - numbersLength);
+      else
+	{
+	  insertCharacters (blanks, 1);
+	  for (k = availableCells - (numbersLength + 1); k > 0; k--)
+	    insertCharacters (&ud->line_fill, 1);
+	  insertCharacters (blanks, 1);
+	}
+      if (!insertWidechars (&translatedBuffer[numbersStart], numbersLength))
+	return 0;
+      finishLine ();
+    }
+  else
+    {
+      finishLine ();
+      availableCells = startLine ();
+      leadingBlanks = style->left_margin;
+      if (!insertCharacters (blanks, leadingBlanks))
+	return 0;
+      availableCells -= leadingBlanks;
+      if (!insertWidechars (&translatedBuffer[lastWord], lastWordLength))
+	return 0;
+      availableCells -= lastWordLength;
+      if ((availableCells - numbersLength) < 3)
+	insertCharacters (blanks, availableCells - numbersLength);
+      else
+	{
+	  insertCharacters (blanks, 1);
+	  for (k = availableCells - (numbersLength + 1); k > 0; k--)
+	    insertCharacters (&ud->line_fill, 1);
+	  insertCharacters (blanks, 1);
+	}
+      if (!insertWidechars (&translatedBuffer[numbersStart], numbersLength))
+	return 0;
       finishLine ();
     }
   return 1;

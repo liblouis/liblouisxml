@@ -52,7 +52,7 @@ liblouisxmlErrors (void *ctx ATTRIBUTE_UNUSED, const char *msg, ...)
   char buffer[MAXNAMELEN];
   va_start (args, msg);
   memset (buffer, 0, sizeof (buffer));
-  vsnprintf (buffer, sizeof (buffer - 4), msg, args);
+  vsnprintf (buffer, sizeof (buffer) - 4, msg, args);
   va_end (args);
   lou_logPrint ("%s", buffer);
 }
@@ -61,14 +61,14 @@ static void
 initLibxml2 (void)
 {
   static int initialized = 0;
-  xmlGenericErrorFunc *handler;
   if (initialized)
     return;
   initialized = 1;
   LIBXML_TEST_VERSION xmlKeepBlanksDefault (0);
   xmlSubstituteEntitiesDefault (1);
-  handler = (xmlGenericErrorFunc *) & liblouisxmlErrors;
-//  initGenericErrorDefaultFunc (handler);
+
+  xmlParserCtxtPtr ctxt = xmlNewParserCtxt();
+  xmlSetGenericErrorFunc(ctxt, liblouisxmlErrors);
 }
 
 static int
@@ -158,7 +158,7 @@ int
 {
 /* Translate the well-formed xml expression in inFileName into 
 * braille according to the specifications in configFileName. If the 
-* expression is not well-formed or there are oteer errors, return a negative 
+* expression is not well-formed or there are other errors, return a negative 
 * number indicating the error.*/
   widechar outbuf[2 * BUFSIZE];
   xmlParserCtxtPtr ctxt = NULL;

@@ -1804,6 +1804,23 @@ produced. This affects only documents processed with this
 semantic-action file. The configuration setting @code{newEntries} 
 affects all documents.
 
+@section Using XPath Expressions
+
+@example
+para &xpath(h4)
+@end example
+
+This example causes any element with the name @samp{h4} to be given the 
+semantic action @code{para}, no matter what other assignments may be 
+made to it. In general, XPath expressions are entered in the second 
+column with the syntax @code{&xpath(...)}. That is, the XPath 
+expression is placed within parentheses following @code{&xpath}. It may 
+contain parentheses itself, as long as they match. The third column may 
+contain arguments, as with any line in a semantic-action file.
+
+The @samp{&funcname(...)} notation may be used for other features, such 
+as XPointer, in the future.
+
 @node Special Features, Special Formats, Connecting with the xml Document, Top
 @chapter Special Features
 

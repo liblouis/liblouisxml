@@ -38,8 +38,8 @@
 
 UserData *ud = NULL;
 
-char *
-EXPORT_CALL lbx_version ()
+char *EXPORT_CALL
+lbx_version ()
 {
   static char *version = PACKAGE_VERSION;
   return version;
@@ -57,25 +57,44 @@ liblouisxmlErrors (void *ctx ATTRIBUTE_UNUSED, const char *msg, ...)
   lou_logPrint ("%s", buffer);
 }
 
-static void
-initLibxml2 (void)
-{
-  static int initialized = 0;
-  if (initialized)
-    return;
-  initialized = 1;
-  LIBXML_TEST_VERSION xmlKeepBlanksDefault (0);
-  xmlSubstituteEntitiesDefault (1);
-
-  xmlParserCtxtPtr ctxt = xmlNewParserCtxt();
-  xmlSetGenericErrorFunc(ctxt, liblouisxmlErrors);
-}
-
 static int
-processXmlDocument (xmlDoc * doc)
+processXmlDocument (const char *inputDoc, int length, int mode)
 {
+  /*This function does all processing of xml documents as such.
+   * If length is 0 the document is assumed to be a file.
+   * If length is not 0 it is assumed to be in memory.
+   * Sort of hackish, but only hackers will see it. */
+
+  xmlDoc *doc = NULL;
   xmlNode *rootElement = NULL;
   int haveSemanticFile;
+  xmlParserCtxt *ctxt;
+  static int initialized = 0;
+  if (!initialized)
+    {
+      initialized = 1;
+      LIBXML_TEST_VERSION xmlKeepBlanksDefault (0);
+      xmlSubstituteEntitiesDefault (1);
+    }
+  ctxt = xmlNewParserCtxt ();
+  xmlSetGenericErrorFunc (ctxt, liblouisxmlErrors);
+  if (length == 0)
+    {
+      if ((mode & htmlDoc))
+	doc = htmlParseFile (inputDoc, NULL);
+      else
+	{
+	  if (ud->internet_access)
+	    doc = xmlCtxtReadFile (ctxt, inputDoc, NULL,
+				   XML_PARSE_DTDVALID | XML_PARSE_NOENT);
+	  else
+	    doc = xmlParseFile (inputDoc);
+	  if (doc == NULL)
+	    doc = htmlParseFile (inputDoc, NULL);
+	}
+    }
+  else
+    doc = xmlParseMemory (inputDoc, length);
   if (doc == NULL)
     return -1;
   rootElement = xmlDocGetRootElement (doc);
@@ -86,25 +105,32 @@ processXmlDocument (xmlDoc * doc)
   examine_document (rootElement);
   append_new_entries ();
   if (!haveSemanticFile)
-    return -2;
+    {
+      lou_logPrint ("Could not process semantic-action file");
+      return -2;
+    }
   transcribe_document (rootElement);
+  xmlFreeDoc (doc);
+  xmlCleanupParser ();
+  initGenericErrorDefaultFunc (NULL);
+  xmlFreeParserCtxt (ctxt);
   return 1;
 }
 
-void *
-EXPORT_CALL lbx_initialize (const char *configFileName, const char 	*logFileName, 
-const char *settingsString)
+void *EXPORT_CALL
+lbx_initialize (const char *configFileName,
+		const char *logFileName, const char *settingsString)
 {
-  initLibxml2 ();
   if (!read_configuration_file (configFileName, logFileName,
 				settingsString, 0))
     return NULL;
   return (void *) ud;
 }
 
-int
-EXPORT_CALL lbx_translateString (const char *const configFileName, char *inbuf,
-		     widechar * outbuf, int *outlen, unsigned int mode)
+int EXPORT_CALL
+lbx_translateString (const char *const configFileName,
+		     char *inbuf, widechar * outbuf,
+		     int *outlen, unsigned int mode)
 {
 /* Translate the well-formed xml expression in inbuf into braille 
 * according to the specifications in configFileName. If the expression 
@@ -113,8 +139,6 @@ EXPORT_CALL lbx_translateString (const char *const configFileName, char *inbuf,
   int k;
   char *xmlInbuf;
   int inlen = strlen (inbuf);
-  xmlDoc *doc;
-  initLibxml2 ();
   if (!read_configuration_file (configFileName, NULL, NULL, mode))
     return -3;
   ud->inbuf = inbuf;
@@ -141,10 +165,7 @@ EXPORT_CALL lbx_translateString (const char *const configFileName, char *inbuf,
       strcat (xmlInbuf, "\n");
       strcat (xmlInbuf, inbuf);
     }
-  doc = xmlParseMemory ((char *) xmlInbuf, inlen);
-  processXmlDocument (doc);
-  xmlFreeDoc (doc);
-  xmlCleanupParser ();
+  processXmlDocument (xmlInbuf, inlen, mode);
   *outlen = ud->outlen_so_far;
   if (xmlInbuf != inbuf)
     free (xmlInbuf);
@@ -177,31 +198,7 @@ int
     }
   else
     ud->outFile = stdout;
-  initLibxml2 ();
-  if ((mode & htmlDoc))
-    doc = htmlParseFile (inFileName, NULL);
-  else
-    {
-      if (ud->internet_access)
-	{
-	  ctxt = xmlNewParserCtxt ();
-	  doc = xmlCtxtReadFile (ctxt, inFileName, NULL, XML_PARSE_DTDVALID |
-				 XML_PARSE_NOENT);
-	}
-      else
-	doc = xmlParseFile (inFileName);
-      if (doc == NULL)
-	doc = htmlParseFile (inFileName, NULL);
-    }
-  if (doc == NULL)
-    return -4;
-  processXmlDocument (doc);
-  xmlFreeDoc (doc);
-  if (ud->internet_access)
-    xmlFreeParserCtxt (ctxt);
-  else
-    xmlCleanupParser ();
-  xmlCleanupParser ();
+  processXmlDocument (inFileName, 0, mode);
   if (ud->outFile != stdout)
     fclose (ud->outFile);
   return 1;
@@ -284,8 +281,8 @@ int
   return 1;
 }
 
-void
-EXPORT_CALL lbx_free (void)
+void EXPORT_CALL
+lbx_free (void)
 {
 /* Free all memory used by liblouisxml. You MUST call this function at 
 * the END of your application.*/

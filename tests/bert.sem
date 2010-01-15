@@ -10,11 +10,10 @@ no level
 heading1 doctitle
 heading1 docauthor
 
+# this is using the local-name function to be independent of any namespace declaration
 heading1 &xpath(//*[local-name()='level']/*[local-name()='h'])
-heading2 &xpath(/level/level/h)
-heading3 &xpath(/level/level/level/h)
-heading4 &xpath(/level/level/level/level/h)
-heading4 &xpath(/level/level/level/level/level/h)
-heading4 &xpath(/level/level/level/level/level/level/h)
+
+# this is using namespace prefixes and assumes the prefix and namespace have been registered with libxml2
+heading1 &xpath(//dtb:level/dtb:h)
 
 para p

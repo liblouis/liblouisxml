@@ -32,8 +32,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
-
 #include "louisxml.h"
 #include <libxml/xpath.h>
 #include "sem_names.h"
@@ -86,8 +84,10 @@ static int notFound = -1;
 static HashTable *actionTable = NULL;
 static HashTable *semanticTable = NULL;
 static HashTable *newEntriesTable;
-
 static int errorCount = 0;
+static xmlXPathContext *xpathCtx = NULL;
+static int registerNamespaces (FileInfo * Nested, xmlXPathContextPtr
+			       xpathCtx, const xmlChar * nsList);
 
 static void
 semanticError (FileInfo * nested, char *format, ...)
@@ -250,6 +250,7 @@ find_semantic_number (const char *name)
   static const char *pseudoActions[] = {
     "include",
     "newentries",
+    "namespaces",
     NULL
   };
   int k;
@@ -282,6 +283,9 @@ destroy_semantic_table (void)
   newEntriesTable = NULL;
   hashFree (actionTable);
   actionTable = NULL;
+  if (xpathCtx != NULL)
+    xmlXPathFreeContext (xpathCtx);
+  xpathCtx = NULL;
 }
 
 static widechar
@@ -328,7 +332,7 @@ encodeInsertions (FileInfo * nested, xmlChar * insertions, int length)
   inserts.lastInsert = 0;
   k = 0;
   prevk = 0;
-/*Inserjions are placed in asserts.charInserts and consist of a length 
+/*Inserjions are placed in inserts.charInserts and consist of a length 
 * followed by the characters to be inserted. The length is one more than 
 * the numbr of characters to make it simpler to step through the 
 * insertions in the next function.*/
@@ -641,14 +645,14 @@ compileLine (FileInfo * nested)
 			 lookFor);
 	  return 0;
 	}
-  switch (func)
-    {
-    case 1:
-      type |= xpathEntry;
-      break;
-    default:
-      break;
-    }
+      switch (func)
+	{
+	case 1:
+	  type |= xpathEntry;
+	  break;
+	default:
+	  break;
+	}
       lookFor = argsStart;
       *lookFor = '&';
       lookForLength = argsLength - 1;
@@ -679,6 +683,9 @@ compileLine (FileInfo * nested)
 	case end_all + 2:	/*newentries */
 	  docNewEntries = 0;
 	  break;
+	case end_all + 3:
+	  registerNamespaces (nested, xpathCtx, lookFor);
+	  break;
 	default:
 	  break;
 	}
@@ -686,7 +693,8 @@ compileLine (FileInfo * nested)
     }
   if (hashLookup (semanticTable, (xmlChar *) lookFor) != notFound)
     {
-      semanticError (nested, "duplicate entry '%s' in column 2", lookFor);
+      if (ud->debug)
+	semanticError (nested, "duplicate entry '%s' in column 2", lookFor);
       return 1;
     }
   countAttrValues ((xmlChar *) lookFor);
@@ -819,6 +827,7 @@ static int moreEntries = 0;
 int
 compile_semantic_table (xmlNode * rootElement)
 {
+  xmlDoc *doc = rootElement->doc;
   char fileName[MAXNAMELEN];
   attrValueCounts = NULL;
   haveSemanticFile = 1;
@@ -827,13 +836,15 @@ compile_semantic_table (xmlNode * rootElement)
   numEntries = 0;
   if (*ud->semantic_files)
     {
-/*Process file list*/
+      /*Process file list */
       int listLength;
       int currentListPos;
       int k;
       listLength = strlen (ud->semantic_files);
       if (strcmp (ud->semantic_files, oldFileList) == 0)
 	return 1;
+      destroy_semantic_table ();
+      xpathCtx = xmlXPathNewContext (rootElement->doc);
       strcpy (oldFileList, ud->semantic_files);
       firstFileName[0] = 0;
       for (k = 0; k < listLength; k++)
@@ -880,6 +891,8 @@ compile_semantic_table (xmlNode * rootElement)
       getRootName (rootElement, fileName);
       if (strcmp (fileName, oldFileList) == 0)
 	return 1;
+      destroy_semantic_table ();
+      xpathCtx = xmlXPathNewContext (rootElement->doc);
       strcpy (oldFileList, fileName);
       strcpy (firstFileName, fileName);
       if (!sem_compileFile (fileName))
@@ -901,118 +914,120 @@ compile_semantic_table (xmlNode * rootElement)
 static void addNewEntries (const xmlChar * key);
 
 /**
- * register_namespaces:
+ * registerNamespaces:
  * @xpathCtx:		the pointer to an XPath context.
  * @nsList:		the list of known namespaces in 
  *			"<prefix1>=<href1> <prefix2>=href2> ..." format.
  *
  * Registers namespaces from @nsList in @xpathCtx.
  *
- * Returns 0 on success and a negative value otherwise.
+ * Returns 1 on success and 0 on failure.
  */
-int 
-register_namespaces(xmlXPathContextPtr xpathCtx, const xmlChar* nsList) {
-    xmlChar* nsListDup;
-    xmlChar* prefix;
-    xmlChar* href;
-    xmlChar* next;
-    
-    assert(xpathCtx);
-    assert(nsList);
+static int
+registerNamespaces (FileInfo * nested, xmlXPathContextPtr xpathCtx, const
+		    xmlChar * nsList)
+{
+  xmlChar *nsListDup;
+  xmlChar *prefix;
+  xmlChar *href;
+  xmlChar *next;
 
-    nsListDup = xmlStrdup(nsList);
-    if(nsListDup == NULL) {
-	fprintf(stderr, "Error: unable to strdup namespaces list\n");
-	return(-1);	
+  nsListDup = xmlStrdup (nsList);
+  if (nsListDup == NULL)
+    {
+      semanticError (nested, "Error: unable to strdup namespaces list\n");
+      return 0;
     }
-    
-    next = nsListDup; 
-    while(next != NULL) {
-	/* skip spaces */
-	while((*next) == ' ') next++;
-	if((*next) == '\0') break;
-
-	/* find prefix */
-	prefix = next;
-	next = (xmlChar*)xmlStrchr(next, '=');
-	if(next == NULL) {
-	    fprintf(stderr,"Error: invalid namespaces list format\n");
-	    xmlFree(nsListDup);
-	    return(-1);	
+  next = nsListDup;
+  while (next != NULL)
+    {
+      if ((*next) == '\0')
+	break;
+      /* find prefix */
+      prefix = next;
+      next = (xmlChar *) xmlStrchr (next, '=');
+      if (next == NULL)
+	{
+	  semanticError (nested, "Error: invalid namespaces list format\n");
+	  xmlFree (nsListDup);
+	  return 0;
 	}
-	*(next++) = '\0';	
-	
-	/* find href */
-	href = next;
-	next = (xmlChar*)xmlStrchr(next, ' ');
-	if(next != NULL) {
-	    *(next++) = '\0';	
+      *(next++) = '\0';
+      /* find href */
+      href = next;
+      next = (xmlChar *) xmlStrchr (next, ',');
+      if (next != NULL)
+	{
+	  *(next++) = '\0';
 	}
-
-	/* do register namespace */
-	if(xmlXPathRegisterNs(xpathCtx, prefix, href) != 0) {
-	    fprintf(stderr,"Error: unable to register NS with prefix=\"%s\" and href=\"%s\"\n", prefix, href);
-	    xmlFree(nsListDup);
-	    return(-1);	
+      /* do register namespace */
+      if (xmlXPathRegisterNs (xpathCtx, prefix, href) != 0)
+	{
+	  semanticError (nested,
+			 "Error: unable to register NS with prefix=\"%s\" and href=\"%s\"\n",
+			 prefix, href);
+	  xmlFree (nsListDup);
+	  return 0;
 	}
     }
-    
-    xmlFree(nsListDup);
-    return(0);
+  xmlFree (nsListDup);
+  return 1;
 }
 
-void
-print_xpath_nodes(xmlNodeSetPtr nodes, FILE* output) {
-    xmlNodePtr cur;
-    int size;
-    int i;
-    
-    assert(output);
-    size = (nodes) ? nodes->nodeNr : 0;
-    
-    fprintf(output, "Result (%d nodes):\n", size);
-    for(i = 0; i < size; ++i) {
-	assert(nodes->nodeTab[i]);
-	
-	if(nodes->nodeTab[i]->type == XML_NAMESPACE_DECL) {
-	    xmlNsPtr ns;
-	    
-	    ns = (xmlNsPtr)nodes->nodeTab[i];
-	    cur = (xmlNodePtr)ns->next;
-	    if(cur->ns) { 
-	        fprintf(output, "= namespace \"%s\"=\"%s\" for node %s:%s\n", 
-		    ns->prefix, ns->href, cur->ns->href, cur->name);
-	    } else {
-	        fprintf(output, "= namespace \"%s\"=\"%s\" for node %s\n", 
-		    ns->prefix, ns->href, cur->name);
+static void
+printXpathNodes (xmlNodeSetPtr nodes)
+{
+  xmlNodePtr cur;
+  int size;
+  int i;
+  size = (nodes) ? nodes->nodeNr : 0;
+  semanticError (NULL, "Result (%d nodes):\n", size);
+  for (i = 0; i < size; ++i)
+    {
+      if (nodes->nodeTab[i]->type == XML_NAMESPACE_DECL)
+	{
+	  xmlNsPtr ns;
+	  ns = (xmlNsPtr) nodes->nodeTab[i];
+	  cur = (xmlNodePtr) ns->next;
+	  if (cur->ns)
+	    {
+	      semanticError (NULL,
+			     "= namespace \"%s\"=\"%s\" for node %s:%s\n",
+			     ns->prefix, ns->href, cur->ns->href, cur->name);
 	    }
-	} else if(nodes->nodeTab[i]->type == XML_ELEMENT_NODE) {
-	    cur = nodes->nodeTab[i];   	    
-	    if(cur->ns) { 
-    	        fprintf(output, "= element node \"%s:%s\"\n", 
-		    cur->ns->href, cur->name);
-	    } else {
-    	        fprintf(output, "= element node \"%s\"\n", 
-		    cur->name);
+	  else
+	    {
+	      semanticError (NULL, "= namespace \"%s\"=\"%s\" for node %s\n",
+			     ns->prefix, ns->href, cur->name);
 	    }
-	} else {
-	    cur = nodes->nodeTab[i];    
-	    fprintf(output, "= node \"%s\": type %d\n", cur->name, cur->type);
+	}
+      else if (nodes->nodeTab[i]->type == XML_ELEMENT_NODE)
+	{
+	  cur = nodes->nodeTab[i];
+	  if (cur->ns)
+	    {
+	      semanticError (NULL, "= element node \"%s:%s\"\n",
+			     cur->ns->href, cur->name);
+	    }
+	  else
+	    {
+	      semanticError (NULL, "= element node \"%s\"\n", cur->name);
+	    }
+	}
+      else
+	{
+	  cur = nodes->nodeTab[i];
+	  semanticError (NULL, "= node \"%s\": type %d\n", cur->name,
+			 cur->type);
 	}
     }
 }
 
 int
-do_xpath_expr (xmlDoc * doc)
+do_xpath_expr ()
 {
-  xmlXPathContext *xpathCtx;
   xmlXPathObject *xpathObj;
   HashEntry *curEntry;
-  if (doc == NULL)
-    return 0;
-  xpathCtx = xmlXPathNewContext (doc);
-  /* hard code a prefix namespace pair for debugging purposes */
-  register_namespaces(xpathCtx, "dtb=http://www.daisy.org/z3986/2005/dtbook/");
   while ((curEntry = hashScan (semanticTable)))
     {
       if (curEntry->type & xpathEntry)
@@ -1025,11 +1040,9 @@ do_xpath_expr (xmlDoc * doc)
 	  if (xpathObj == NULL || xpathObj->type != XPATH_NODESET)
 	    continue;
 	  nodeSet = xpathObj->nodesetval;
-	  /* Print results */
-	  print_xpath_nodes(nodeSet, stdout);
-
+	  if (ud->debug)
+	    printXpathNodes (nodeSet);
 	  size = (nodeSet) ? nodeSet->nodeNr : 0;
-	  
 	  for (k = 0; k < size; k++)
 	    {
 	      node = nodeSet->nodeTab[k];
@@ -1039,10 +1052,8 @@ do_xpath_expr (xmlDoc * doc)
 	  xmlXPathFreeObject (xpathObj);
 	}
     }
-  xmlXPathFreeContext (xpathCtx);
   return 1;
 }
-
 
 sem_act
 set_sem_attr (xmlNode * node)

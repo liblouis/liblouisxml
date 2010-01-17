@@ -96,19 +96,22 @@ processXmlDocument (const char *inputDoc, int length, int mode)
   else
     doc = xmlParseMemory (inputDoc, length);
   if (doc == NULL)
-    return -1;
+    {
+      lou_logPrint ("Document could not be processed");
+      return 0;
+    }
   rootElement = xmlDocGetRootElement (doc);
   if (rootElement == NULL)
-    return -1;
+    {
+      lou_logPrint ("Document is empty");
+      return 0;
+    }
   haveSemanticFile = compile_semantic_table (rootElement);
-  do_xpath_expr (doc);
+  do_xpath_expr ();
   examine_document (rootElement);
   append_new_entries ();
   if (!haveSemanticFile)
-    {
-      lou_logPrint ("Could not process semantic-action file");
-      return -2;
-    }
+    return 0;
   transcribe_document (rootElement);
   xmlFreeDoc (doc);
   xmlCleanupParser ();
@@ -134,13 +137,13 @@ lbx_translateString (const char *const configFileName,
 {
 /* Translate the well-formed xml expression in inbuf into braille 
 * according to the specifications in configFileName. If the expression 
-* is not well-formed or there are oteer errors, return a negative 
-* number indicating the error.*/
+* is not well-formed or there are oteer errors, print an error 
+* message and return 0.*/
   int k;
   char *xmlInbuf;
   int inlen = strlen (inbuf);
   if (!read_configuration_file (configFileName, NULL, NULL, mode))
-    return -3;
+    return 0;
   ud->inbuf = inbuf;
   ud->inlen = inlen;
   ud->outbuf = outbuf;
@@ -160,12 +163,16 @@ lbx_translateString (const char *const configFileName,
     {
       inlen += strlen (ud->xml_header);
       if (!(xmlInbuf = malloc (inlen + 4)))
-	return -2;
+	{
+	  lou_logPrint ("Net eno<gh memery");
+	  return 0;
+	}
       strcpy (xmlInbuf, ud->xml_header);
       strcat (xmlInbuf, "\n");
       strcat (xmlInbuf, inbuf);
     }
-  processXmlDocument (xmlInbuf, inlen, mode);
+  if (!processXmlDocument (xmlInbuf, inlen, mode))
+    return 0;
   *outlen = ud->outlen_so_far;
   if (xmlInbuf != inbuf)
     free (xmlInbuf);
@@ -179,13 +186,13 @@ int
 {
 /* Translate the well-formed xml expression in inFileName into 
 * braille according to the specifications in configFileName. If the 
-* expression is not well-formed or there are other errors, return a negative 
-* number indicating the error.*/
+* expression is not well-formed or there are other errors, print 
+* an error message and return 0.*/
   widechar outbuf[2 * BUFSIZE];
   xmlParserCtxtPtr ctxt = NULL;
   xmlDoc *doc;
   if (!read_configuration_file (configFileName, NULL, NULL, mode))
-    return -3;
+    return 0;
   ud->outbuf = outbuf;
   ud->outlen = (sizeof (outbuf) / CHARSIZE) - 4;
   if (strcmp (outFileName, "stdout"))
@@ -193,12 +200,13 @@ int
       if (!(ud->outFile = fopen (outFileName, "w")))
 	{
 	  lou_logPrint ("Can't open file %s.", outFileName);
-	  return -3;
+	  return 0;
 	}
     }
   else
     ud->outFile = stdout;
-  processXmlDocument (inFileName, 0, mode);
+  if (!processXmlDocument (inFileName, 0, mode))
+    return 0;
   if (ud->outFile != stdout)
     fclose (ud->outFile);
   return 1;
@@ -210,16 +218,16 @@ int
    int mode)
 {
 /* Translate the text file in inFileName into braille according to
-* the specifications in configFileName. If there are errors, return a negative
-* number indicating the error.*/
+* the specifications in configFileName. If there are errors, print 
+* an error message and return 0.*/
   if (!read_configuration_file (configFileName, NULL, NULL, mode))
-    return -3;
+    return 0;
   if (strcmp (inFileName, "stdin"))
     {
       if (!(ud->inFile = fopen (inFileName, "r")))
 	{
 	  lou_logPrint ("Can't open file %s.\n", inFileName);
-	  return -3;
+	  return 0;
 	}
     }
   else
@@ -229,7 +237,7 @@ int
       if (!(ud->outFile = fopen (outFileName, "w")))
 	{
 	  lou_logPrint ("Can't open file %s.\n", outFileName);
-	  return -3;
+	  return 0;
 	}
     }
   else
@@ -249,16 +257,16 @@ int
 {
 /* Back translate the braille file in inFileName into either an 
 * xml file or a text file according to
-* the specifications in configFileName. If there are errors, return a negative
-* number indicating the error.*/
+* the specifications in configFileName. If there are errors, print an 
+* error message and return 0.*/
   if (!read_configuration_file (configFileName, NULL, NULL, mode))
-    return -3;
+    return 0;
   if (strcmp (inFileName, "stdin"))
     {
       if (!(ud->inFile = fopen (inFileName, "r")))
 	{
 	  lou_logPrint ("Can't open file %s.\n", inFileName);
-	  return -3;
+	  return 0;
 	}
     }
   else
@@ -268,7 +276,7 @@ int
       if (!(ud->outFile = fopen (outFileName, "w")))
 	{
 	  lou_logPrint ("Can't open file %s.\n", outFileName);
-	  return -3;
+	  return 0;
 	}
     }
   else

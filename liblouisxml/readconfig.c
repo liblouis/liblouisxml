@@ -69,8 +69,7 @@ configureError (FileInfo * nested, char *format, ...)
 #endif
   va_end (arguments);
   if (nested)
-    lou_logPrint ("%s:%d: %s",
-		  nested->fileName, nested->lineNumber, buffer);
+    lou_logPrint ("%s:%d: %s", nested->fileName, nested->lineNumber, buffer);
   else
     lou_logPrint ("%s", buffer);
   errorCount++;
@@ -508,7 +507,16 @@ compileConfig (FileInfo * nested)
     "formatFor",
     "31",
     "inputTextEncoding",
-    "32", "contents", "33", "linefill", "34", "style", "90", NULL
+    "32",
+    "contents",
+    "33",
+    "linefill",
+    "34",
+    "debug",
+    "35",
+    "style",
+    "90",
+    NULL
   };
   static const char *yesNo[] = {
     "no", "0", "yes", "1", NULL
@@ -699,6 +707,10 @@ compileConfig (FileInfo * nested)
 	    ud->line_fill = ' ';
 	  else
 	    ud->line_fill = nested->value[0];
+	  break;
+	case 35:
+	  if ((k = checkValues (nested, yesNo)) != NOTFOUND)
+	    ud->debug = k;
 	  break;
 	case 90:
 	  {

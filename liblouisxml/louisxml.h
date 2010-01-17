@@ -143,6 +143,7 @@ typedef struct
   FormatFor format_for;
   int contents;
   int has_contentsheader;
+  int debug;
   int cells_per_line;
   int lines_per_page;
   int beginning_braille_page_number;
@@ -210,7 +211,7 @@ int read_configuration_file (const char *configFileName,
 			     const char *logFileName, const char
 			     *settingsString, unsigned int mode);
 int config_compileSettings (const char *fileName);
-int do_xpath_expr (xmlDoc * doc);
+int do_xpath_expr ();
 int examine_document (xmlNode * node);
 int transcribe_document (xmlNode * node);
 int transcribe_math (xmlNode * node, int action);

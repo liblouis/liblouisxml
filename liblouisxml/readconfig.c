@@ -885,7 +885,7 @@ read_configuration_file (const char *configFileList, const char
   int currentListPos = 0;
   errorCount = 0;
   logFileNamex = logFileName;
-  if (mode != 0)
+  if (mode & dontInit)
     {
       ud->has_comp_code = 0;
       ud->has_math = 0;

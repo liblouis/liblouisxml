@@ -840,7 +840,7 @@ compile_semantic_table (xmlNode * rootElement)
       int currentListPos;
       int k;
       listLength = strlen (ud->semantic_files);
-      if (ud->mode != 0)
+      if (ud->mode & dontInit)
 	return 1;
       xpathCtx = xmlXPathNewContext (rootElement->doc);
       firstFileName[0] = 0;

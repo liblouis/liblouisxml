@@ -1,3 +1,4 @@
+namespaces dtb=http://www.daisy.org/z3986/2005/dtbook/
 document dtbook
 skip head
 no book

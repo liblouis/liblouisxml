@@ -910,6 +910,7 @@ read_configuration_file (const char *configFileList, const char
     return 0;
   memset (ud, 0, sizeof (UserData));
   entities = 0;
+  ud->mode = mode;
   ud->top = -1;
   ud->style_top = -1;
   for (k = document; k < notranslate; k++)

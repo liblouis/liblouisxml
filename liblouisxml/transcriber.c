@@ -123,6 +123,8 @@ start_document (void)
 int
 end_document (void)
 {
+  if (ud->style_top < 0)
+   ud->style_top = 0;
   if (ud->text_length != 0)
     insert_translation (ud->mainBrailleTable);
   if (ud->translated_length != 0)

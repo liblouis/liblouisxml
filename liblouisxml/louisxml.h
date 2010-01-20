@@ -143,6 +143,7 @@ typedef struct
   FormatFor format_for;
   int contents;
   int has_contentsheader;
+  unsigned int mode;
   int debug;
   int cells_per_line;
   int lines_per_page;

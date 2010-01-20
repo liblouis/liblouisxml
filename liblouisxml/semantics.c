@@ -239,7 +239,6 @@ hashLookup (HashTable * table, const unsigned char *key)
   return notFound;
 }
 
-static char oldFileList[MAXNAMELEN];
 static char firstFileName[MAXNAMELEN];
 static int haveSemanticFile = 1;
 static int docNewEntries = 1;
@@ -656,6 +655,7 @@ compileLine (FileInfo * nested)
       lookFor = argsStart;
       *lookFor = '&';
       lookForLength = argsLength - 1;
+      curchar = &lookFor[argsLength];
     }
   else
     {
@@ -827,7 +827,6 @@ static int moreEntries = 0;
 int
 compile_semantic_table (xmlNode * rootElement)
 {
-  xmlDoc *doc = rootElement->doc;
   char fileName[MAXNAMELEN];
   attrValueCounts = NULL;
   haveSemanticFile = 1;
@@ -841,11 +840,9 @@ compile_semantic_table (xmlNode * rootElement)
       int currentListPos;
       int k;
       listLength = strlen (ud->semantic_files);
-      if (strcmp (ud->semantic_files, oldFileList) == 0)
+      if (ud->mode != 0)
 	return 1;
-      destroy_semantic_table ();
       xpathCtx = xmlXPathNewContext (rootElement->doc);
-      strcpy (oldFileList, ud->semantic_files);
       firstFileName[0] = 0;
       for (k = 0; k < listLength; k++)
 	if (ud->semantic_files[k] == ',')
@@ -889,11 +886,9 @@ compile_semantic_table (xmlNode * rootElement)
   else
     {
       getRootName (rootElement, fileName);
-      if (strcmp (fileName, oldFileList) == 0)
+    if (ud->mode != 0)
 	return 1;
-      destroy_semantic_table ();
       xpathCtx = xmlXPathNewContext (rootElement->doc);
-      strcpy (oldFileList, fileName);
       strcpy (firstFileName, fileName);
       if (!sem_compileFile (fileName))
 	return (haveSemanticFile = 0);
@@ -935,7 +930,7 @@ registerNamespaces (FileInfo * nested, xmlXPathContextPtr xpathCtx, const
   nsListDup = xmlStrdup (nsList);
   if (nsListDup == NULL)
     {
-      semanticError (nested, "Error: unable to strdup namespaces list\n");
+      semanticError (nested, "Error: unable to strdup namespaces list");
       return 0;
     }
   next = nsListDup;
@@ -948,7 +943,7 @@ registerNamespaces (FileInfo * nested, xmlXPathContextPtr xpathCtx, const
       next = (xmlChar *) xmlStrchr (next, '=');
       if (next == NULL)
 	{
-	  semanticError (nested, "Error: invalid namespaces list format\n");
+	  semanticError (nested, "Error: invalid namespaces list format");
 	  xmlFree (nsListDup);
 	  return 0;
 	}
@@ -964,7 +959,7 @@ registerNamespaces (FileInfo * nested, xmlXPathContextPtr xpathCtx, const
       if (xmlXPathRegisterNs (xpathCtx, prefix, href) != 0)
 	{
 	  semanticError (nested,
-			 "Error: unable to register NS with prefix=\"%s\" and href=\"%s\"\n",
+			 "Error: unable to register NS with prefix=\"%s\" and href=\"%s\"",
 			 prefix, href);
 	  xmlFree (nsListDup);
 	  return 0;
@@ -981,7 +976,7 @@ printXpathNodes (xmlNodeSetPtr nodes)
   int size;
   int i;
   size = (nodes) ? nodes->nodeNr : 0;
-  semanticError (NULL, "Result (%d nodes):\n", size);
+  semanticError (NULL, "Result (%d nodes):", size);
   for (i = 0; i < size; ++i)
     {
       if (nodes->nodeTab[i]->type == XML_NAMESPACE_DECL)
@@ -992,12 +987,12 @@ printXpathNodes (xmlNodeSetPtr nodes)
 	  if (cur->ns)
 	    {
 	      semanticError (NULL,
-			     "= namespace \"%s\"=\"%s\" for node %s:%s\n",
+			     "= namespace \"%s\"=\"%s\" for node %s:%s",
 			     ns->prefix, ns->href, cur->ns->href, cur->name);
 	    }
 	  else
 	    {
-	      semanticError (NULL, "= namespace \"%s\"=\"%s\" for node %s\n",
+	      semanticError (NULL, "= namespace \"%s\"=\"%s\" for node %s",
 			     ns->prefix, ns->href, cur->name);
 	    }
 	}
@@ -1006,18 +1001,18 @@ printXpathNodes (xmlNodeSetPtr nodes)
 	  cur = nodes->nodeTab[i];
 	  if (cur->ns)
 	    {
-	      semanticError (NULL, "= element node \"%s:%s\"\n",
+	      semanticError (NULL, "= element node \"%s:%s\"",
 			     cur->ns->href, cur->name);
 	    }
 	  else
 	    {
-	      semanticError (NULL, "= element node \"%s\"\n", cur->name);
+	      semanticError (NULL, "= element node \"%s\"", cur->name);
 	    }
 	}
       else
 	{
 	  cur = nodes->nodeTab[i];
-	  semanticError (NULL, "= node \"%s\": type %d\n", cur->name,
+	  semanticError (NULL, "= node \"%s\": type %d", cur->name,
 			 cur->type);
 	}
     }

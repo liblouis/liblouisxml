@@ -1780,7 +1780,8 @@ future.
 @section Pseudo-actions
 
 These actions affect the processing of semantic-action files. They are 
-not connected with any tag in the document.
+not connected with any tag in the document. They are executed when they 
+are encountered in the processing of semantic-action files.
 
 @subsection include
 
@@ -1788,9 +1789,9 @@ not connected with any tag in the document.
 include filename
 @end example
 
-filename must be the name of a semantic action file. The file is 
-compiled as though it were part of the file containing the 
-@code{include} entry.
+filename must be the name of a semantic action file. The file is
+compiled as though it were part of the file containing the
+@code{include} entry. Included files may include other files.
 
 @subsection newentries
 
@@ -1804,6 +1805,17 @@ produced. This affects only documents processed with this
 semantic-action file. The configuration setting @code{newEntries} 
 affects all documents.
 
+@subsection namespaces
+
+@example
+namespaces dtb=http://www.daisy.org/z3986/2005/dtbook/
+@end example
+
+This pseudo-action is used to declare namespaces used in XPath 
+expressions. (See following section). The format is @samp{namespaces 
+prefix1=url1,prefix2=url2,...}. The list of namespaces may not contain 
+blanks. 
+
 @section Using XPath Expressions
 
 @example
@@ -1816,7 +1828,12 @@ made to it. In general, XPath expressions are entered in the second
 column with the syntax @code{&xpath(...)}. That is, the XPath 
 expression is placed within parentheses following @code{&xpath}. It may 
 contain parentheses itself, as long as they match. The third column may 
-contain arguments, as with any line in a semantic-action file.
+contain arguments, as with any line in a semantic-action file. XPath 
+expressions are not processed in any particular order. Care should be 
+taken that the node sets which they find do not overlap. If a node is in 
+a node set found by a particular XPath exprcssion it will be given the 
+semantic-action and arguments associated with that expression. This will 
+not be changed subsequently.
 
 The @samp{&funcname(...)} notation may be used for other features, such 
 as XPointer, in the future.

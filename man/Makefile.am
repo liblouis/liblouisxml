@@ -20,14 +20,22 @@ common_mandeps = $(top_srcdir)/configure.ac
 # Depend on the source, not the binary; we don't need to regenerate the
 # binary when any source file changes, only the main one.
 xml2brl.1: $(top_srcdir)/tools/xml2brl.c $(common_mandeps)
-	$(HELP2MAN) ../tools/xml2brl$(EXEEXT) --info-page=$(PACKAGE) --output=$@
+	$(HELP2MAN) ../tools/xml2brl$(EXEEXT) --info-page=$(PACKAGE) \
+	--name="Translate an xml or a text file into an embosser-ready Braille file." \
+	--output=$@
 
 msword2brl.1: $(top_srcdir)/tools/msword2brl $(common_mandeps)
-	$(HELP2MAN) ../tools/msword2brl --info-page=$(PACKAGE) --output=$@
+	$(HELP2MAN) ../tools/msword2brl --info-page=$(PACKAGE) \
+	--name="Translate an MS Word file into an embosser-ready Braille file." \
+	--output=$@
 
 rtf2brl.1: $(top_srcdir)/tools/rtf2brl $(common_mandeps)
-	$(HELP2MAN) ../tools/rtf2brl --info-page=$(PACKAGE) --output=$@
+	$(HELP2MAN) ../tools/rtf2brl --info-page=$(PACKAGE) \
+	--name="Translate an RTF file into an embosser-ready Braille file." \
+	--output=$@
 
 pdf2brl.1: $(top_srcdir)/tools/pdf2brl $(common_mandeps)
-	$(HELP2MAN) ../tools/pdf2brl --info-page=$(PACKAGE) --output=$@
+	$(HELP2MAN) ../tools/pdf2brl --info-page=$(PACKAGE) \
+	--name="Translate a PDF file into an embosser-ready Braille file." \
+	--output=$@
 

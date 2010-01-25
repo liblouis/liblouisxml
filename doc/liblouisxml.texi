@@ -129,6 +129,7 @@ Connecting with the xml Document - Semantic-Action Files
 * Semantic Actions Overview::   
 * Semantic Actions in detail::  
 * Pseudo-actions::              
+* Using XPath Expressions::     
 
 Special Features
 
@@ -1008,6 +1009,7 @@ Paragraph. This is ordinary body text.
 * Semantic Actions Overview::   
 * Semantic Actions in detail::  
 * Pseudo-actions::              
+* Using XPath Expressions::     
 @end menu
 
 @node Semantic Actions Overview, Semantic Actions in detail, Connecting with the xml Document, Connecting with the xml Document
@@ -1776,7 +1778,7 @@ future.
 
 @end table
 
-@node Pseudo-actions,  , Semantic Actions in detail, Connecting with the xml Document
+@node  Pseudo-actions, Using XPath Expressions, Semantic Actions in detail, Connecting with the xml Document
 @section Pseudo-actions
 
 These actions affect the processing of semantic-action files. They are 
@@ -1816,6 +1818,7 @@ expressions. (See following section). The format is @samp{namespaces
 prefix1=url1,prefix2=url2,...}. The list of namespaces may not contain 
 blanks. 
 
+@node Using XPath Expressions,  , Pseudo-actions, Connecting with the xml Document
 @section Using XPath Expressions
 
 @example
@@ -1831,14 +1834,14 @@ contain parentheses itself, as long as they match. The third column may
 contain arguments, as with any line in a semantic-action file. XPath 
 expressions are not processed in any particular order. Care should be 
 taken that the node sets which they find do not overlap. If a node is in 
-a node set found by a particular XPath exprcssion it will be given the 
+a node set found by a particular XPath expression it will be given the 
 semantic-action and arguments associated with that expression. This will 
 not be changed subsequently.
 
 The @samp{&funcname(...)} notation may be used for other features, such 
 as XPointer, in the future.
 
-@node Special Features, Special Formats, Connecting with the xml Document, Top
+@node  Special Features, Special Formats, Connecting with the xml Document, Top
 @chapter Special Features
 
 @menu

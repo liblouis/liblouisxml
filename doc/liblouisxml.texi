@@ -290,10 +290,11 @@ current directory first, precede the file name with @code{./}.
 This option enables you to specify configuration settings on the
 command line instead of changing the configuration file. You can use
 as many @option{-C} options as you wish. Any settings can be specified
-except those having to do with styles. These must be specified in 
-configuration files. The settings may be in any
-order. They override any settings in @file{canonical.cfg} or in the
-configuration file used by @command{xml2brl}.
+except those having to do with styles. @xref{Configuration Settings
+Index}, for a list of available settings. These must be specified in
+configuration files. The settings may be in any order. They override
+any settings in @file{canonical.cfg} or in the configuration file used
+by @command{xml2brl}.
 
 @item -b
 @itemx --backward

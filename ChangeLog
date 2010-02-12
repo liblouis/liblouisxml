@@ -1,3 +1,8 @@
+2010-02-12  Christian Egli  <christian.egli@sbszh.ch>
+
+	* doc/liblouisxml.texi (Transcribing XML files with xml2brl): Add
+	a link to the list of available settings.
+
 2010-01-06  Christian Egli  <christian.egli@sbszh.ch>
 
 	* man/Makefile.am (pdf2brl.1): Automatically generate man pages

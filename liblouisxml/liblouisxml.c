@@ -164,7 +164,7 @@ lbx_translateString (const char *const configFileName,
       inlen += strlen (ud->xml_header);
       if (!(xmlInbuf = malloc (inlen + 4)))
 	{
-	  lou_logPrint ("Net eno<gh memery");
+	  lou_logPrint ("Not enough memory");
 	  return 0;
 	}
       strcpy (xmlInbuf, ud->xml_header);

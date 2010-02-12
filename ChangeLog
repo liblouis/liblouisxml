@@ -1,5 +1,7 @@
 2010-02-12  Christian Egli  <christian.egli@sbszh.ch>
 
+	* liblouisxml/liblouisxml.c (lbx_translateString): Fix a typo.
+
 	* doc/liblouisxml.texi (Transcribing XML files with xml2brl): Add
 	a link to the list of available settings.
 

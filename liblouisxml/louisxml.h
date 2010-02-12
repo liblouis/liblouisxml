@@ -77,7 +77,11 @@ typedef struct
 #define vsnprintf _vsnprintf
 #endif
 
+
+#ifndef CHARSIZE
 #define CHARSIZE sizeof (widechar)
+#endif
+
 #define BUFSIZE 8192
 #define MAX_LENGTH BUFSIZE - 4
 #define MAX_TRANS_LENGTH 2 * BUFSIZE - 4
@@ -102,7 +106,8 @@ typedef enum
 typedef enum
 {
   textDevice = 0,
-  browser
+  browser,
+  utd
 } FormatFor;
 
 typedef enum

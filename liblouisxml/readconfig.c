@@ -35,6 +35,7 @@
 #include <stdarg.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <louis.h>
 #include "louisxml.h"
 #include "sem_names.h"
 
@@ -532,7 +533,10 @@ compileConfig (FileInfo * nested)
   };
 
   static const char *formatFor[] = {
-    "textDevice", "0", "browser", "1", NULL
+    "textDevice", "0",
+    "browser", "1",
+    "utd", "2",
+    NULL
   };
 
   int k;

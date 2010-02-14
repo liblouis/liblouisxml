@@ -813,7 +813,7 @@ getRootName (xmlNode * rootElement, char *fileName)
   curchar = fileName;
   while (*curchar)
     {
-      if (*curchar == ':' || *curchar == '/'
+      if (*curchar == ':' || *curchar == '/' || *curchar == ','
 	  || *curchar == '\\' || *curchar == 34 || *curchar == 39
 	  || *curchar == '(' || *curchar == ')' || *curchar < 33 ||
 	  *curchar > 126)

@@ -2521,6 +2521,8 @@ start_style (StyleType * curStyle)
 {
   if (curStyle == NULL)
     curStyle = lookup_style ("para");
+  if (prevStyle == NULL)
+    prevStyle = lookup_style ("para");
   if ((ud->text_length > 0 || ud->translated_length > 0) &&
       ud->style_top >= 0)
     {

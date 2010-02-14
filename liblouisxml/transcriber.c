@@ -42,7 +42,7 @@ static StyleType *style;
 static StyleType *prevStyle;
 static int styleBody (void);
 
-int
+static int
 fineFormat (void)
 {
   if (ud->text_length == 0 && ud->translated_length == 0)

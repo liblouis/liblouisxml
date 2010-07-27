@@ -11,17 +11,17 @@
    All rights reserved
 
    This file is free software; you can redistribute it and/or modify it
-   under the terms of the Lesser or Library GNU General Public License 
+   under the terms of the Lesser or Library GNU General Public License
    as published by the
    Free Software Foundation; either version 3, or (at your option) any
    later version.
 
    This file is distributed in the hope that it will be useful, but
    WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    Library GNU General Public License for more details.
 
-   You should have received a copy of the Library GNU General Public 
+   You should have received a copy of the Library GNU General Public
    License along with this program; see the file COPYING.  If not, write to
    the Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
@@ -35,7 +35,6 @@
 #include <stdarg.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <louis.h>
 #include "louisxml.h"
 #include "sem_names.h"
 
@@ -515,6 +514,22 @@ compileConfig (FileInfo * nested)
     "34",
     "debug",
     "35",
+    "pageSeparator",
+    "36",
+    "pageSeparatorNumber",
+    "37",
+    "ignoreEmptyPages",
+    "38",
+    "continuePages",
+    "39",
+    "mergeUnnumberedPages",
+    "40",
+    "pageNumberTopSeparateLine",
+    "41",
+    "pageNumberBottomSeparateLine",
+    "42",
+    "printPageNumberRange",
+    "43",
     "style",
     "90",
     NULL
@@ -533,10 +548,7 @@ compileConfig (FileInfo * nested)
   };
 
   static const char *formatFor[] = {
-    "textDevice", "0",
-    "browser", "1",
-    "utd", "2",
-    NULL
+    "textDevice", "0", "browser", "1", NULL
   };
 
   int k;
@@ -596,7 +608,7 @@ compileConfig (FileInfo * nested)
 	  break;
 	case 11:
 	  if ((k = checkValues (nested, topBottom)) != NOTFOUND)
-	    ud->print_page_number_at = ud->braille_page_number_at = k;
+	    ud->print_page_number_at = k;
 	  break;
 	case 12:
 	  if ((k = checkValues (nested, topBottom)) != NOTFOUND)
@@ -605,8 +617,8 @@ compileConfig (FileInfo * nested)
 		k = 0;
 	      else
 		k = 1;
-	      ud->print_page_number_at = ud->braille_page_number_at = k;
 	    }
+	  ud->braille_page_number_at = k;
 	  break;
 	case 13:
 	  if ((k = checkValues (nested, yesNo)) != NOTFOUND)
@@ -715,6 +727,54 @@ compileConfig (FileInfo * nested)
 	case 35:
 	  if ((k = checkValues (nested, yesNo)) != NOTFOUND)
 	    ud->debug = k;
+	  break;
+	case 36:
+	  if ((k = checkValues (nested, yesNo)) != NOTFOUND)
+	    {
+	      ud->page_separator = k;
+	    }
+	  break;
+	case 37:
+	  if ((k = checkValues (nested, yesNo)) != NOTFOUND)
+	    {
+	      ud->page_separator_number = k;
+	    }
+	  break;
+	case 38:
+	  if ((k = checkValues (nested, yesNo)) != NOTFOUND)
+	    {
+	      ud->ignore_empty_pages = k;
+	    }
+	  break;
+	case 39:
+	  if ((k = checkValues (nested, yesNo)) != NOTFOUND)
+	    {
+	      ud->continue_pages = k;
+	    }
+	  break;
+	case 40:
+	  if ((k = checkValues (nested, yesNo)) != NOTFOUND)
+	    {
+	      ud->merge_unnumbered_pages = k;
+	    }
+	  break;
+	case 41:
+	  if ((k = checkValues (nested, yesNo)) != NOTFOUND)
+	    {
+	      ud->page_number_top_separate_line = k;
+	    }
+	  break;
+	case 42:
+	  if ((k = checkValues (nested, yesNo)) != NOTFOUND)
+	    {
+	      ud->page_number_bottom_separate_line = k;
+	    }
+	  break;
+	case 43:
+	  if ((k = checkValues (nested, yesNo)) != NOTFOUND)
+	    {
+	      ud->print_page_number_range = k;
+	    }
 	  break;
 	case 90:
 	  {
@@ -842,10 +902,6 @@ compileConfig (FileInfo * nested)
 	  continue;
 	}
     }
-  if (!((ud->print_page_number_at && ud->braille_page_number_at) ||
-	(!ud->print_page_number_at && !ud->braille_page_number_at)))
-    configureError (nested,
-		    "invalid combination of braille and print page number placements");
   return 1;
 }
 
@@ -907,6 +963,14 @@ read_configuration_file (const char *configFileList, const char
       ud->outlen_so_far = 0;
       ud->lines_on_page = 0;
       ud->braille_page_number = ud->beginning_braille_page_number;
+      ud->print_page_number_first[0] = '_';
+      ud->print_page_number[1] = 0;
+      ud->print_page_number_first[1] = 0;
+      ud->print_page_number_last[0] = 0;
+      ud->page_separator_number_first[0] = 0;
+      ud->page_separator_number_first[0] = 0;
+      ud->pagelen_so_far = 0;
+      ud->fill_pages = 0;
       return 1;
     }
   lbx_free ();

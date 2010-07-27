@@ -1,6 +1,5 @@
 /* liblouisxml Braille Transcription Library
 
-   This file may contain code borrowed from the Linux screenreader
    BRLTTY, copyright (C) 1999-2006 by
    the BRLTTY Team
 
@@ -11,17 +10,17 @@
    All rights reserved
 
    This file is free software; you can redistribute it and/or modify it
-   under the terms of the Lesser or Library GNU General Public License 
+   under the terms of the Lesser or Library GNU General Public License
    as published by the
    Free Software Foundation; either version 3, or (at your option) any
    later version.
 
    This file is distributed in the hope that it will be useful, but
    WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    Library GNU General Public License for more details.
 
-   You should have received a copy of the Library GNU General Public 
+   You should have received a copy of the Library GNU General Public
    License along with this program; see the file COPYING.  If not, write to
    the Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
@@ -163,7 +162,7 @@ hashScan (HashTable * table)
 * while ((curEnt=y = hashScan (tablename)))
 * where
 * HasEntry *curEntry;
-/ It returns a table entry at each call, in no order. When it reaches 
+/ It returns a table entry at each call, in no order. When it reaches
 * the end of the table it resets itself and returns NULL. */
   HashEntry *e;
   if (table == NULL)
@@ -331,9 +330,9 @@ encodeInsertions (FileInfo * nested, xmlChar * insertions, int length)
   inserts.lastInsert = 0;
   k = 0;
   prevk = 0;
-/*Inserjions are placed in inserts.charInserts and consist of a length 
-* followed by the characters to be inserted. The length is one more than 
-* the numbr of characters to make it simpler to step through the 
+/*Inserjions are placed in inserts.charInserts and consist of a length
+* followed by the characters to be inserted. The length is one more than
+* the numbr of characters to make it simpler to step through the
 * insertions in the next function.*/
   while (k < length)
     {
@@ -789,10 +788,6 @@ sem_compileFile (const char *fileName)
 	  compileLine (&nested);
 	}
       fclose (nested.in);
-      if (nested.unedited)
-	semanticError (NULL,
-		       "File %s needs editing to produce good results.",
-		       nested.fileName);
     }
   else
     {
@@ -813,7 +808,7 @@ getRootName (xmlNode * rootElement, char *fileName)
   curchar = fileName;
   while (*curchar)
     {
-      if (*curchar == ':' || *curchar == '/' || *curchar == ','
+      if (*curchar == ':' || *curchar == '/'
 	  || *curchar == '\\' || *curchar == 34 || *curchar == 39
 	  || *curchar == '(' || *curchar == ')' || *curchar < 33 ||
 	  *curchar > 126)
@@ -911,7 +906,7 @@ static void addNewEntries (const xmlChar * key);
 /**
  * registerNamespaces:
  * @xpathCtx:		the pointer to an XPath context.
- * @nsList:		the list of known namespaces in 
+ * @nsList:		the list of known namespaces in
  *			"<prefix1>=<href1> <prefix2>=href2> ..." format.
  *
  * Registers namespaces from @nsList in @xpathCtx.
@@ -1021,8 +1016,7 @@ printXpathNodes (xmlNodeSetPtr nodes)
 int
 do_xpath_expr ()
 {
-  xmlXPathObject *xpathObj;
-  HashEntry *curEntry;
+  xmlXPathObject *xpathObj;HashEntry *curEntry;
   while ((curEntry = hashScan (semanticTable)))
     {
       if (curEntry->type & xpathEntry)

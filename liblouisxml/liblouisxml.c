@@ -11,17 +11,17 @@
    All rights reserved
 
    This file is free software; you can redistribute it and/or modify it
-   under the terms of the Lesser or Library GNU General Public License 
+   under the terms of the Lesser or Library GNU General Public License
    as published by the
    Free Software Foundation; either version 3, or (at your option) any
    later version.
 
    This file is distributed in the hope that it will be useful, but
    WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    Library GNU General Public License for more details.
 
-   You should have received a copy of the Library GNU General Public 
+   You should have received a copy of the Library GNU General Public
    License along with this program; see the file COPYING.  If not, write to
    the Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
@@ -135,9 +135,9 @@ lbx_translateString (const char *const configFileName,
 		     char *inbuf, widechar * outbuf,
 		     int *outlen, unsigned int mode)
 {
-/* Translate the well-formed xml expression in inbuf into braille 
-* according to the specifications in configFileName. If the expression 
-* is not well-formed or there are oteer errors, print an error 
+/* Translate the well-formed xml expression in inbuf into braille
+* according to the specifications in configFileName. If the expression
+* is not well-formed or there are oteer errors, print an error
 * message and return 0.*/
   int k;
   char *xmlInbuf;
@@ -164,7 +164,7 @@ lbx_translateString (const char *const configFileName,
       inlen += strlen (ud->xml_header);
       if (!(xmlInbuf = malloc (inlen + 4)))
 	{
-	  lou_logPrint ("Not enough memory");
+	  lou_logPrint ("Net enough memory");
 	  return 0;
 	}
       strcpy (xmlInbuf, ud->xml_header);
@@ -184,10 +184,11 @@ int
   (char *configFileName, char *inFileName, char *outFileName, unsigned
    int mode)
 {
-/* Translate the well-formed xml expression in inFileName into 
-* braille according to the specifications in configFileName. If the 
-* expression is not well-formed or there are other errors, print 
+/* Translate the well-formed xml expression in inFileName into
+* braille according to the specifications in configFileName. If the
+* expression is not well-formed or there are other errors, print
 * an error message and return 0.*/
+
   widechar outbuf[2 * BUFSIZE];
   xmlParserCtxtPtr ctxt = NULL;
   xmlDoc *doc;
@@ -195,6 +196,9 @@ int
     return 0;
   ud->outbuf = outbuf;
   ud->outlen = (sizeof (outbuf) / CHARSIZE) - 4;
+    widechar pagebuf[2 * BUFSIZE];
+    ud->pagebuf = pagebuf;
+    ud->pagelen = (sizeof (pagebuf) / CHARSIZE) - 4;
   if (strcmp (outFileName, "stdout"))
     {
       if (!(ud->outFile = fopen (outFileName, "w")))
@@ -218,7 +222,7 @@ int
    int mode)
 {
 /* Translate the text file in inFileName into braille according to
-* the specifications in configFileName. If there are errors, print 
+* the specifications in configFileName. If there are errors, print
 * an error message and return 0.*/
   if (!read_configuration_file (configFileName, NULL, NULL, mode))
     return 0;
@@ -255,9 +259,9 @@ int
   (char *configFileName, char *inFileName, char *outFileName, unsigned
    int mode)
 {
-/* Back translate the braille file in inFileName into either an 
+/* Back translate the braille file in inFileName into either an
 * xml file or a text file according to
-* the specifications in configFileName. If there are errors, print an 
+* the specifications in configFileName. If there are errors, print an
 * error message and return 0.*/
   if (!read_configuration_file (configFileName, NULL, NULL, mode))
     return 0;
@@ -292,7 +296,7 @@ int
 void EXPORT_CALL
 lbx_free (void)
 {
-/* Free all memory used by liblouisxml. You MUST call this function at 
+/* Free all memory used by liblouisxml. You MUST call this function at
 * the END of your application.*/
   lou_free ();
   destroy_semantic_table ();

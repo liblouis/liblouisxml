@@ -11,17 +11,17 @@
    All rights reserved
 
    This file is free software; you can redistribute it and/or modify it
-   under the terms of the Lesser or Library GNU General Public License 
+   under the terms of the Lesser or Library GNU General Public License
    as published by the
    Free Software Foundation; either version 3, or (at your option) any
    later version.
 
    This file is distributed in the hope that it will be useful, but
    WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    Library GNU General Public License for more details.
 
-   You should have received a copy of the Library GNU General Public 
+   You should have received a copy of the Library GNU General Public
    License along with this program; see the file COPYING.  If not, write to
    the Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
@@ -77,11 +77,7 @@ typedef struct
 #define vsnprintf _vsnprintf
 #endif
 
-
-#ifndef CHARSIZE
 #define CHARSIZE sizeof (widechar)
-#endif
-
 #define BUFSIZE 8192
 #define MAX_LENGTH BUFSIZE - 4
 #define MAX_TRANS_LENGTH 2 * BUFSIZE - 4
@@ -106,8 +102,7 @@ typedef enum
 typedef enum
 {
   textDevice = 0,
-  browser,
-  utd
+  browser
 } FormatFor;
 
 typedef enum
@@ -191,6 +186,25 @@ typedef struct
   char interline_back_table_name[MAXNAMELEN];
   char semantic_files[MAXNAMELEN];
   widechar print_page_number[MAXNUMLEN];
+  widechar page_separator_number_first[MAXNUMLEN];
+  widechar page_separator_number_last[MAXNUMLEN];
+  widechar print_page_number_first[MAXNUMLEN];
+  widechar print_page_number_last[MAXNUMLEN];
+
+  int page_separator;
+  int page_separator_number;
+  int ignore_empty_pages;
+  int continue_pages;
+  int merge_unnumbered_pages;
+  int print_page_number_range;
+  int page_number_top_separate_line;
+  int page_number_bottom_separate_line;
+
+  int fill_pages;
+  int after_contents;
+  widechar *pagebuf;
+  int pagelen;
+  int pagelen_so_far;
   widechar braille_page_string[MAXNUMLEN];
   char lineEnd[8];
   char pageEnd[8];
@@ -270,4 +284,5 @@ int start_style (StyleType * curStyle);
 int end_style (StyleType * curStyle);
 int find_action (const char **actions, const char *action);
 int find_group_length (const char groupSym[2], const char *groupStart);
+
 #endif /*louisxml_h */

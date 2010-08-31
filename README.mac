@@ -37,3 +37,12 @@ or svn; decompress it; switch to the liblouisxml directory and run
 This works on my mac, and so hopefully should work for you. Although I
 am still running 10.5 on a PPC, the standard installation shouldn't
 have changed that much.
+
+
+If you run into linking problems it might be that there are multiple
+versions of libxml2 installed. In that case uninstall all of the
+libxml2 versions except for the one in /usr/ and try again.
+
+If libraries have been installed in nonstandard locations, then those
+pkgconfig paths should be added to the PKG_CONFIG_PATH variable in
+~/.profile.

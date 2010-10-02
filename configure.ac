@@ -1,7 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(liblouisxml, 2.3.0, john.boyer@abilitiessoft.com)
+AC_INIT(liblouisxml, 2.3.1, john.boyer@abilitiessoft.com)
 AC_CONFIG_SRCDIR([liblouisxml/semantics.c])
 AC_CONFIG_HEADER([liblouisxml/config.h])
 # AM_MAINTAINER_MODE
@@ -15,7 +15,7 @@ LIBLOUISXML_CURRENT=2
 
 # increment any time the source changes; set to
 #  0 if you increment CURRENT
-LIBLOUISXML_REVISION=2
+LIBLOUISXML_REVISION=3
 
 
 # increment if any interfaces have been added; set to 0
@@ -85,6 +85,7 @@ AC_CONFIG_FILES([Makefile
                  tests/Makefile
 		 liblouisxml.pc
                  tools/Makefile
+                 python/Makefile
 		 m4/Makefile])
 
 AC_CONFIG_FILES([tools/msword2brl], [chmod +x tools/msword2brl])

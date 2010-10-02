@@ -14,7 +14,8 @@ mfrac mfrac ^?,/,^#
 mfenced mfenced ^(,^)
 mfenced mfenced,open,{ ^{,^}
 mglyph mglyph
-mi mi
+no mi
+boldx mstyle,mathvariant,bold
 mlabeledtr mlabeledtr
 mmultiscripts mmultiscripts
 mn mn

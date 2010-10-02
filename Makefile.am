@@ -1,4 +1,4 @@
-SUBDIRS = gnulib doc lbx_files liblouisxml tests tools man m4
+SUBDIRS = gnulib doc lbx_files liblouisxml tests tools man m4 python
 
 ACLOCAL_AMFLAGS = -I m4 -I gnulib/m4
 

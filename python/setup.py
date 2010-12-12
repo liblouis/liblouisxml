@@ -20,6 +20,7 @@ setup(
     author = "Michael Whapples",
     author_email = "mwhapples@users.berlios.de",
     ext_modules = [Extension("louisxml", ["louisxml.c"], libraries=["louisxml"])],
+    include_dirs = ['../liblouisxml/'],
     classifiers = [
         "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: Artistic License",

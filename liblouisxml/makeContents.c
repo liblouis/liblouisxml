@@ -97,6 +97,9 @@ start_heading (sem_act action, widechar * translatedBuffer, int
   int k;
   if (!(ud->contents && (action == heading1 || action == heading2 ||
 			 action == heading3 || action == heading4 ||
+			 action == heading5 || action == heading6 ||
+			 action == heading7 || action == heading8 ||
+			 action == heading9 || action == heading10 ||
 			 action == contentsheader)))
     return 1;
   if (translatedLength > 3 * MAXNAMELEN)
@@ -117,6 +120,9 @@ finish_heading (sem_act action)
   SaveHeading *headingPtr;
   if (!(ud->contents && (action == heading1 || action == heading2 ||
 			 action == heading3 || action == heading4 ||
+			 action == heading5 || action == heading6 ||
+			 action == heading7 || action == heading8 ||
+			 action == heading9 || action == heading10 ||
 			 action == contentsheader)))
     return 1;
   heading.next = NULL;
@@ -210,6 +216,24 @@ make_contents (void)
 	      break;
 	    case heading4:
 	      action = contents4;
+	      break;
+	    case heading5:
+	      action = contents5;
+	      break;
+        case heading6:
+	      action = contents6;
+	      break;
+        case heading7:
+	      action = contents7;
+	      break;
+        case heading8:
+	      action = contents8;
+	      break;
+        case heading9:
+	      action = contents9;
+	      break;
+        case heading10:
+	      action = contents10;
 	      break;
 	    }
 	  style = action_to_style (action);

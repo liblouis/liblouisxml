@@ -2388,11 +2388,11 @@ styleBody (void)
     }
   if (ud->contents == 1)
     {
-      if (ud->braille_pages && (action ==
-				heading1
-				|| action ==
-				heading2
-				|| action == heading3 || action == heading4))
+      if (ud->braille_pages && (action == heading1 || action == heading2 ||
+                                action == heading3 || action == heading4 ||
+                                action == heading5 || action == heading6 ||
+                                action == heading7 || action == heading8 ||
+                                action == heading9 || action == heading10))
 	getBraillePageString ();
       start_heading (action, translatedBuffer, translatedLength);
     }

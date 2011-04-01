@@ -99,6 +99,12 @@ insert_code (node, branchCount);
     case para:
       write_paragraph (para);
       break;
+    case heading10:
+    case heading9:
+    case heading8:
+    case heading7:
+    case heading6:
+    case heading5:
     case heading4:
     case heading3:
       write_paragraph (para);

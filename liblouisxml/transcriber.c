@@ -688,6 +688,8 @@ fillPage (void)
 
   if (!ud->braille_pages)
     return 1;
+  if (ud->outbuf3_enabled && ud->lines_length <= MAXLINES)
+    ud->lines_newpage[ud->lines_length] = 1;
   if (ud->lines_on_page == 0 && !ud->fill_page_skipped)
     ud->fill_page_skipped = 1;
   else
@@ -1235,6 +1237,12 @@ startLine (void)
 	  else
 		{
       	  ud->blank_lines = 0;
+      	  if (ud->outbuf3_enabled && ud->lines_length < MAXLINES)
+			{
+              ud->lines_pagenum[ud->lines_length] = ud->braille_page_number;
+              ud->lines_newpage[ud->lines_length] = 0;
+              ud->lines_length++;
+    		}
     	}
 
       if (ud->fill_pages > 0 && ud->lines_on_page == 0)
@@ -1482,6 +1490,26 @@ writeBuffer(int from, int skip)
 static widechar *translatedBuffer;
 static int translationLength;
 static int translatedLength;
+
+static widechar* saved_translatedBuffer;
+static int saved_translationLength;
+static int saved_translatedLength;
+
+int
+savePointers(void)
+{
+  saved_translatedBuffer = translatedBuffer;
+  saved_translationLength = translationLength;
+  saved_translatedLength = translatedLength;
+}
+
+int
+restorePointers(void)
+{
+  translatedBuffer = saved_translatedBuffer;
+  translationLength = saved_translationLength;
+  translatedLength = saved_translatedLength;
+}
 
 static int
 hyphenatex (int lastBlank, int lineEnd)

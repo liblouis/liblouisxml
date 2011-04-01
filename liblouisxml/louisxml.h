@@ -62,6 +62,9 @@ typedef struct
   int lines_after;
   int left_margin;
   int centered_margin;
+  int keep_with_next;
+  int dont_split;
+  int orphan_control;
   int first_line_indent;	/* At true margin if negative */
   sem_act translate;
   int skip_number_lines;	/*Don't write on lines with page numbers */
@@ -85,6 +88,7 @@ typedef struct
 #define MAXNAMELEN 256
 #define MAXNUMLEN 32
 #define STACKSIZE 100
+#define MAXLINES 512
 
 typedef enum
 {
@@ -175,6 +179,9 @@ typedef struct
   int blank_lines;
   int print_page_numbers_in_contents;
   int braille_page_numbers_in_contents;
+  int lines_pagenum[MAXLINES+1];
+  int lines_newpage[MAXLINES+1];
+  int lines_length;
   BrlPageNumFormat cur_brl_page_num_format;
   int lines_on_page;
   int braille_page_number;

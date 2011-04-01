@@ -816,6 +816,12 @@ compileConfig (FileInfo * nested)
 		  "12",
           "centeredMargin",
           "13",
+          "keepWithNext",
+          "14",
+          "dontSplit",
+          "15",
+          "orphanControl",
+          "16",
           NULL
 	    };
 	    static const char *formats[] = {
@@ -910,6 +916,17 @@ compileConfig (FileInfo * nested)
           case 13:
             style->centered_margin = atoi (nested->value);
             break;
+          case 14:
+            if ((k = checkValues (nested, yesNo)) != NOTFOUND)
+		      style->keep_with_next = k;
+		    break;
+          case 15:
+            if ((k = checkValues (nested, yesNo)) != NOTFOUND)
+		      style->dont_split = k;
+		    break;
+          case 16:
+            style->orphan_control = atoi (nested->value);
+            break;
 		  default:
 		    configureError (nested, "Program error in readconfig.c");
 		    continue;
@@ -992,6 +1009,7 @@ read_configuration_file (const char *configFileList, const char
 	  ud->fill_pages = 0;
       ud->fill_page_skipped = 0;
       ud->blank_lines = 0;
+      ud->lines_length = 0;
       ud->lines_on_page = 0;
       ud->braille_page_number = ud->beginning_braille_page_number;
       ud->print_page_number_first[0] = '_';

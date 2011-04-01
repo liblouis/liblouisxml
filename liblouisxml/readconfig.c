@@ -530,6 +530,10 @@ compileConfig (FileInfo * nested)
     "42",
     "printPageNumberRange",
     "43",
+    "printPageNumbersInContents",
+    "44",
+    "braillePageNumbersInContents",
+    "45",
     "style",
     "90",
     NULL
@@ -776,6 +780,14 @@ compileConfig (FileInfo * nested)
 	    {
 	      ud->print_page_number_range = k;
 	    }
+	  break;
+    case 44:
+	  if ((k = checkValues (nested, yesNo)) != NOTFOUND)
+		ud->print_page_numbers_in_contents = k;
+	  break;
+    case 45:
+	  if ((k = checkValues (nested, yesNo)) != NOTFOUND)
+		ud->braille_page_numbers_in_contents = k;
 	  break;
 	case 90:
 	  {

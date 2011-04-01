@@ -2016,7 +2016,6 @@ static int
 doContents (void)
 {
   int lastWord;
-  int lastWordLength;
   int untilLastWord;
   int numbersStart;
   int numbersLength;
@@ -2024,6 +2023,11 @@ doContents (void)
   int charactersWritten = 0;
   int cellsToWrite = 0;
   int availableCells = 0;
+  int minGuideDots = 2;             // Only print guide dots if space between last word and page number >= 1 + 2 + 1
+  int minSpaceAfterLastWord = 1;    // Minumum space between last word and page number = 1 cell
+  int minSpaceAfterNotLastWord = 6; // Minimum space after any braille line that is continued on the next line = 6 cells
+  int lastWordNewRule = 0;          // Last word begins on a new rule
+
   int k;
   if (translatedBuffer[translatedLength - 1] == 0xa0)
     {
@@ -2042,7 +2046,6 @@ doContents (void)
   numbersLength = translatedLength - numbersStart;
   for (--k; k >= 0 && translatedBuffer[k] > 32; k--);
   lastWord = k + 1;
-  lastWordLength = numbersStart - lastWord;
   for (k = numbersStart; k < translatedLength; k++)
     if (translatedBuffer[k] == 0xa0)
       translatedBuffer[k] = ' ';
@@ -2064,28 +2067,32 @@ doContents (void)
       if (!insertCharacters (blanks, leadingBlanks))
 	return 0;
       availableCells -= leadingBlanks;
-      if ((charactersWritten + availableCells) >= untilLastWord)
+
+      if ((charactersWritten + availableCells) >=
+          (untilLastWord + minSpaceAfterNotLastWord))
 	cellsToWrite = untilLastWord - charactersWritten;
       else
 	{
-	  for (cellsToWrite = availableCells - 2; cellsToWrite > 0;
-	       cellsToWrite--)
+	  for (cellsToWrite = availableCells - minSpaceAfterNotLastWord;
+	       cellsToWrite > 0; cellsToWrite--)
 	    if (translatedBuffer[charactersWritten + cellsToWrite] == ' ')
 	      break;
-	  if (cellsToWrite == 0)
-	    {
-	      cellsToWrite = availableCells - 1;
-	      wordTooLong = 1;
+	  if (cellsToWrite <= 0)
+		{
+          wordTooLong = 1;
+		  cellsToWrite = 0;
 	    }
-	  else
-	    {
-	      if (ud->hyphenate)
-		breakAt =
-		  hyphenatex (charactersWritten + cellsToWrite,
-			      charactersWritten + availableCells);
-	      if (breakAt)
+      if (ud->hyphenate)
+        breakAt = hyphenatex (charactersWritten + cellsToWrite,
+            charactersWritten + availableCells - minSpaceAfterNotLastWord);
+      if (breakAt)
 		cellsToWrite = breakAt - charactersWritten;
-	    }
+      else if (wordTooLong)
+		{
+          cellsToWrite = availableCells - minSpaceAfterNotLastWord - 1;
+          if (cellsToWrite <= 0)
+			cellsToWrite = 1;
+        }
 	}
       for (k = charactersWritten; k < (charactersWritten + cellsToWrite); k++)
 	if (translatedBuffer[k] == 0xa0)	/*unbreakable space */
@@ -2107,7 +2114,7 @@ doContents (void)
       else
 	{
 	  availableCells -= cellsToWrite;
-	  if (availableCells <= 0)
+	  if (availableCells <= minSpaceAfterNotLastWord)
 	    {
 	      finishLine ();
 	      availableCells = 0;
@@ -2129,51 +2136,75 @@ doContents (void)
       if (!insertCharacters (blanks, leadingBlanks))
 	return 0;
       availableCells -= leadingBlanks;
-    }
-  if ((lastWordLength + numbersLength + 2) < availableCells)
-    {
-      insertCharacters (blanks, 1);
-      availableCells--;
-      if (!insertWidechars (&translatedBuffer[lastWord], lastWordLength))
-	return 0;
-      availableCells -= lastWordLength;
-      if ((availableCells - numbersLength) < 3)
-	insertCharacters (blanks, availableCells - numbersLength);
-      else
-	{
-	  insertCharacters (blanks, 1);
-	  for (k = availableCells - (numbersLength + 1); k > 0; k--)
-	    insertCharacters (&ud->line_fill, 1);
-	  insertCharacters (blanks, 1);
-	}
-      if (!insertWidechars (&translatedBuffer[numbersStart], numbersLength))
-	return 0;
-      finishLine ();
+      lastWordNewRule = 1;
     }
   else
-    {
+	{
+      insertCharacters (blanks, 1);
+      availableCells--;
+	}
+  charactersWritten = lastWord;
+  while (((numbersStart-1) - charactersWritten) >
+           (availableCells - minSpaceAfterLastWord - numbersLength))
+	{
+      int breakAt = 0;
+      if (ud->hyphenate)
+		{
+          if (((numbersStart-1) - charactersWritten) >
+              (availableCells - minSpaceAfterNotLastWord))
+            breakAt = hyphenatex (charactersWritten,
+              charactersWritten + (availableCells - minSpaceAfterNotLastWord));
+		  else
+            breakAt = hyphenatex (charactersWritten, numbersStart-1);
+		}
+      if (breakAt || lastWordNewRule)
+		{
+          if (breakAt)
+            cellsToWrite = breakAt - charactersWritten;
+          else
+			{
+          	  if (((numbersStart-1) - charactersWritten) >
+              	   (availableCells - minSpaceAfterNotLastWord))
+            	cellsToWrite = (availableCells - minSpaceAfterNotLastWord) - 1;
+          	  else
+            	cellsToWrite = ((numbersStart-1) - charactersWritten) - 1;
+          	  if (cellsToWrite <= 0)
+				cellsToWrite = 1;
+			}
+          if (!insertWidechars(&translatedBuffer[charactersWritten], cellsToWrite))
+          	return 0;
+          charactersWritten += cellsToWrite;
+          if ((breakAt && translatedBuffer[breakAt - 1] != *litHyphen) || lastWordNewRule)
+	      	if (!insertDubChars (litHyphen, strlen (litHyphen)))
+              return 0;
+		}
       finishLine ();
       availableCells = startLine ();
       leadingBlanks = style->left_margin;
       if (!insertCharacters (blanks, leadingBlanks))
-	return 0;
+        return 0;
       availableCells -= leadingBlanks;
-      if (!insertWidechars (&translatedBuffer[lastWord], lastWordLength))
-	return 0;
-      availableCells -= lastWordLength;
-      if ((availableCells - numbersLength) < 3)
-	insertCharacters (blanks, availableCells - numbersLength);
-      else
-	{
-	  insertCharacters (blanks, 1);
-	  for (k = availableCells - (numbersLength + 1); k > 0; k--)
-	    insertCharacters (&ud->line_fill, 1);
-	  insertCharacters (blanks, 1);
+      lastWordNewRule = 1;
+      if (availableCells < (1 + minSpaceAfterLastWord + numbersLength))
+        break;
 	}
-      if (!insertWidechars (&translatedBuffer[numbersStart], numbersLength))
+
+  if (!insertWidechars (&translatedBuffer[charactersWritten], 
+		(numbersStart-1) - charactersWritten))
 	return 0;
-      finishLine ();
+  availableCells -= (numbersStart-1) - charactersWritten;
+  if ((availableCells - numbersLength) < (1 + minGuideDots + 1))
+	insertCharacters (blanks, availableCells - numbersLength);
+  else
+	{
+      insertCharacters (blanks, 1);
+      for (k = availableCells - (numbersLength + 2); k > 0; k--)
+        insertCharacters (&ud->line_fill, 1);
+	  insertCharacters (blanks, 1);
     }
+  if (!insertWidechars (&translatedBuffer[numbersStart], numbersLength))
+    return 0;
+  finishLine ();
   return 1;
 }
 

@@ -122,17 +122,27 @@ finish_heading (sem_act action)
   heading.next = NULL;
   if (action != contentsheader)
     {
-      if (*ud->print_page_number != '_')
+      if (ud->print_pages &&
+		  ud->print_page_numbers_in_contents &&
+		  *ud->print_page_number != '_')
 	{
 	  heading.headingChars[heading.headingLength++] = ' ';
-	  k = 0;
+      if (ud->print_page_number[0] != '+' &&
+          ud->print_page_number[0] != ' ')
+        heading.headingChars[heading.headingLength++] = 
+	      ud->print_page_number[0];
+      k = 1;
 	  while (ud->print_page_number[k])
 	    heading.headingChars[heading.headingLength++] =
 	      ud->print_page_number[k++];
 	}
-      if (*ud->braille_page_string)
+      if (ud->braille_pages &&
+		  ud->braille_page_numbers_in_contents && 
+		  *ud->braille_page_string)
 	{
-	  if (*ud->print_page_number != '_')
+	  if (ud->print_pages &&
+		  ud->print_page_numbers_in_contents &&
+		  *ud->print_page_number != '_')
 	    heading.headingChars[heading.headingLength++] = 0xa0;
 	  else
 	    heading.headingChars[heading.headingLength++] = ' ';

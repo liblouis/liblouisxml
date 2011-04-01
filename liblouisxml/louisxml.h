@@ -172,6 +172,8 @@ typedef struct
   int after_contents;
   int fill_page_skipped;
   int blank_lines;
+  int print_page_numbers_in_contents;
+  int braille_page_numbers_in_contents;
   BrlPageNumFormat cur_brl_page_num_format;
   int lines_on_page;
   int braille_page_number;

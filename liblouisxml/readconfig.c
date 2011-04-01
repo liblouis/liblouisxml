@@ -811,7 +811,12 @@ compileConfig (FileInfo * nested)
 	      "newPageAfter",
 	      "10",
 	      "rightHandPage",
-	      "11", "braillePageNumberFormat", "12", NULL
+	      "11",
+		  "braillePageNumberFormat",
+		  "12",
+          "centeredMargin",
+          "13",
+          NULL
 	    };
 	    static const char *formats[] = {
 	      "leftJustified",
@@ -902,6 +907,9 @@ compileConfig (FileInfo * nested)
 			NOTFOUND)
 		      style->brlNumFormat = k;
 		    break;
+          case 13:
+            style->centered_margin = atoi (nested->value);
+            break;
 		  default:
 		    configureError (nested, "Program error in readconfig.c");
 		    continue;

@@ -61,6 +61,7 @@ typedef struct
   int lines_before;
   int lines_after;
   int left_margin;
+  int centered_margin;
   int first_line_indent;	/* At true margin if negative */
   sem_act translate;
   int skip_number_lines;	/*Don't write on lines with page numbers */

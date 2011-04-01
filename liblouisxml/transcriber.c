@@ -2214,11 +2214,20 @@ doCenterRight (void)
   int charactersWritten = 0;
   int cellsToWrite = 0;
   int availableCells = 0;
+  int margin = 0;
+  if (style->format == centered)
+	{
+	  margin = style->centered_margin;
+	  if (margin < 0)
+		margin = 0;
+	}
   int k;
   while (charactersWritten < translatedLength)
     {
       int wordTooLong = 0;
       availableCells = startLine ();
+      if (style->format == centered)
+        availableCells -= (2*margin);
       if ((translatedLength - charactersWritten) < availableCells)
 	{
 	  k = (availableCells - (translatedLength - charactersWritten));
@@ -2226,7 +2235,7 @@ doCenterRight (void)
 	    k /= 2;
 	  else if (style->format != rightJustified)
 	    return 0;
-	  if (!insertCharacters (blanks, k))
+	  if (!insertCharacters (blanks, margin + k))
 	    return 0;
 	  if (!insertWidechars (&translatedBuffer[charactersWritten],
 				translatedLength - charactersWritten))
@@ -2256,9 +2265,11 @@ doCenterRight (void)
 	  k = availableCells - cellsToWrite;
 	  if (style->format == centered)
 	    k /= 2;
-	  if (!insertCharacters (blanks, k))
-	    return 0;
 	}
+	  else
+        k = 0;
+	  if (!insertCharacters (blanks, margin + k))
+	    return 0;
       if (!insertWidechars
 	  (&translatedBuffer[charactersWritten], cellsToWrite))
 	return 0;

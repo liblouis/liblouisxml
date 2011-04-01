@@ -617,8 +617,9 @@ compileConfig (FileInfo * nested)
 		k = 0;
 	      else
 		k = 1;
+
+	    ud->braille_page_number_at = k;
 	    }
-	  ud->braille_page_number_at = k;
 	  break;
 	case 13:
 	  if ((k = checkValues (nested, yesNo)) != NOTFOUND)
@@ -960,7 +961,17 @@ read_configuration_file (const char *configFileList, const char
       ud->inFile = NULL;
       ud->outFile = NULL;
       ud->mainBrailleTable = ud->contracted_table_name;
-      ud->outlen_so_far = 0;
+      ud->outbuf1_len_so_far = 0;
+	  ud->outbuf2_len_so_far = 0;
+      ud->outbuf3_len_so_far = 0;
+	  ud->outbuf2_enabled = ud->braille_pages &&
+		ud->print_pages &&
+		ud->print_page_number_range &&
+		ud->print_page_number_at;
+      ud->outbuf3_enabled = 0;
+	  ud->fill_pages = 0;
+      ud->fill_page_skipped = 0;
+      ud->blank_lines = 0;
       ud->lines_on_page = 0;
       ud->braille_page_number = ud->beginning_braille_page_number;
       ud->print_page_number_first[0] = '_';
@@ -969,8 +980,6 @@ read_configuration_file (const char *configFileList, const char
       ud->print_page_number_last[0] = 0;
       ud->page_separator_number_first[0] = 0;
       ud->page_separator_number_first[0] = 0;
-      ud->pagelen_so_far = 0;
-      ud->fill_pages = 0;
       return 1;
     }
   lbx_free ();

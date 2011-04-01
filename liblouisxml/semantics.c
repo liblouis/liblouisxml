@@ -42,7 +42,7 @@ typedef struct
   int lineNumber;
   int numEntries;
   int unedited;
-  char line[2 * MAXNAMELEN];
+  char line[5 * MAXNAMELEN];
 }
 FileInfo;
 

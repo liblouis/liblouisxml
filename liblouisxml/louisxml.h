@@ -157,9 +157,22 @@ typedef struct
   char *mainBrailleTable;
   char *inbuf;
   int inlen;
-  widechar *outbuf;
-  int outlen;
-  int outlen_so_far;
+  widechar *outbuf1;
+  widechar *outbuf2;
+  widechar *outbuf3;
+  int outbuf1_len;
+  int outbuf2_len;
+  int outbuf3_len;
+  int outbuf1_len_so_far;
+  int outbuf2_len_so_far;
+  int outbuf3_len_so_far;
+  int outbuf2_enabled;
+  int outbuf3_enabled;
+  int fill_pages;
+  int after_contents;
+  int fill_page_skipped;
+  int blank_lines;
+  BrlPageNumFormat cur_brl_page_num_format;
   int lines_on_page;
   int braille_page_number;
   int prelim_pages;
@@ -190,7 +203,6 @@ typedef struct
   widechar page_separator_number_last[MAXNUMLEN];
   widechar print_page_number_first[MAXNUMLEN];
   widechar print_page_number_last[MAXNUMLEN];
-
   int page_separator;
   int page_separator_number;
   int ignore_empty_pages;
@@ -199,12 +211,6 @@ typedef struct
   int print_page_number_range;
   int page_number_top_separate_line;
   int page_number_bottom_separate_line;
-
-  int fill_pages;
-  int after_contents;
-  widechar *pagebuf;
-  int pagelen;
-  int pagelen_so_far;
   widechar braille_page_string[MAXNUMLEN];
   char lineEnd[8];
   char pageEnd[8];

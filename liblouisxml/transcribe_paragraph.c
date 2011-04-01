@@ -126,6 +126,9 @@ transcribe_paragraph (xmlNode * node, int action)
     case changetable:
       change_table (node);
       return 1;
+    case pagenum:
+      do_pagenum();
+      break;
     default:
       break;
     }

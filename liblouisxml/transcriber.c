@@ -939,6 +939,8 @@ getPageNumber (void)
 	  braillePageNumber = 1;
 	}
     }
+  if (ud->interpoint && !(ud->braille_page_number & 1))
+	braillePageNumber = 0;
   if (printPageNumber || braillePageNumber)
     {
       pageNumberString[pageNumberLength++] = ' ';
@@ -1027,13 +1029,11 @@ nextPrintPage (void)
       else if (ud->braille_pages &&
 	       (ud->lines_on_page == ud->lines_per_page - 2))
 	{
-
-	  ud->lines_on_page++;
 	  insertCharacters (ud->lineEnd, strlen (ud->lineEnd));
-	  ud->lines_on_page++;
+	  ud->lines_on_page = ud->lines_per_page;
+	  cellsWritten = 0;
 	  getPageNumber ();
 	  finishLine ();
-
     }
       else
 	{

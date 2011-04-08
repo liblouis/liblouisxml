@@ -1158,7 +1158,7 @@ startLine (void)
   int blank_lines = ud->blank_lines;
 
   while (availableCells == 0 ||
-         ud->fill_pages > 0 ||
+         (ud->braille_pages && ud->fill_pages > 0) ||
          blank_lines > 0)
     {
       if (ud->page_separator_number_first[0])
@@ -1226,14 +1226,16 @@ startLine (void)
 	  else if (blank_lines == 0)
       	return ud->cells_per_line;
 
-      if (ud->fill_pages > 0 || availableCells == 0)
-    	finishLine();
-	  else if (blank_lines > 0)
+      if (ud->braille_pages && ud->fill_pages > 0)
+        finishLine();
+      else if (blank_lines > 0)
 		{
           finishLine();
           blank_lines--;
           availableCells = 0;
     	}
+      else if (availableCells == 0)
+    	finishLine();
 	  else
 		{
       	  ud->blank_lines = 0;
@@ -1245,7 +1247,8 @@ startLine (void)
     		}
     	}
 
-      if (ud->fill_pages > 0 && ud->lines_on_page == 0)
+      if (ud->braille_pages && ud->fill_pages > 0
+			&& ud->lines_on_page == 0)
 		{
       	  ud->fill_pages--;
       	  if (ud->fill_pages == 0)

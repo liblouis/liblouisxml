@@ -1,8 +1,7 @@
--*- outline -*-
-This HACKING file describes the development environment.
+This HACKING file describes the development environment.  	-*- org -*-
 
-  Copyright (C) 2008, 2009 ViewPlus Technologies, Inc. and JJB
-  Software, Inc.
+  Copyright (C) 2008, 2009, 2011 ViewPlus Technologies, Inc. and JJB
+  Software, Inc. 
 
   Copying and distribution of this file, with or without modification,
   are permitted in any medium without royalty provided the copyright
@@ -66,6 +65,10 @@ are not needed for ordinary patch submission.
 Update the version number in NEWS (with version, date, and release
 type), ChangeLog and configure.ac.
 
+Don't forget to update the libtool versioning info in configure.ac,
+i.e. LIBLOUISXML_REVISION and possibly LIBLOUISXML_CURRENT and
+LIBLOUISXML_AGE. 
+
 ** Commit and tag
 Commit the changes and tag this version
 
@@ -111,4 +114,3 @@ liblouis-liblouisxml@freelists.org. See ANNOUNCEMENT for an example.
 ** Other web updates
 Update the Google project page. Add the current NEWS to the front
 page.
-

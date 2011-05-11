@@ -1,5 +1,8 @@
 2011-05-11  Christian Egli  <christian.egli@sbs.ch>
 
+	* ANNOUNCEMENT: Add an ANNOUNCEMENT file which can serve as a
+	template for future release announcements.
+
 	* python/Makefile.am: Uncomment the all and install target as they
 	do not work. Maybe an autoconf test is needed to check for the
 	presence of Python dev libraries?

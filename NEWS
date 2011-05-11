@@ -2,6 +2,10 @@ liblouisxml NEWS -- history of user-visible changes.
 
 * Noteworthy changes in release 2.4.0 (2011-05-11)
 
+This release brings in the many bug fixes and feature enhancments that
+Bert Frees has done while working on the odt2braille Braille extension
+to OpenOffice.org Writer. 
+
 ** New features
 *** xpath expression handling
     element specifiers for semantic actionan now defined in terms of

@@ -1,5 +1,78 @@
 liblouisxml NEWS -- history of user-visible changes.
 
+* Noteworthy changes in release 2.4.0 (2011-05-11)
+
+** New features
+*** xpath expression handling
+    element specifiers for semantic actionan now defined in terms of
+    xpath expressions
+
+*** New style attributes
+    - dontSplit + keepWithNext + orphanControl
+
+    - underlinex: New style similar to italicx and boldx
+
+    - heading5 ... heading10: Additional heading styles
+
+    - contents5 ... contents10: Additional table of contents styles
+
+    - centeredMargin: Prevent centered text from extending too near to
+      the left and right edges.
+
+    - dontSplit: Protect an element from being split across multiple
+      pages.
+
+    - keepWithNext: keep an element together with the first line of
+      the next sibling.
+
+    - orphanControl: Control how many lines of an element must be
+      printed at least at the bottom of a Braille page. 
+
+*** New table of content parameters
+    printPageNumbersInContents + braillePageNumbersInContents
+
+*** Many layout improvements
+    - continuePages: Enable or disable prefixing of page numbers with
+      a letter (a, b, c, etc.) on continued pages. 
+
+    - pageSeparator: Enable or disable placing of a page separator
+      line where a print page break occurs.
+
+    - pageSeparatorNumber: Enable or disable placing of page numbers
+      with page separator lines. 
+
+    - ignoreEmptyPages: Empty pages can be ignored, or they can be
+      indicated with a combined print page number.
+
+    - printPageNumberRange: Show only the first print page number of a
+      Braille page, or display the whole range of print pages
+      contained in a Braille page. 
+
+    - mergeUnnumberedPages: Ignore page breaks without a page number.
+
+    - pageNumberTopSeparateLine/pageNumberBottomSeparateLine: Provide
+      a separate line for page numbers when they are placed at the top
+      or bottom. 
+
+    - printPageNumbersInContents/braillePageNumbersInContents:  Enable
+      or disable print and Braille page numbers in the table of
+      contents. 
+
+** Improvements
+   - braillePageNumberAt/printPageNumberAt: Print page numbers and
+     Braille page numbers can now both be placed at the top or bottom
+     together.
+   - Improved handling of linesBefore, linesAfter, newPageBefore,
+     newPageAfter and pagenum. 
+
+** Bug fixes
+   - Fixed table of content bugs 
+   - Fixed braille page number should only be visible on odd pages
+     when interpoint = yes 
+   - Fixed failure when new print page starts on second last line of
+     page 
+   - Fixed endless loop when braillePages=yes
+
 * Noteworthy changes in release 2.1.0 (2009-11-23)
 
 The main focus for this release has been the addition of user-defined
@@ -97,3 +170,4 @@ None
 Local variables:
 mode: org
 end:
+

@@ -1,3 +1,11 @@
+2011-05-11  Christian Egli  <christian.egli@sbs.ch>
+
+	* python/Makefile.am: Uncomment the all and install target as they
+	do not work. Maybe an autoconf test is needed to check for the
+	presence of Python dev libraries?
+
+	* Makefile.am (EXTRA_DIST): Fix a typo
+
 2010-02-12  Christian Egli  <christian.egli@sbszh.ch>
 
 	* liblouisxml/liblouisxml.c (lbx_translateString): Fix a typo.

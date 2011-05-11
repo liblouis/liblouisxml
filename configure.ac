@@ -1,7 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(liblouisxml, 2.3.1, john.boyer@abilitiessoft.com)
+AC_INIT(liblouisxml, 2.4.0, john.boyer@abilitiessoft.com)
 AC_CONFIG_SRCDIR([liblouisxml/semantics.c])
 AC_CONFIG_HEADER([liblouisxml/config.h])
 # AM_MAINTAINER_MODE
@@ -11,17 +11,16 @@ AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 
 # increment if the interface has additions, changes, removals.
-LIBLOUISXML_CURRENT=2
+LIBLOUISXML_CURRENT=3
 
 # increment any time the source changes; set to
 #  0 if you increment CURRENT
-LIBLOUISXML_REVISION=3
-
+LIBLOUISXML_REVISION=0
 
 # increment if any interfaces have been added; set to 0
 #  if any interfaces have been changed or removed. removal has
 #  precedence over adding, so set to 0 if both happened.
-LIBLOUISXML_AGE=1
+LIBLOUISXML_AGE=2
 
 AC_SUBST(LIBLOUISXML_CURRENT)
 AC_SUBST(LIBLOUISXML_REVISION)

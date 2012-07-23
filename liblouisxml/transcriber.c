@@ -778,6 +778,7 @@ insert_text (xmlNode * node)
 }
 
 static char *makeRomanNumber (int n);
+static char *makeRomanCapsNumber (int n);
 
 static int
 getBraillePageString (void)
@@ -802,8 +803,15 @@ getBraillePageString (void)
 	sprintf (brlPageString, "p%d", ud->braille_page_number);
       break;
     case roman:
-      strcpy (brlPageString, LETSIGN);
+      strcpy (brlPageString, " ");
+      strcat (brlPageString, LETSIGN);
       strcat (brlPageString, makeRomanNumber (ud->braille_page_number));
+      translationLength = strlen (brlPageString);
+      break;
+    case romancaps:
+      strcpy (brlPageString, " ");
+      strcat (brlPageString, LETSIGN);
+      strcat (brlPageString, makeRomanCapsNumber (ud->braille_page_number));
       translationLength = strlen (brlPageString);
       break;
     }
@@ -814,6 +822,14 @@ getBraillePageString (void)
 			    &translationLength, ud->braille_page_string,
 			    &translatedLength, NULL, NULL, 0))
     return 0;
+  switch (ud->cur_brl_page_num_format) {
+    case roman: case romancaps:
+      translatedLength--;
+      for (k = 0; k < translatedLength; k++)
+        ud->braille_page_string[k] = ud->braille_page_string[k+1];
+      ud->braille_page_string[k] = 0;
+      break;
+  }
   ud->braille_page_string[translatedLength] = 0;
   widecharcpy(&(pageNumberString[pageNumberLength]), ud->braille_page_string, translatedLength);
   pageNumberLength += translatedLength;
@@ -861,6 +877,56 @@ makeRomanNumber (int n)
     "vii",
     "viii",
     "ix"
+  };
+  if (n <= 0 || n > 1000)
+    return NULL;
+  romNum[0] = 0;
+  strcat (romNum, hundreds[n / 100]);
+  strcat (romNum, tens[(n / 10) % 10]);
+  strcat (romNum, units[n % 10]);
+  return romNum;
+}
+
+static char *
+makeRomanCapsNumber (int n)
+{
+  static char romNum[40];
+  static const char *hundreds[] = {
+    "",
+    "C",
+    "CC",
+    "CCC",
+    "CD",
+    "D",
+    "DC",
+    "DCC",
+    "DCCC",
+    "CM",
+    "M"
+  };
+  static const char *tens[] = {
+    "",
+    "X",
+    "XX",
+    "XXX",
+    "XL",
+    "L",
+    "LX",
+    "LXX",
+    "LXXX",
+    "XC"
+  };
+  static const char *units[] = {
+    "",
+    "I",
+    "II",
+    "III",
+    "IV",
+    "V",
+    "VI",
+    "VII",
+    "VIII",
+    "IX"
   };
   if (n <= 0 || n > 1000)
     return NULL;

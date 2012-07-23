@@ -182,6 +182,7 @@ typedef struct
   int lines_pagenum[MAXLINES+1];
   int lines_newpage[MAXLINES+1];
   int lines_length;
+  char soft_hyphens[2 * BUFSIZE];
   BrlPageNumFormat cur_brl_page_num_format;
   int lines_on_page;
   int braille_page_number;

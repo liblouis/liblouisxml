@@ -33,43 +33,43 @@
 #include <string.h>
 #include "louisxml.h"
 
-static int           dont_split = 0;
-static int           dont_split_status = 0;
-static int           keep_with_next = 0;
-static int           keep_with_previous = 0;
-static int           keep_with_previous_pos = 0;
-static int           keep_with_previous_status = 0;
-static int           orphan_control = 0;
-static int           orphan_control_pos = 0;
-static int           orphan_control_status = 0;
+static int dont_split = 0;
+static int dont_split_status = 0;
+static int keep_with_next = 0;
+static int keep_with_previous = 0;
+static int keep_with_previous_pos = 0;
+static int keep_with_previous_status = 0;
+static int orphan_control = 0;
+static int orphan_control_pos = 0;
+static int orphan_control_status = 0;
 
-static int           saved_text_length;
-static int           saved_translated_length;
-static int           saved_outbuf1_len_so_far;
-static int           saved_outbuf2_len_so_far;
-static int           saved_running_head_length;
-static int           saved_footer_length;
-static int           saved_braille_page_number;
-static int           saved_brl_page_num_format;
-static int           saved_cur_brl_page_num_format;
-static int           saved_lines_on_page;
-static int           saved_line_spacing;
-static int           saved_blank_lines;
-static int           saved_fill_pages;
-static int           saved_fill_page_skipped;
-static char          saved_soft_hyphens[2 * BUFSIZE];
-static widechar      saved_text_buffer[2 * BUFSIZE];
-static widechar      saved_translated_buffer[2 * BUFSIZE];
-static widechar      saved_outbuf1[2 * BUFSIZE];
-static widechar      saved_outbuf2[2 * BUFSIZE];
-static widechar      saved_page_separator_number_first[MAXNUMLEN];
-static widechar      saved_page_separator_number_last[MAXNUMLEN];
-static widechar      saved_print_page_number_first[MAXNUMLEN];
-static widechar      saved_print_page_number_last[MAXNUMLEN];
-static widechar      saved_print_page_number[MAXNUMLEN];
-static widechar      saved_braille_page_string[MAXNUMLEN];
-static widechar      saved_running_head[MAXNAMELEN / 2];
-static widechar      saved_footer[MAXNAMELEN / 2];
+static int saved_text_length;
+static int saved_translated_length;
+static int saved_outbuf1_len_so_far;
+static int saved_outbuf2_len_so_far;
+static int saved_running_head_length;
+static int saved_footer_length;
+static int saved_braille_page_number;
+static int saved_brl_page_num_format;
+static int saved_cur_brl_page_num_format;
+static int saved_lines_on_page;
+static int saved_line_spacing;
+static int saved_blank_lines;
+static int saved_fill_pages;
+static int saved_fill_page_skipped;
+static char saved_soft_hyphens[2 * BUFSIZE];
+static widechar saved_text_buffer[2 * BUFSIZE];
+static widechar saved_translated_buffer[2 * BUFSIZE];
+static widechar saved_outbuf1[2 * BUFSIZE];
+static widechar saved_outbuf2[2 * BUFSIZE];
+static widechar saved_page_separator_number_first[MAXNUMLEN];
+static widechar saved_page_separator_number_last[MAXNUMLEN];
+static widechar saved_print_page_number_first[MAXNUMLEN];
+static widechar saved_print_page_number_last[MAXNUMLEN];
+static widechar saved_print_page_number[MAXNUMLEN];
+static widechar saved_braille_page_string[MAXNUMLEN];
+static widechar saved_running_head[MAXNAMELEN / 2];
+static widechar saved_footer[MAXNAMELEN / 2];
 static unsigned char saved_typeform[2 * BUFSIZE];
 
 static int
@@ -98,6 +98,7 @@ saveState(void)
     widecharcpy(saved_running_head,                ud->running_head,        saved_running_head_length);
     widecharcpy(saved_footer,                      ud->footer,              saved_footer_length);
     unsignedcharcpy(saved_typeform,                ud->typeform,            saved_text_length);
+    charcpy(saved_soft_hyphens,                    ud->soft_hyphens,        saved_translated_length);
 
     widestrcpy(saved_page_separator_number_first,  ud->page_separator_number_first);
     widestrcpy(saved_page_separator_number_last,   ud->page_separator_number_last);
@@ -135,6 +136,7 @@ restoreState(void)
     widecharcpy(ud->running_head,               saved_running_head,        saved_running_head_length);
     widecharcpy(ud->footer,                     saved_footer,              saved_footer_length);
     unsignedcharcpy(ud->typeform,               saved_typeform,            saved_text_length);
+    charcpy(ud->soft_hyphens,                   saved_soft_hyphens,        saved_translated_length);
 
     widestrcpy(ud->page_separator_number_first, saved_page_separator_number_first);
     widestrcpy(ud->page_separator_number_last,  saved_page_separator_number_last);

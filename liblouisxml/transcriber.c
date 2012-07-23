@@ -77,6 +77,8 @@ static int fillPage (void);
 static int writeOutbuf (void);
 static int insertCharacters (char *chars, int length);
 
+static widechar softHyphen = 0xE00F;
+
 void
 widestrcpy(widechar* to, const widechar* from)
 {
@@ -1494,9 +1496,12 @@ static widechar *translatedBuffer;
 static int translationLength;
 static int translatedLength;
 
+static char* softHyphens;
+
 static widechar* saved_translatedBuffer;
 static int saved_translationLength;
 static int saved_translatedLength;
+static char* saved_softHyphens;
 
 int
 savePointers(void)
@@ -1504,6 +1509,7 @@ savePointers(void)
   saved_translatedBuffer = translatedBuffer;
   saved_translationLength = translationLength;
   saved_translatedLength = translatedLength;
+  saved_softHyphens = softHyphens;
 }
 
 int
@@ -1512,6 +1518,7 @@ restorePointers(void)
   translatedBuffer = saved_translatedBuffer;
   translationLength = saved_translationLength;
   translatedLength = saved_translatedLength;
+  softHyphens = saved_softHyphens;
 }
 
 static int
@@ -1551,7 +1558,8 @@ hyphenatex (int lastBlank, int lineEnd)
   for (k = strlen (hyphens) - 2; k > 0; k--)
     {
       breakAt = wordStart + k;
-      if (hyphens[k] == '1' && breakAt < lineEnd)
+      if ((hyphens[k] == '1' || softHyphens[wordStart + k] == '1') &&
+         (breakAt < lineEnd || (breakAt == lineEnd && translatedBuffer[breakAt - 1] == *litHyphen)))
 	break;
     }
   if (k < 2)
@@ -2340,6 +2348,35 @@ editTrans (void)
       translatedBuffer = ud->translated_buffer;
       translatedLength = ud->translated_length;
     }
+  if (ud->hyphenate)
+	{
+      int i;
+      int j = 0;
+      int newSyllable = 0;
+      softHyphens = ud->soft_hyphens;
+      for(i=0;i<translatedLength;i++)
+		{
+          if (newSyllable)
+			{
+              softHyphens[j] = '1';
+              newSyllable = 0;
+            }
+		  else
+			{
+              softHyphens[j] = '0';
+            }
+          if (translatedBuffer[i] == softHyphen)
+            newSyllable = 1;
+          else
+			{
+              translatedBuffer[j] = translatedBuffer[i];
+              j++;
+            }
+        }
+      translatedLength = j;
+      translatedBuffer[translatedLength] = 0;
+      softHyphens[translatedLength] = 0;
+    }
   return 1;
 }
 
@@ -2387,6 +2424,7 @@ styleBody (void)
       if (realStart > 0)
 	{
 	  translatedBuffer = &translatedBuffer[realStart];
+      softHyphens = &softHyphens[realStart];
 	  translatedLength -= realStart;
 	}
     }

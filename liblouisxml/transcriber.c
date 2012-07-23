@@ -1550,7 +1550,7 @@ hyphenatex (int lastBlank, int lineEnd)
   hyphens[wordLength] = 0;
   if (!hyphenFound)
     {
-      if (!lou_hyphenate (ud->mainBrailleTable,
+      if (!lou_hyphenate (ud->interline_back_table_name,
 			  &translatedBuffer[wordStart], wordLength,
 			  hyphens, 1))
 	return 0;

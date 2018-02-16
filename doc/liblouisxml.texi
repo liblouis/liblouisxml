@@ -758,7 +758,7 @@ contracted or uncontracted.
 The table used for producing uncontracted or Grade One braille. This
 setting appears to be superfluous and may be eliminated in the future.
 
-@setting{compbrailleTable, en-us-compbrl.ctb}
+@setting{compbrlTable, en-us-compbrl.ctb}
 The table used for producing large amounts of output in computer
 braille, such as computer programs. The computer braille table is
 usually combined with one of the two tables above.

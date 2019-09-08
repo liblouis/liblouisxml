@@ -24,17 +24,17 @@ xml2brl.1: $(top_srcdir)/tools/xml2brl.c $(common_mandeps)
 	--name="Translate an xml or a text file into an embosser-ready Braille file." \
 	--output=$@
 
-msword2brl.1: $(top_srcdir)/tools/msword2brl $(common_mandeps)
+msword2brl.1: $(top_srcdir)/tools/msword2brl.in $(common_mandeps)
 	$(HELP2MAN) ../tools/msword2brl --info-page=$(PACKAGE) \
 	--name="Translate an MS Word file into an embosser-ready Braille file." \
 	--output=$@
 
-rtf2brl.1: $(top_srcdir)/tools/rtf2brl $(common_mandeps)
+rtf2brl.1: $(top_srcdir)/tools/rtf2brl.in $(common_mandeps)
 	$(HELP2MAN) ../tools/rtf2brl --info-page=$(PACKAGE) \
 	--name="Translate an RTF file into an embosser-ready Braille file." \
 	--output=$@
 
-pdf2brl.1: $(top_srcdir)/tools/pdf2brl $(common_mandeps)
+pdf2brl.1: $(top_srcdir)/tools/pdf2brl.in $(common_mandeps)
 	$(HELP2MAN) ../tools/pdf2brl --info-page=$(PACKAGE) \
 	--name="Translate a PDF file into an embosser-ready Braille file." \
 	--output=$@

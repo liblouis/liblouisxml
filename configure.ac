@@ -49,8 +49,6 @@ AM_PROG_LIBTOOL
 AC_CHECK_PROG([HELP2MAN], [help2man], [help2man])
 AM_CONDITIONAL([HAVE_HELP2MAN], [test x$HELP2MAN = xhelp2man])
 
-AC_PATH_PROG(PKG_CONFIG, pkg-config)
-
 PKG_CHECK_MODULES(BASE_DEPENDENCIES, [liblouis, libxml-2.0])
 
 # Checks for libraries.
